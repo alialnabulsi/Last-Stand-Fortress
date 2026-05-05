@@ -6,6 +6,6 @@ class GameLevel extends Level {
   }
 
   initialize() {
-    this.game.addSprite(new Grid(50,this.game.arrayOfSprites,this.utils));
+    this.game.addSprite(new Grid(40,this.game.arrayOfSprites,this.utils));
   }
 }

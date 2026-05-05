@@ -22,23 +22,23 @@ class Tile extends Sprite {
   setFrame() {
     switch (this.type) {
       case this.TILE_TYPES.GRASS:
-        this.frameX = Math.floor(Math.random() * 2);
-        this.frameY = Math.floor(Math.random() * 2);
+        this.frameX = 0;
+        this.frameY = 0;
         break;
 
       case this.TILE_TYPES.BUILDABLE:
-        this.frameX = Math.floor(Math.random() * 3);
-        this.frameY = Math.floor(Math.random() * 2);
+       this.frameX = 0;
+        this.frameY = 0;
         break;
 
       case this.TILE_TYPES.BLOCKED:
-        this.frameX = Math.floor(Math.random() * 3);
-        this.frameY = Math.floor(Math.random() * 2);
+        this.frameX = 0;
+        this.frameY = 0;
         break;
 
       case this.TILE_TYPES.TOWN_HALL:
-        this.frameX = Math.floor(Math.random() * 2);
-        this.frameY = Math.floor(Math.random() * 2);
+        this.frameX = 0;
+        this.frameY = 0;
         break;
 
       case this.TILE_TYPES.PATH:
@@ -52,8 +52,8 @@ class Tile extends Sprite {
         break;
 
       case this.TILE_TYPES.FOREST:
-        this.frameX = 1;
-        this.frameY = 1;
+        this.frameX = 0;
+        this.frameY = 0;
         break;
 
       case this.TILE_TYPES.SPAWNER:
@@ -62,18 +62,19 @@ class Tile extends Sprite {
         break;
 
       case this.TILE_TYPES.TROOP_ZONE:
-        this.frameX = Math.floor(Math.random() * 2);
-        this.frameY = Math.floor(Math.random() * 2);
+        this.frameX = 0;
+        this.frameY = 0;
         break;
 
       case this.TILE_TYPES.RESOURCE_ZONE:
-        this.frameX = Math.floor(Math.random() * 2);
-        this.frameY = Math.floor(Math.random() * 2);
+        this.frameX = 0;
+        this.frameY = 0;
         break;
     }
   }
 
   update() {
+    /*
     this.gameTime += 16;
 
     if (this.type === this.TILE_TYPES.WATER) {
@@ -83,6 +84,7 @@ class Tile extends Sprite {
     if (this.type === this.TILE_TYPES.SPAWNER) {
       this.frameX = Math.floor(this.gameTime / 200) % 4;
     }
+      */
   }
 
   draw(ctx) {
