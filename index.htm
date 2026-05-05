@@ -1,0 +1,39 @@
+<html>
+<head>
+    <title>CSIS250 GameEngine</title>
+</head>
+<body style="background-color: rgb(0, 0, 0);">
+    <canvas id ="canvas" width="1600" height="900" style=" background-color: white;"></canvas>
+    <script src = js/game.js></script>
+
+    <!--Components-->
+    <script src = js/Components/Button.js></script>
+    <script src = js/Components/Text.js></script>
+    <script src = js/Components/Cell.js></script>
+    <script src = js/Components/Tile.js></script>
+
+    <!--Utils-->
+    <script src = js/Utils/Background.js></script>
+    <script src = js/Utils/SoundManager.js></script>
+    <script src = js/Utils/Grid.js></script>
+
+    <!--Levels-->
+    <script src = js/Levels/MenuLevel.js></script>
+    <script src = js/Levels/HelpLevel.js></script>
+    <script src = js/Levels/StoryLevel.js></script>
+    <script src = js/Levels/GameLevel.js></script>
+
+
+    <script src = index.js></script>
+</body>
+<style>
+  body {
+    margin: 0;
+    display: flex;
+    justify-content: center; /* horizontal center */
+    align-items: center;     /* vertical center */
+    height: 100vh;
+    background: black; /* optional */
+  }
+</style>
+</html>
