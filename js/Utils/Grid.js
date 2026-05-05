@@ -60,7 +60,9 @@ class Grid extends Sprite {
 
         const image = this.getTileImage(tileType);
 
-       
+        sprites.push(
+          new Tile(this.TILE_TYPES, x, y, tileType, this.cellSize, image),
+        );
 
         sprites.push(new Cell(x, y, this.cellSize, this.cellSize));
       }
