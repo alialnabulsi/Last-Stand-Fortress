@@ -157,7 +157,7 @@ const Utils = {
 
     ResourceZone: (() => {
       const img = new Image();
-      img.src = "images/tiles/ResourceZone.png";
+      img.src = "images/tiles/ResourcesZone.png";
       return img;
     })(),
 

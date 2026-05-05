@@ -8,8 +8,11 @@ class Cell extends Sprite {
     }
 
     render(ctx) {
-        ctx.strokeStyle = "Black";
-        ctx.lineWidth = 1;
+        ctx.save();
+
+        ctx.strokeStyle = "red";
+        ctx.lineWidth = 2;
         ctx.strokeRect(this.x, this.y, this.width, this.height);
+        ctx.restore();
     }
 }

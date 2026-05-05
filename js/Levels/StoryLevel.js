@@ -2,7 +2,7 @@ class StoryLevel extends Level {
   constructor(game, utils) {
     super();
     this.game = game;
-    this.MenuBackgroundImage = utils.Images.MenuLevelBackground;
+    this.MenuBackgroundImage = utils.BackgroundImages.MenuLevelBackground;
     this.backButtonTitle = utils.LevelsTexts.MenuLevel.backButtonTitle;
     this.shortStoryIntro = utils.LevelsTexts.StoryLevel.shortStoryIntro;
     this.storySound = utils.Sounds.storySound;
