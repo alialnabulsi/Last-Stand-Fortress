@@ -1,8 +1,8 @@
 class Grid extends Sprite {
-  constructor(cellSize, sprites, utils) {
+  constructor(cellSize, sprites, utils, map) {
     super();
 
-    this.map = utils.MAP.map_1;
+    this.map = map || utils.MAP.map_1;
     this.rows = this.map.length;
     this.cols = this.map[0].length;
 
@@ -143,8 +143,9 @@ class Grid extends Sprite {
             sprites.push(new Grass(x, y, this.cellSize, this.images.Grass));
             break;
         }
-
-        sprites.push(new Cell(x, y, this.cellSize, this.cellSize));
+        const cell = new Cell(x, y, this.cellSize, this.cellSize);
+        cell.isMapTile = true;
+        sprites.push(cell);
       }
     }
   }

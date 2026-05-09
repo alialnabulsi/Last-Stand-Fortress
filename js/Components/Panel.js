@@ -169,11 +169,18 @@ class Panel extends Sprite {
   addXP(amount) { this.playerState.xp += Math.max(0, amount); this.levelUpIfNeeded(); }
 
   levelUpIfNeeded() {
+    let didLevelUp = false;
+
     while (this.playerState.xp >= this.playerState.xpToNextLevel) {
       this.playerState.xp -= this.playerState.xpToNextLevel;
       this.playerState.level += 1;
       this.playerState.xpToNextLevel = Math.floor(this.playerState.xpToNextLevel * 1.2);
       this.updateEnemyInfo();
+      didLevelUp = true;
+    }
+
+    if (didLevelUp && this.game.currentGameLevel) {
+      this.game.currentGameLevel.changeMapForPlayerLevel(this.playerState.level);
     }
   }
 

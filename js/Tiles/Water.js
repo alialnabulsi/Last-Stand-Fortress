@@ -4,6 +4,8 @@ class Water extends Sprite {
     this.x = x;
     this.y = y;
     this.size = size;
+
+    this.isMapTile = true;
     this.image = image;
 
     this.frame = 0;

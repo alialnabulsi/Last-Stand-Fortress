@@ -5,6 +5,8 @@ class Buildable extends Sprite {
     this.x = x;
     this.y = y;
     this.size = size;
+
+    this.isMapTile = true;
     this.image = image;
 
     this.sourceSize = 40;

@@ -6,6 +6,7 @@ class TownHall extends Sprite {
     this.y = y;
     this.size = size; // should be 80 if TownHall takes 2x2 cells
     this.image = image;
+    this.isMapTile = true;
 
     this.sourceSize = 80;
 
