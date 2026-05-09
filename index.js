@@ -246,100 +246,43 @@ const Utils = {
     })(),
   },
   // ===============================
-  // PANEL DATABASE / CONFIG
-  // Edit panel titles, shop items, costs, timers, enemy scaling, etc. from here.
   // ===============================
-
+  // PANEL STATIC CONFIG (UI ONLY)
+  // ===============================
   Panel: {
     layout: {
       x: 0,
       y: 800,
       width: 1600,
       height: 200,
+      shop: { x: 12, y: 812, width: 835, height: 176 },
+      game: { x: 865, y: 812, width: 285, height: 176 },
+      info: { x: 1160, y: 812, width: 428, height: 176 },
+    },
 
-      shop: {
-        x: 12,
-        y: 812,
-        width: 835,
-        height: 176,
-        title: "SHOP",
-      },
-
-      game: {
-        x: 865,
-        y: 812,
-        width: 285,
-        height: 176,
-        title: "DEFENSE",
-      },
-
-      info: {
-        x: 1160,
-        y: 812,
-        width: 428,
-        height: 176,
-        title: "FORTRESS INFO",
-      },
+    titles: {
+      shop: "SHOP",
+      game: "DEFENSE",
+      info: "FORTRESS INFO",
     },
 
     style: {
       panelTop: "#3a2a1b",
       panelMiddle: "#1d1510",
       panelBottom: "#090706",
-
       border: "#c69a3a",
       sectionFill: "rgba(0, 0, 0, 0.30)",
       sectionBorder: "rgba(230, 180, 70, 0.75)",
-
       titleColor: "#ffd166",
       textColor: "#ffffff",
       mutedText: "#d6c8a5",
       danger: "#ff7070",
       good: "#7dff9d",
-
       buttonFill: "#3b2a1d",
       buttonHover: "#4b3625",
       buttonSelected: "#73521f",
       buttonDisabled: "#242424",
       buttonBorder: "#c49a45",
-    },
-
-    playerDefaults: {
-      level: 1,
-      xp: 0,
-      xpToNextLevel: 100,
-      gold: 250,
-      fortressHp: 100,
-      fortressMaxHp: 100,
-    },
-
-    defenseDefaults: {
-      phase: "PREPARATION",
-      preparationTimer: 30,
-      timer: 30,
-      started: false,
-      enemiesRemaining: 0,
-    },
-
-    enemyScaling: {
-      baseEnemyCount: 5,
-      extraEnemiesPerLevel: 2,
-
-      baseEnemyHpMultiplier: 1,
-      hpMultiplierPerLevel: 0.18,
-
-      baseEnemySpeedMultiplier: 1,
-      speedMultiplierPerLevel: 0.08,
-    },
-
-    messages: {
-      default: "Select something from the shop.",
-      selected: "Click a valid tile on the map.",
-      cancelled: "Selection cancelled.",
-      notEnoughGold: "Not enough gold.",
-      locked: "This item is locked.",
-      defenseStarted: "Defense started. Prepare for enemies.",
-      defenseAlreadyStarted: "Defense is already running.",
     },
 
     shopButton: {
@@ -352,113 +295,13 @@ const Utils = {
     },
 
     shopItems: [
-      {
-        id: "buildable_tile",
-        category: "buildable",
-        name: "Build Tile",
-        shortName: "Build",
-        cost: 25,
-        levelRequired: 1,
-        description: "Create slot",
-        icon: "⬚",
-        placement: "grass",
-      },
-
-      {
-        id: "gold_mine",
-        category: "resource",
-        name: "Gold Mine",
-        shortName: "Gold",
-        cost: 100,
-        levelRequired: 1,
-        description: "+Gold/sec",
-        icon: "◆",
-        placement: "buildable",
-      },
-
-      {
-        id: "basic_barracks",
-        category: "barracks",
-        name: "Barracks",
-        shortName: "Barracks",
-        cost: 150,
-        levelRequired: 1,
-        description: "Unlock troops",
-        icon: "⚑",
-        placement: "buildable",
-      },
-
-      {
-        id: "elite_barracks",
-        category: "barracks",
-        name: "Elite Camp",
-        shortName: "Elite",
-        cost: 300,
-        levelRequired: 3,
-        description: "Elite troops",
-        icon: "♜",
-        placement: "buildable",
-      },
-
-      {
-        id: "archer_troop",
-        category: "troop",
-        name: "Archer",
-        shortName: "Archer",
-        cost: 80,
-        levelRequired: 1,
-        description: "Range unit",
-        icon: "➶",
-        placement: "buildable",
-      },
-
-      {
-        id: "knight_troop",
-        category: "troop",
-        name: "Knight",
-        shortName: "Knight",
-        cost: 120,
-        levelRequired: 2,
-        description: "Melee unit",
-        icon: "♞",
-        placement: "buildable",
-      },
-
-      {
-        id: "arrow_tower",
-        category: "defense",
-        name: "Arrow Tower",
-        shortName: "Arrow",
-        cost: 120,
-        levelRequired: 1,
-        description: "Fast attack",
-        icon: "▲",
-        placement: "buildable",
-      },
-
-      {
-        id: "cannon_tower",
-        category: "defense",
-        name: "Cannon Tower",
-        shortName: "Cannon",
-        cost: 200,
-        levelRequired: 2,
-        description: "Splash dmg",
-        icon: "●",
-        placement: "buildable",
-      },
-
-      {
-        id: "mage_tower",
-        category: "defense",
-        name: "Mage Tower",
-        shortName: "Mage",
-        cost: 260,
-        levelRequired: 4,
-        description: "Magic dmg",
-        icon: "✦",
-        placement: "buildable",
-      },
+      { id: "buildable_tile", label: "Build", fullName: "Build Tile", icon: "⬚", description: "Create slot", category: "buildable" },
+      { id: "gold_mine", label: "Gold", fullName: "Gold Mine", icon: "◆", description: "Gold income", category: "resource" },
+      { id: "barracks", label: "Barracks", fullName: "Barracks", icon: "⚑", description: "Train troops", category: "military" },
+      { id: "archer", label: "Archer", fullName: "Archer", icon: "➶", description: "Ranged unit", category: "unit" },
+      { id: "cannon", label: "Cannon", fullName: "Cannon", icon: "◉", description: "Heavy defense", category: "tower" },
+      { id: "wizard", label: "Wizard", fullName: "Wizard", icon: "✦", description: "Magic damage", category: "tower" },
+      { id: "inferno_tower", label: "Inferno", fullName: "Inferno Tower", icon: "🔥", description: "Burning beam", category: "tower" },
     ],
   },
 };
