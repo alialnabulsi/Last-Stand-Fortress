@@ -21,13 +21,28 @@ class Grid extends Sprite {
       case this.TILE_TYPES.BUILDABLE:
         return this.images.Buildable;
 
-      case this.TILE_TYPES.BLOCKED:
-        return this.images.Blocked;
-
       case this.TILE_TYPES.TOWN_HALL:
         return this.images.TownHall;
 
-      case this.TILE_TYPES.PATH:
+      case this.TILE_TYPES.CROSS:
+        return this.images.Path;
+
+      case this.TILE_TYPES.HORZ:
+        return this.images.Path;
+
+      case this.TILE_TYPES.VERT:
+        return this.images.Path;
+
+      case this.TILE_TYPES.BRIGHT:
+        return this.images.Path;
+
+      case this.TILE_TYPES.BLEFT:
+        return this.images.Path;
+
+      case this.TILE_TYPES.TRIGHT:
+        return this.images.Path;
+
+      case this.TILE_TYPES.TLEFT:
         return this.images.Path;
 
       case this.TILE_TYPES.WATER:
@@ -38,12 +53,6 @@ class Grid extends Sprite {
 
       case this.TILE_TYPES.SPAWNER:
         return this.images.Spawner;
-
-      case this.TILE_TYPES.TROOP_ZONE:
-        return this.images.TroopZone;
-
-      case this.TILE_TYPES.RESOURCE_ZONE:
-        return this.images.ResourceZone;
 
       default:
         return this.images.Grass;
@@ -59,10 +68,81 @@ class Grid extends Sprite {
         const y = row * this.cellSize;
 
         const image = this.getTileImage(tileType);
+        switch (tileType) {
+          case this.TILE_TYPES.GRASS:
+            sprites.push(new Grass(x, y, this.cellSize, image));
+            break;
 
-        sprites.push(
-          new Tile(this.TILE_TYPES, x, y, tileType, this.cellSize, image),
-        );
+          case this.TILE_TYPES.BUILDABLE:
+            sprites.push(new Buildable(x, y, this.cellSize, image));
+            break;
+
+          case this.TILE_TYPES.TOWN_HALL:
+            const isTopLeftTownHall =
+              (row === 0 ||
+                this.map[row - 1][col] !== this.TILE_TYPES.TOWN_HALL) &&
+              (col === 0 ||
+                this.map[row][col - 1] !== this.TILE_TYPES.TOWN_HALL);
+
+            if (isTopLeftTownHall) {
+              sprites.push(new TownHall(x, y, this.cellSize * 2, image, 1));
+            }
+            break;
+
+          case this.TILE_TYPES.CROSS:
+            sprites.push(
+              new Path(x, y, this.cellSize, image, this.TILE_TYPES.CROSS),
+            );
+            break;
+          case this.TILE_TYPES.HORZ:
+            sprites.push(
+              new Path(x, y, this.cellSize, image, this.TILE_TYPES.HORZ),
+            );
+            break;
+
+          case this.TILE_TYPES.VERT:
+            sprites.push(
+              new Path(x, y, this.cellSize, image, this.TILE_TYPES.VERT),
+            );
+            break;
+          case this.TILE_TYPES.BRIGHT:
+            sprites.push(
+              new Path(x, y, this.cellSize, image, this.TILE_TYPES.BRIGHT),
+            );
+            break;
+          case this.TILE_TYPES.BLEFT:
+            sprites.push(
+              new Path(x, y, this.cellSize, image, this.TILE_TYPES.BLEFT),
+            );
+            break;
+          case this.TILE_TYPES.TRIGHT:
+            sprites.push(
+              new Path(x, y, this.cellSize, image, this.TILE_TYPES.TRIGHT),
+            );
+            break;
+          case this.TILE_TYPES.TLEFT:
+            sprites.push(
+              new Path(x, y, this.cellSize, image, this.TILE_TYPES.TLEFT),
+            );
+            break;
+
+          case this.TILE_TYPES.WATER:
+            sprites.push(new Water(x, y, this.cellSize, image));
+            break;
+
+          case this.TILE_TYPES.FOREST:
+            sprites.push(new Forest(x, y, this.cellSize, image));
+            break;
+
+          case this.TILE_TYPES.SPAWNER:
+            sprites.push(new Spawner(x, y, this.cellSize, image));
+            break;
+
+
+          default:
+            sprites.push(new Grass(x, y, this.cellSize, this.images.Grass));
+            break;
+        }
 
         sprites.push(new Cell(x, y, this.cellSize, this.cellSize));
       }

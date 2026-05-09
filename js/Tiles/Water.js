@@ -12,11 +12,13 @@ class Water extends Sprite {
   }
 
   update() {
+    
     this.counter++;
 
-    if (this.counter % 10 === 0) {
+    if (this.counter % 30 === 0) {
       this.frame = (this.frame + 1) % this.frameCount;
     }
+      
   }
 
   draw(ctx) {

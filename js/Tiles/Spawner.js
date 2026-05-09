@@ -7,12 +7,16 @@ class Spawner extends Sprite {
     this.image = image;
 
     this.frame = 0;
-    this.frameCount = 4;
+    this.frameCount = 5;
     this.counter = 0;
   }
 
   update() {
-    
+    this.counter++;
+
+    if (this.counter % 20 === 0) {
+      this.frame = (this.frame + 1) % this.frameCount;
+    }
   }
 
   draw(ctx) {
