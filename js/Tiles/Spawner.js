@@ -5,6 +5,7 @@ class Spawner extends Sprite {
     this.y = y;
     this.size = size;
     this.image = image;
+    this.spawn = false;
 
     this.frame = 0;
     this.frameCount = 5;
@@ -12,6 +13,12 @@ class Spawner extends Sprite {
   }
 
   update() {
+    if(this.spawn){
+      this.animateSpawner();
+    }
+  }
+
+  animateSpawner(){
     this.counter++;
 
     if (this.counter % 20 === 0) {

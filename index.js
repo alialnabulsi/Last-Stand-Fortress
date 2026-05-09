@@ -182,6 +182,29 @@ const Utils = {
       return img;
     })(),
 
+    Enemies: (() => {
+      const E1 = new Image();
+      E1.src = "images/SpriteSheets/Enemies/1.png";
+
+      const E2 = new Image();
+      E2.src = "images/SpriteSheets/Enemies/2.png";
+
+      const E3 = new Image();
+      E3.src = "images/SpriteSheets/Enemies/3.png";
+
+      const E4 = new Image();
+      E4.src = "images/SpriteSheets/Enemies/4.png";
+
+      return {
+        E1,
+        E2,
+        E3,
+        E4,
+      };
+    })(),
+
+    
+
     Buildable: (() => {
       const img = new Image();
       img.src = "images/SpriteSheets/Buildable.png";
