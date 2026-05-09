@@ -11,6 +11,9 @@ class TownHall extends Sprite {
 
     this.level = level; // 1, 2, 3, or 4
     this.frame = this.level - 1; // level 1 = frame 0
+    this.isTownHall = true;
+    this.maxHp = 1000;
+    this.hp = this.maxHp;
   }
 
   setLevel(level) {
