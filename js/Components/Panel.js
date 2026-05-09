@@ -85,21 +85,13 @@ class Panel extends Sprite {
       const x = config.startX + col * (config.width + config.gap);
       const y = config.startY + row * (config.height + config.gap);
 
-      const btn = new PanelButton(
-        x,
-        y,
-        config.width,
-        config.height,
-        item.label,
-        () => this.selectShopItem(item),
-        {
-          item,
-          icon: item.icon,
-          description: item.description,
-          cost: (this.shopRules[item.id] && this.shopRules[item.id].cost) || null,
-          style,
-        }
-      );
+      const btn = new PanelButton(x, y, config.width, config.height, item.label, () => this.selectShopItem(item), {
+        item,
+        icon: item.icon,
+        description: item.description,
+        cost: (this.shopRules[item.id] && this.shopRules[item.id].cost) || null,
+        style,
+      });
 
       this.shopButtons.push(btn);
     }
@@ -109,25 +101,32 @@ class Panel extends Sprite {
     const style = this.config.style;
     const gameBox = this.config.layout.game;
 
-    this.startDefenseButton = new PanelButton(
-      gameBox.x + 25,
-      gameBox.y + 75,
-      235,
-      44,
-      "START DEFENSE",
-      () => {
-        this.defenseState.state = "DEFENDING";
-        this.updateEnemyInfo();
-        this.setMessage("Defense started. Prepare for enemies.");
-      },
-      {
-        icon: "⚔",
-        description: "Begin enemy attack",
-        style,
-      }
-    );
+    this.startDefenseButton = new PanelButton(gameBox.x + 16, gameBox.y + 75, 120, 44, "START", () => {
+      this.defenseState.state = "DEFENDING";
+      this.updateEnemyInfo();
+      this.setMessage("Defense started. Enemy spawning is not active yet.");
+    }, {
+      icon: "⚔",
+      description: "Start wave",
+      style,
+    });
 
-    this.controlButtons = [this.startDefenseButton];
+    this.takeBreakButton = new PanelButton(gameBox.x + 150, gameBox.y + 75, 120, 44, "TAKE BREAK", () => {
+      if (this.defenseState.breaksUsed >= this.defenseState.breaksAllowed) {
+        this.setMessage("No breaks left.");
+        return;
+      }
+
+      this.defenseState.breaksUsed += 1;
+      this.defenseState.state = "BREAK";
+      this.setMessage("Break activated. This is UI-only for now.");
+    }, {
+      icon: "☕",
+      description: "Pause phase",
+      style,
+    });
+
+    this.controlButtons = [this.startDefenseButton, this.takeBreakButton];
   }
 
   selectShopItem(item) {
@@ -160,32 +159,14 @@ class Panel extends Sprite {
 
     this.shopState.selectedItem = { ...item, ...rule };
     this.shopState.selectedItemId = item.id;
-    this.setMessage(`${item.fullName} selected. Click a valid tile on the map.`);
+    this.setMessage(`${item.fullName} selected. Placement is not enabled yet.`);
   }
 
-  clearSelection() {
-    this.shopState.selectedItem = null;
-    this.shopState.selectedItemId = null;
-  }
-
-  canAfford(cost) {
-    return this.playerState.gold >= cost;
-  }
-
-  spendGold(amount) {
-    if (!this.canAfford(amount)) return false;
-    this.playerState.gold -= amount;
-    return true;
-  }
-
-  addGold(amount) {
-    this.playerState.gold += Math.max(0, amount);
-  }
-
-  addXP(amount) {
-    this.playerState.xp += Math.max(0, amount);
-    this.levelUpIfNeeded();
-  }
+  clearSelection() { this.shopState.selectedItem = null; this.shopState.selectedItemId = null; }
+  canAfford(cost) { return this.playerState.gold >= cost; }
+  spendGold(amount) { if (!this.canAfford(amount)) return false; this.playerState.gold -= amount; return true; }
+  addGold(amount) { this.playerState.gold += Math.max(0, amount); }
+  addXP(amount) { this.playerState.xp += Math.max(0, amount); this.levelUpIfNeeded(); }
 
   levelUpIfNeeded() {
     while (this.playerState.xp >= this.playerState.xpToNextLevel) {
@@ -196,28 +177,6 @@ class Panel extends Sprite {
     }
   }
 
-  addGoldMine() {
-    this.economyState.goldMineCount += 1;
-    this.economyState.goldRate = this.economyState.goldMineCount;
-  }
-
-  addBarracks() {
-    this.armyState.barracksCount += 1;
-    this.armyState.maxTroops = this.armyState.barracksCount * 5;
-  }
-
-  increaseTroopCount(amount) {
-    this.armyState.currentTroops += Math.max(0, amount);
-    if (this.armyState.currentTroops > this.armyState.maxTroops) {
-      this.armyState.currentTroops = this.armyState.maxTroops;
-    }
-  }
-
-  decreaseTroopCount(amount) {
-    this.armyState.currentTroops -= Math.max(0, amount);
-    if (this.armyState.currentTroops < 0) this.armyState.currentTroops = 0;
-  }
-
   updateEnemyInfo() {
     const level = this.playerState.level;
     this.defenseState.enemyLevel = level;
@@ -226,13 +185,10 @@ class Panel extends Sprite {
     this.defenseState.enemySpeed = 1 + (level - 1) * 0.08;
   }
 
-  setMessage(message) {
-    this.shopState.message = message;
-  }
+  setMessage(message) { this.shopState.message = message; }
 
   findTownHall(arrayOfSprites) {
     const hasTownHallClass = typeof TownHall !== "undefined";
-
     for (let i = 0; i < arrayOfSprites.length; i++) {
       const sprite = arrayOfSprites[i];
       const isTownHallInstance = hasTownHallClass && sprite instanceof TownHall;
@@ -267,6 +223,7 @@ class Panel extends Sprite {
     }
 
     this.startDefenseButton.disabled = this.defenseState.state === "DEFENDING";
+    this.takeBreakButton.disabled = this.defenseState.breaksUsed >= this.defenseState.breaksAllowed;
     for (const btn of this.controlButtons) btn.update(arrayOfSprites, keys, mouse);
 
     return false;
@@ -313,10 +270,12 @@ class Panel extends Sprite {
 
     ctx.font = "14px Arial";
     ctx.fillStyle = style.mutedText;
-    ctx.fillText(`Prep: ${this.formatTimer(this.defenseState.preparationTimer)}`, gameBox.x + 20, gameBox.y + 130);
+    const activeTimer = this.defenseState.state === "BREAK" ? this.defenseState.breakTimer : this.defenseState.preparationTimer;
+    ctx.fillText(`Timer: ${this.formatTimer(activeTimer)}`, gameBox.x + 20, gameBox.y + 130);
     ctx.fillText(`Enemy Lvl: ${this.defenseState.enemyLevel}`, gameBox.x + 20, gameBox.y + 150);
-    ctx.fillText(`Enemies: ${this.defenseState.enemyCount}`, gameBox.x + 150, gameBox.y + 130);
-    ctx.fillText(`HP x${this.defenseState.enemyHp.toFixed(2)}`, gameBox.x + 150, gameBox.y + 150);
+    ctx.fillText(`Enemy #: ${this.defenseState.enemyCount}`, gameBox.x + 150, gameBox.y + 130);
+    ctx.fillText(`Enemy HP: x${this.defenseState.enemyHp.toFixed(2)}`, gameBox.x + 150, gameBox.y + 150);
+    ctx.fillText(`Enemy Spd: x${this.defenseState.enemySpeed.toFixed(2)}`, gameBox.x + 20, gameBox.y + 168);
 
     for (const btn of this.controlButtons) btn.draw(ctx);
     ctx.restore();
@@ -331,18 +290,16 @@ class Panel extends Sprite {
     ctx.textBaseline = "top";
     ctx.font = "bold 15px Arial";
     ctx.fillStyle = style.textColor;
-    ctx.fillText(`Level: ${this.playerState.level}`, info.x + 16, info.y + 44);
-    ctx.fillText(`Gold: ${this.playerState.gold}G`, info.x + 170, info.y + 44);
+    ctx.fillText(`Gold: ${this.playerState.gold}G`, info.x + 16, info.y + 44);
+    ctx.fillText(`Level: ${this.playerState.level}`, info.x + 160, info.y + 44);
+    ctx.fillText(`XP: ${this.playerState.xp}/${this.playerState.xpToNextLevel}`, info.x + 250, info.y + 44);
 
     ctx.font = "14px Arial";
     ctx.fillStyle = style.mutedText;
     const selectedName = this.shopState.selectedItem ? this.shopState.selectedItem.fullName : "None";
     ctx.fillText(`Selected: ${selectedName}`, info.x + 16, info.y + 74);
-    ctx.fillText(this.shopState.message, info.x + 16, info.y + 102);
-
-    if (this.townHallState.maxHp > 0) {
-      ctx.fillText(`Town Hall: ${this.townHallState.hp}/${this.townHallState.maxHp}`, info.x + 16, info.y + 126);
-    }
+    ctx.fillText(`Town Hall HP: ${this.townHallState.hp}/${this.townHallState.maxHp}`, info.x + 16, info.y + 96);
+    ctx.fillText(this.shopState.message, info.x + 16, info.y + 122);
 
     ctx.restore();
   }
