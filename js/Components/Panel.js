@@ -11,6 +11,16 @@ class Panel extends Sprite {
     this.width = this.config.layout.width;
     this.height = this.config.layout.height;
 
+    this.shopRules = {
+      buildable_tile: { cost: 25, unlockLevel: 1, placement: "grass" },
+      gold_mine: { cost: 100, unlockLevel: 1, placement: "buildable", goldRateBonus: 1 },
+      barracks: { cost: 150, unlockLevel: 1, placement: "buildable", troopCapacityBonus: 10 },
+      archer: { cost: 80, unlockLevel: 1, placement: "buildable", troopCost: 1 },
+      cannon: { cost: 120, unlockLevel: 2, placement: "buildable", troopCost: 2 },
+      wizard: { cost: 180, unlockLevel: 3, placement: "buildable", troopCost: 2 },
+      inferno_tower: { cost: 260, unlockLevel: 4, placement: "buildable", troopCost: 3 },
+    };
+
     this.playerState = {
       gold: 250,
       xp: 0,
@@ -86,6 +96,7 @@ class Panel extends Sprite {
           item,
           icon: item.icon,
           description: item.description,
+          cost: (this.shopRules[item.id] && this.shopRules[item.id].cost) || null,
           style,
         }
       );
@@ -120,13 +131,34 @@ class Panel extends Sprite {
   }
 
   selectShopItem(item) {
+    const rule = this.shopRules[item.id];
+    if (!rule) {
+      this.setMessage("This item is not configured yet.");
+      return;
+    }
+
     if (this.shopState.selectedItemId === item.id) {
       this.clearSelection();
       this.setMessage("Selection cancelled.");
       return;
     }
 
-    this.shopState.selectedItem = item;
+    if (this.playerState.level < rule.unlockLevel) {
+      this.setMessage(`${item.fullName} is locked. Unlocks at level ${rule.unlockLevel}.`);
+      return;
+    }
+
+    if (!this.canAfford(rule.cost)) {
+      this.setMessage(`Not enough gold for ${item.fullName}. Need ${rule.cost}G.`);
+      return;
+    }
+
+    if (rule.troopCost && this.armyState.currentTroops >= this.armyState.maxTroops) {
+      this.setMessage("Troop capacity is full.");
+      return;
+    }
+
+    this.shopState.selectedItem = { ...item, ...rule };
     this.shopState.selectedItemId = item.id;
     this.setMessage(`${item.fullName} selected. Click a valid tile on the map.`);
   }
@@ -220,8 +252,12 @@ class Panel extends Sprite {
     }
 
     for (const btn of this.shopButtons) {
+      const rule = this.shopRules[btn.item.id];
+      const locked = rule ? this.playerState.level < rule.unlockLevel : true;
+      const broke = rule ? !this.canAfford(rule.cost) : true;
+
       btn.selected = this.shopState.selectedItemId === btn.item.id;
-      btn.disabled = false;
+      btn.disabled = locked || broke;
       btn.update(arrayOfSprites, keys, mouse);
     }
 
