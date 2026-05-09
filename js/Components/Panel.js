@@ -59,8 +59,8 @@ class Panel extends Sprite {
 
     this.townHallState = {
       townHall: null,
-      hp: 0,
-      maxHp: 0,
+      hp: 100,
+      maxHp: 100,
     };
 
     this.shopButtons = [];
@@ -231,9 +231,13 @@ class Panel extends Sprite {
   }
 
   findTownHall(arrayOfSprites) {
+    const hasTownHallClass = typeof TownHall !== "undefined";
+
     for (let i = 0; i < arrayOfSprites.length; i++) {
       const sprite = arrayOfSprites[i];
-      if (sprite && sprite.isTownHall) {
+      const isTownHallInstance = hasTownHallClass && sprite instanceof TownHall;
+
+      if (sprite && (isTownHallInstance || sprite.isTownHall === true)) {
         this.townHallState.townHall = sprite;
         this.townHallState.hp = sprite.hp;
         this.townHallState.maxHp = sprite.maxHp;
@@ -241,6 +245,7 @@ class Panel extends Sprite {
       }
     }
 
+    this.townHallState.townHall = null;
     return null;
   }
 
