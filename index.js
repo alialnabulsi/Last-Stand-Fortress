@@ -217,6 +217,7 @@ MAP: {
   //Sounds
   Sounds: {
     storySound: "sounds/storySound.mp3",
+    waterAmbient: "sounds/water.mp3",
   },
 
   //Images

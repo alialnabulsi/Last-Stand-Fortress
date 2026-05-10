@@ -1,5 +1,5 @@
 class Buildable extends Sprite {
-  constructor(x, y, size, image) {
+  constructor(x, y, size, image, row, col) {
     super();
 
     this.x = x;
@@ -7,8 +7,17 @@ class Buildable extends Sprite {
     this.size = size;
 
     this.isMapTile = true;
-    this.image = image;
+    this.tileType = "BUILDABLE";
+    this.row = typeof row === "number" ? row : Math.floor(y / size);
+    this.col = typeof col === "number" ? col : Math.floor(x / size);
+    this.canPlaceBuildable = false;
+    this.canPlaceObject = true;
+    this.isEnemyPath = false;
 
+    this.isPlacedObject = true;
+    this.occupied = false;
+
+    this.image = image;
     this.sourceSize = 40;
   }
 
@@ -16,17 +25,6 @@ class Buildable extends Sprite {
 
   draw(ctx) {
     if (!this.image || !this.image.complete) return;
-
-    ctx.drawImage(
-      this.image,
-      0,
-      0,
-      this.sourceSize,
-      this.sourceSize,
-      this.x,
-      this.y,
-      this.size,
-      this.size
-    );
+    ctx.drawImage(this.image, 0, 0, this.sourceSize, this.sourceSize, this.x, this.y, this.size, this.size);
   }
 }
