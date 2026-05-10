@@ -64,19 +64,16 @@ class GameLevel extends Level {
     }
   }
   setupAmbientWaterSound() {
-    if (
-      !this.game ||
-      !this.game.soundManager ||
-      typeof this.game.soundManager.playAmbientLoop !== "function"
-    )
-      return;
-    if (this.hasWater)
-      this.game.soundManager.playAmbientLoop(
-        "water",
-        this.utils.Sounds.waterAmbient,
-      );
-    else if (typeof this.game.soundManager.stopAmbientLoop === "function")
-      this.game.soundManager.stopAmbientLoop("water");
+    if (GameLevel.mapHasWater(this.currentMap)) SoundManager.playLoop("water", 0.15);
+    else SoundManager.stop("water");
+  }
+
+  static mapHasWater(mapArray) {
+    if (!Array.isArray(mapArray)) return false;
+    for (let i = 0; i < mapArray.length; i++) {
+      if (Array.isArray(mapArray[i]) && mapArray[i].includes(5)) return true;
+    }
+    return false;
   }
   isInsideMap(row, col) {
     return (

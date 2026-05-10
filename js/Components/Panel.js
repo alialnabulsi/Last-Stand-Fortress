@@ -49,6 +49,8 @@ class Panel extends Sprite {
       state: "PREPARATION",
       preparationTimer: 30,
       breakTimer: 10,
+      timerRunning: false,
+      lastTickAt: 0,
       breaksUsed: 0,
       breaksAllowed: 3,
       enemyLevel: 1,
@@ -102,9 +104,20 @@ class Panel extends Sprite {
     const gameBox = this.config.layout.game;
 
     this.startDefenseButton = new PanelButton(gameBox.x + 16, gameBox.y + 75, 120, 44, "START", () => {
-      this.defenseState.state = "DEFENDING";
+      if (this.defenseState.state === "UNDER_ATTACK") {
+        this.setMessage("Defense already started.");
+        return;
+      }
+
+      if (this.defenseState.state === "BREAK") {
+        this.setMessage("Cannot start while on break.");
+        return;
+      }
+
+      this.defenseState.timerRunning = true;
+      this.defenseState.lastTickAt = performance.now();
       this.updateEnemyInfo();
-      this.setMessage("Defense started. Enemy spawning is not active yet.");
+      this.setMessage("Preparation timer started.");
     }, {
       icon: "⚔",
       description: "Start wave",
@@ -119,7 +132,10 @@ class Panel extends Sprite {
 
       this.defenseState.breaksUsed += 1;
       this.defenseState.state = "BREAK";
-      this.setMessage("Break activated. This is UI-only for now.");
+      this.defenseState.breakTimer = 10;
+      this.defenseState.timerRunning = true;
+      this.defenseState.lastTickAt = performance.now();
+      this.setMessage("Break activated.");
     }, {
       icon: "☕",
       description: "Pause phase",
@@ -229,13 +245,43 @@ class Panel extends Sprite {
       btn.update(arrayOfSprites, keys, mouse);
     }
 
-    this.startDefenseButton.disabled = this.defenseState.state === "DEFENDING";
+    this.updateDefenseTimer();
+
+    this.startDefenseButton.disabled = this.defenseState.state === "UNDER_ATTACK";
     this.takeBreakButton.disabled = this.defenseState.breaksUsed >= this.defenseState.breaksAllowed;
     for (const btn of this.controlButtons) btn.update(arrayOfSprites, keys, mouse);
 
     return false;
   }
 
+
+  updateDefenseTimer() {
+    if (!this.defenseState.timerRunning) return;
+
+    const now = performance.now();
+    if (!this.defenseState.lastTickAt) this.defenseState.lastTickAt = now;
+    const elapsedSeconds = (now - this.defenseState.lastTickAt) / 1000;
+    this.defenseState.lastTickAt = now;
+
+    if (this.defenseState.state === "PREPARATION") {
+      this.defenseState.preparationTimer = Math.max(0, this.defenseState.preparationTimer - elapsedSeconds);
+      if (this.defenseState.preparationTimer === 0) {
+        this.defenseState.state = "UNDER_ATTACK";
+        this.defenseState.timerRunning = false;
+        this.setMessage("Preparation ended. Under attack.");
+      }
+      return;
+    }
+
+    if (this.defenseState.state === "BREAK") {
+      this.defenseState.breakTimer = Math.max(0, this.defenseState.breakTimer - elapsedSeconds);
+      if (this.defenseState.breakTimer === 0) {
+        this.defenseState.state = "UNDER_ATTACK";
+        this.defenseState.timerRunning = false;
+        this.setMessage("Break ended. Under attack.");
+      }
+    }
+  }
   draw(ctx) {
     this.drawPanelBackground(ctx);
     this.drawSectionTitles(ctx);

@@ -2,6 +2,7 @@ class MenuLevel extends Level {
   constructor(game, utils) {
     super();
     this.game = game;
+    this.utils = utils;
     this.MenuBackgroundImage = utils.BackgroundImages.MenuLevelBackground;
     this.title = utils.LevelsTexts.MenuLevel.title;
     this.startButtonTitle = utils.LevelsTexts.MenuLevel.startButtonTitle;
@@ -21,6 +22,15 @@ class MenuLevel extends Level {
     );
     this.game.addSprite(
       new Button(650, 425, 300, 50, this.startButtonTitle, () => {
+        SoundManager.loadSound("music", this.utils.Sounds.musicAmbient, { loop: true, volume: 0.12 });
+
+        SoundManager.playLoop("music", 0.12);
+
+        const gameMap = this.utils.MAP ? this.utils.MAP.map_1 : null;
+        const hasWater = typeof GameLevel !== "undefined" && GameLevel.mapHasWater(gameMap);
+        if (hasWater) SoundManager.playLoop("water", 0.15);
+        else SoundManager.stop("water");
+
         this.game.changeLevel(3);
       }),
     );
