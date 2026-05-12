@@ -14,6 +14,5 @@ class HelpLevel extends Level {
         this.game.changeLevel(0);
       }),
     );
-     console.log("HelpLevel",this.game.arrayOfSprites);
   }
 }

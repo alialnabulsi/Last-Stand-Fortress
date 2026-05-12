@@ -36,6 +36,5 @@ class MenuLevel extends Level {
       }),
     );
 
-     console.log("MenuLevel",this.game.arrayOfSprites);
   }
 }

@@ -20,7 +20,6 @@ class GameLevel extends Level {
     if (!panel) return;
 
     this.changeMapForPlayerLevel(panel.playerState.level);
-     console.log("GameLevel",this.game.arrayOfSprites);
   }
 
   findPanel() {

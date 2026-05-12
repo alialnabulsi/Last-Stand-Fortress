@@ -29,7 +29,6 @@ class StoryLevel extends Level {
         this.game.changeLevel(0);
       }),
     );
-        console.log("StoryLevel",this.game.arrayOfSprites);
 
   }
 }
