@@ -2,26 +2,19 @@ class StoryLevel extends Level {
   constructor(game, utils) {
     super();
     this.game = game;
+    this.utils = utils;
     this.MenuBackgroundImage = utils.BackgroundImages.MenuLevelBackground;
     this.backButtonTitle = utils.LevelsTexts.MenuLevel.backButtonTitle;
     this.shortStoryIntro = utils.LevelsTexts.StoryLevel.shortStoryIntro;
-    this.storySound = utils.Sounds.storySound;
+    
   }
 
   initialize() {
-    const entryMusic = Sound.find(this.game.arrayOfSprites, "entryMusic");
-    const planningMusic = Sound.find(this.game.arrayOfSprites, "planningMusic");
-    const combatMusic = Sound.find(this.game.arrayOfSprites, "combatMusic");
-    const storySound = Sound.find(this.game.arrayOfSprites, "storySound");
-    const villageTracks = Sound.findAll(this.game.arrayOfSprites).filter(
-      (sound) => sound && sound.id && sound.id.startsWith("villageMusic"),
-    );
+    this.initializeSounds(this.utils.Sounds.storyLevelSounds);
 
-    if (entryMusic) entryMusic.stop();
-    if (planningMusic) planningMusic.stop();
-    if (combatMusic) combatMusic.stop();
-    for (const villageTrack of villageTracks) villageTrack.stop();
+    const storySound = Sound.find(this.game.arrayOfSprites, "storySound");
     if (storySound) storySound.play();
+
     this.game.addSprite(new Background(this.MenuBackgroundImage));
     for (let i = 0; i < this.shortStoryIntro.length; i++) {
       const isLastLine = i === this.shortStoryIntro.length - 1;
@@ -43,5 +36,28 @@ class StoryLevel extends Level {
         this.game.changeLevel(0);
       }),
     );
+        console.log("StoryLevel",this.game.arrayOfSprites);
+
+  }
+
+  initializeSounds(sounds) {
+    if (!Array.isArray(sounds)) return;
+
+    for (let i = 0; i < sounds.length; i++) {
+      const soundData = sounds[i];
+      if (!soundData) continue;
+      if (Sound.find(this.game.arrayOfSprites, soundData.id)) continue;
+
+      this.game.addSprite(
+        new Sound(
+          soundData.id,
+          soundData.title,
+          soundData.src,
+          soundData.volume,
+          soundData.loop,
+          soundData.autoplay,
+        ),
+      );
+    }
   }
 }

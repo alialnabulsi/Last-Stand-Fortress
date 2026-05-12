@@ -12,6 +12,7 @@ class GameLevel extends Level {
   }
   initialize() {
     this.game.currentGameLevel = this;
+    this.initializeSounds(this.utils.Sounds.gameLevelSounds);
     let panel = this.findPanel();
     if (!panel) {
       panel = new Panel(this.game, this.utils);
@@ -30,6 +31,28 @@ class GameLevel extends Level {
       villageTracks[randomIndex].play();
     }
     this.changeMapForPlayerLevel(panel.playerState.level);
+     console.log("GameLevel",this.game.arrayOfSprites);
+  }
+
+  initializeSounds(sounds) {
+    if (!Array.isArray(sounds)) return;
+
+    for (let i = 0; i < sounds.length; i++) {
+      const soundData = sounds[i];
+      if (!soundData) continue;
+      if (Sound.find(this.game.arrayOfSprites, soundData.id)) continue;
+
+      this.game.addSprite(
+        new Sound(
+          soundData.id,
+          soundData.title,
+          soundData.src,
+          soundData.volume,
+          soundData.loop,
+          soundData.autoplay,
+        ),
+      );
+    }
   }
   findPanel() {
     return this.game.arrayOfSprites.find((sprite) => sprite instanceof Panel) || null;

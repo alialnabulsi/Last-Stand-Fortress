@@ -9,11 +9,11 @@ class MenuLevel extends Level {
     this.helpButtonTitle = utils.LevelsTexts.MenuLevel.helpButtonTitle;
     this.storyButtonTitle = utils.LevelsTexts.MenuLevel.storyButtonTitle;
     this.unlockHandlerAttached = false;
+    
   }
 
   initialize() {
-    this.initializeSounds();
-    this.game.changeLevel(0);
+    this.initializeSounds(this.utils.Sounds.menuLevelSounds);
     this.game.addSprite(new Background(this.MenuBackgroundImage));
     this.game.addSprite(
       new Text(800, 350, this.title, {
@@ -32,6 +32,7 @@ class MenuLevel extends Level {
     );
     this.game.addSprite(
       new Button(650, 525, 300, 50, this.helpButtonTitle, () => {
+        this.stopMenuAndStoryMusic();
         this.game.changeLevel(1);
       }),
     );
@@ -44,21 +45,14 @@ class MenuLevel extends Level {
 
     this.playEntryMusic();
     this.attachMenuAudioUnlock();
+     console.log("MenuLevel",this.game.arrayOfSprites);
   }
 
-  initializeSounds() {
-    const sounds = this.utils.Sounds;
+  initializeSounds(sounds) {
+    if (!Array.isArray(sounds)) return;
 
-    for (const soundKey in sounds) {
-      const soundData = sounds[soundKey];
-
-      if (Array.isArray(soundData)) {
-        for (let i = 0; i < soundData.length; i++) {
-          this.addSoundSprite(soundData[i]);
-        }
-      } else {
-        this.addSoundSprite(soundData);
-      }
+    for (let i = 0; i < sounds.length; i++) {
+      this.addSoundSprite(sounds[i]);
     }
   }
 
@@ -110,7 +104,7 @@ class MenuLevel extends Level {
   }
 
   playEntryMusic() {
-    const entryMusic = Sound.find(this.game.arrayOfSprites, "entryMusic");
+    const entryMusic = Sound.find(this.game.arrayOfSprites, "entryMusic2");
     if (!entryMusic) return;
 
     entryMusic.play();
@@ -121,7 +115,7 @@ class MenuLevel extends Level {
     this.unlockHandlerAttached = true;
 
     const unlock = () => {
-      const entryMusic = Sound.find(this.game.arrayOfSprites, "entryMusic");
+      const entryMusic = Sound.find(this.game.arrayOfSprites, "entryMusic2");
       if (entryMusic) entryMusic.play();
       window.removeEventListener("pointerdown", unlock);
       window.removeEventListener("keydown", unlock);

@@ -455,27 +455,30 @@ const Utils = {
   },
 
   //Sounds
-  // Sounds
   Sounds: {
-    storySound: {
-      id: "storySound",
-      title: "Story Sound",
-      src: "sounds/storySound.mp3",
-      volume: 0.8,
-      loop: false,
-      autoplay: false,
-    },
+    menuLevelSounds: [
+      {
+        id: "entryMusic2",
+        title: "Entry Music",
+        src: "sounds/entryMusic2.mp3",
+        volume: 0.8,
+        loop: true,
+        autoplay: false,
+      },
+    ],
 
-    entryMusic: {
-      id: "entryMusic",
-      title: "Entry Music",
-      src: "sounds/entryMusic.mp3",
-      volume: 0.8,
-      loop: true,
-      autoplay: false,
-    },
+    storyLevelSounds: [
+      {
+        id: "storySound",
+        title: "Story Sound",
+        src: "sounds/storySound.mp3",
+        volume: 0.8,
+        loop: false,
+        autoplay: false,
+      },
+    ],
 
-    villageTracks: [
+    gameLevelSounds: [
       {
         id: "villageMusic1",
         title: "Village Music 1",
@@ -500,25 +503,23 @@ const Utils = {
         loop: true,
         autoplay: false,
       },
+      {
+        id: "planningMusic",
+        title: "Combat Planning Music",
+        src: "sounds/Combat_Planning_Music.mp3",
+        volume: 0.25,
+        loop: true,
+        autoplay: false,
+      },
+      {
+        id: "combatMusic",
+        title: "Combat Music",
+        src: "sounds/HV_Combat_Music.mp3",
+        volume: 0.28,
+        loop: true,
+        autoplay: false,
+      },
     ],
-
-    planningMusic: {
-      id: "planningMusic",
-      title: "Combat Planning Music",
-      src: "sounds/Combat_Planning_Music.mp3",
-      volume: 0.25,
-      loop: true,
-      autoplay: false,
-    },
-
-    combatMusic: {
-      id: "combatMusic",
-      title: "Combat Music",
-      src: "sounds/HV_Combat_Music.mp3",
-      volume: 0.28,
-      loop: true,
-      autoplay: false,
-    },
   },
 
   //Images
