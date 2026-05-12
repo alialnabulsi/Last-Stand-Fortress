@@ -1,68 +1,44 @@
-class SoundManager extends Sprite {
-  constructor(sound) {
-    super();
-    this.Sound = sound ? new Audio(sound) : null;
-    if (this.Sound) this.Sound.volume = 0.7;
-    this.playStory();
-  }
-  playStory() {
-    if (!this.Sound) return;
-    this.Sound.play().catch(() => {});
-  }
-  stopStory() {
-    if (!this.Sound) return;
-    this.Sound.pause();
-    this.Sound.currentTime = 0;
+//should be transformed into a sprite
+class SoundManager {
+  constructor(src, options = {}) {
+    this.audio = new Audio(src);
+    this.audio.preload = "auto";
+    this.isPlaying = false;
+    this.setVolume(typeof options.volume === "number" ? options.volume : 0.7);
+    this.setLoop(!!options.loop);
+    this.audio.addEventListener("ended", () => {
+      this.isPlaying = false;
+    });
   }
 
-  static loadSound(id, src, options = {}) {
-    if (!id || !src) return null;
-    if (!SoundManager.sounds[id]) {
-      const audio = new Audio(src);
-      audio.loop = !!options.loop;
-      audio.preload = "auto";
-      if (typeof options.volume === "number") {
-        audio.volume = Math.max(0, Math.min(1, options.volume));
-      }
-      SoundManager.sounds[id] = audio;
-    }
-    return SoundManager.sounds[id];
+  play() {
+    if (!this.audio || this.isPlaying) return;
+    this.isPlaying = true;
+    this.audio.play().catch(() => {
+      this.isPlaying = false;
+    });
   }
 
-  static playLoop(id, volume) {
-    const audio = SoundManager.sounds[id];
-    if (!audio) return;
-    audio.loop = true;
-    if (typeof volume === "number") this.setVolume(id, volume);
-    if (!audio.paused) return;
-    audio.play().catch(() => {});
+  pause() {
+    if (!this.audio) return;
+    this.audio.pause();
+    this.isPlaying = false;
   }
 
-  static stop(id) {
-    const audio = SoundManager.sounds[id];
-    if (!audio) return;
-    audio.pause();
-    audio.currentTime = 0;
+  stop() {
+    if (!this.audio) return;
+    this.audio.pause();
+    this.audio.currentTime = 0;
+    this.isPlaying = false;
   }
 
-  static stopAll() {
-    const ids = Object.keys(SoundManager.sounds);
-    for (let i = 0; i < ids.length; i++) this.stop(ids[i]);
+  setVolume(volume) {
+    if (!this.audio) return;
+    this.audio.volume = Math.max(0, Math.min(1, volume));
   }
 
-  static setVolume(id, volume) {
-    const audio = SoundManager.sounds[id];
-    if (!audio) return;
-    audio.volume = Math.max(0, Math.min(1, volume));
+  setLoop(loop) {
+    if (!this.audio) return;
+    this.audio.loop = !!loop;
   }
-
-  static isPlaying(id) {
-    const audio = SoundManager.sounds[id];
-    return !!(audio && !audio.paused);
-  }
-
-  update(sprites, keys) {}
-  draw(ctx) {}
 }
-
-SoundManager.sounds = {};

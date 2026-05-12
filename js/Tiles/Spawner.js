@@ -27,25 +27,61 @@ class Spawner extends Sprite {
   }
 
   getSpawnData() {
-    const defense = this.game && this.game.panel ? this.game.panel.defenseState : null;
-    const remaining = defense ? (typeof defense.enemiesRemaining === "number" ? defense.enemiesRemaining : defense.enemyRemaining) : null;
+    const defense =
+      this.game && this.game.panel ? this.game.panel.defenseState : null;
+    const remaining = defense
+      ? typeof defense.enemiesRemaining === "number"
+        ? defense.enemiesRemaining
+        : defense.enemyRemaining
+      : null;
     return {
-      enemyLevel: defense && typeof defense.enemyLevel === "number" ? defense.enemyLevel : 1,
-      enemyHp: defense && typeof defense.enemyHp === "number" ? defense.enemyHp : 1,
-      enemySpeed: defense && typeof defense.enemySpeed === "number" ? defense.enemySpeed : 1,
+      enemyLevel:
+        defense && typeof defense.enemyLevel === "number"
+          ? defense.enemyLevel
+          : 1,
+      enemyHp:
+        defense && typeof defense.enemyHp === "number" ? defense.enemyHp : 1,
+      enemySpeed:
+        defense && typeof defense.enemySpeed === "number"
+          ? defense.enemySpeed
+          : 1,
       enemiesRemaining: typeof remaining === "number" ? remaining : 0,
     };
   }
 
   canSpawn() {
-    if (!this.game || !this.game.panel || !this.game.panel.defenseState) return false;
+    if (!this.game || !this.game.panel || !this.game.panel.defenseState)
+      return false;
     const defense = this.game.panel.defenseState;
     const state = defense.state;
-    const remaining = typeof defense.enemiesRemaining === "number" ? defense.enemiesRemaining : defense.enemyRemaining;
-    return state === "UNDER_ATTACK" && typeof remaining === "number" && remaining > 0;
+    const remaining =
+      typeof defense.enemiesRemaining === "number"
+        ? defense.enemiesRemaining
+        : defense.enemyRemaining;
+    return (
+      state === "UNDER_ATTACK" && typeof remaining === "number" && remaining > 0
+    );
   }
 
-  update() { if (this.spawn) this.animateSpawner(); }
-  animateSpawner() { this.counter++; if (this.counter % 20 === 0) this.frame = (this.frame + 1) % this.frameCount; }
-  draw(ctx) { ctx.drawImage(this.image, this.frame * 40, 0, 40, 40, this.x, this.y, this.size, this.size); }
+  update() {
+    if (this.spawn) this.animateSpawner();
+  }
+  animateSpawner() {
+    this.counter++;
+    if (this.counter % 20 === 0)
+      this.frame = (this.frame + 1) % this.frameCount;
+  }
+  draw(ctx) {
+    ctx.drawImage(
+      this.image,
+      this.frame * 40,
+      0,
+      40,
+      40,
+      this.x,
+      this.y,
+      this.size,
+      this.size,
+    );
+  }
 }

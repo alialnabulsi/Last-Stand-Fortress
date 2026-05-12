@@ -9,9 +9,15 @@ class StoryLevel extends Level {
   }
 
   initialize() {
+     //change this when we change how the soundManager works
+    if (this.game.sounds) {
+      this.game.sounds.entryMusic.stop();
+      this.game.sounds.villageMusic.stop();
+      this.game.sounds.planningMusic.stop();
+      this.game.sounds.combatMusic.stop();
+      this.game.sounds.storySound.play();
+    }
     this.game.addSprite(new Background(this.MenuBackgroundImage));
-
-    this.game.addSprite(new SoundManager(this.storySound));
     for (let i = 0; i < this.shortStoryIntro.length; i++) {
       const isLastLine = i === this.shortStoryIntro.length - 1;
 
@@ -27,10 +33,7 @@ class StoryLevel extends Level {
 
     this.game.addSprite(
       new Button(100, 800, 300, 50, this.backButtonTitle, () => {
-        let soundManager = this.game.arrayOfSprites.find(
-          (sprite) => sprite instanceof SoundManager,
-        );
-        soundManager.stopStory();
+        if (this.game.sounds) this.game.sounds.storySound.stop();
         this.game.changeLevel(0);
       }),
     );

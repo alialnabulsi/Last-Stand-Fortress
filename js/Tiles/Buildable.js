@@ -25,6 +25,16 @@ class Buildable extends Sprite {
 
   draw(ctx) {
     if (!this.image || !this.image.complete) return;
-    ctx.drawImage(this.image, 0, 0, this.sourceSize, this.sourceSize, this.x, this.y, this.size, this.size);
+    ctx.drawImage(
+      this.image,
+      0,
+      0,
+      this.sourceSize,
+      this.sourceSize,
+      this.x,
+      this.y,
+      this.size,
+      this.size,
+    );
   }
 }

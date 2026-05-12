@@ -11,8 +11,16 @@ class GameLevel extends Level {
     this.hasWater = false;
   }
   initialize() {
+     //change this when we change how the soundManager works
     this.game.currentGameLevel = this;
     if (!this.game.panel) this.game.panel = new Panel(this.game, this.utils);
+    if (this.game.sounds) {
+      this.game.sounds.entryMusic.stop();
+      this.game.sounds.storySound.stop();
+      this.game.sounds.planningMusic.stop();
+      this.game.sounds.combatMusic.stop();
+      this.game.sounds.villageMusic.play();
+    }
     this.changeMapForPlayerLevel(this.game.panel.playerState.level);
   }
   getMapForPlayerLevel(level) {
@@ -64,8 +72,7 @@ class GameLevel extends Level {
     }
   }
   setupAmbientWaterSound() {
-    if (GameLevel.mapHasWater(this.currentMap)) SoundManager.playLoop("water", 0.15);
-    else SoundManager.stop("water");
+    return;
   }
 
   static mapHasWater(mapArray) {

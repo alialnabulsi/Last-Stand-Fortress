@@ -21,7 +21,23 @@ class TownHall extends Sprite {
     this.maxHp = 1000;
     this.hp = this.maxHp;
   }
-  setLevel(level) { this.level = Math.max(1, Math.min(4, level)); this.frame = this.level - 1; }
+  setLevel(level) {
+    this.level = Math.max(1, Math.min(4, level));
+    this.frame = this.level - 1;
+  }
   update() {}
-  draw(ctx) { if (!this.image || !this.image.complete) return; ctx.drawImage(this.image, this.frame * this.sourceSize, 0, this.sourceSize, this.sourceSize, this.x, this.y, this.size, this.size); }
+  draw(ctx) {
+    if (!this.image || !this.image.complete) return;
+    ctx.drawImage(
+      this.image,
+      this.frame * this.sourceSize,
+      0,
+      this.sourceSize,
+      this.sourceSize,
+      this.x,
+      this.y,
+      this.size,
+      this.size,
+    );
+  }
 }

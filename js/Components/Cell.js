@@ -1,10 +1,11 @@
 class Cell extends Sprite {
-    constructor(x, y, width, height) {
+    constructor(x, y, width, height,isMapTile) {
         super();
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
+        this.isMapTile = isMapTile;
     }
 
     render(ctx) {

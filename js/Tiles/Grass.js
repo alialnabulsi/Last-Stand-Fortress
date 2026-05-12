@@ -19,6 +19,16 @@ class Grass extends Sprite {
   update() {}
 
   draw(ctx) {
-    ctx.drawImage(this.image, 0, 0, 40, 40, this.x, this.y, this.size, this.size);
+    ctx.drawImage(
+      this.image,
+      0,
+      0,
+      40,
+      40,
+      this.x,
+      this.y,
+      this.size,
+      this.size,
+    );
   }
 }

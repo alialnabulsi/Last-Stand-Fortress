@@ -1,0 +1,9 @@
+index.js line 424
+soundManager.js line 1
+Buildable must be treated as a troop not a tile.
+Spawner must have updated when the panel is upated to a sprite
+MenuLevel line 14
+StoryLevel line 12
+GameLevel line 14
+GameLevel should be refactored
+Panel.js line 14

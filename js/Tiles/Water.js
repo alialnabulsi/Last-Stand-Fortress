@@ -22,10 +22,21 @@ class Water extends Sprite {
 
   update() {
     this.counter++;
-    if (this.counter % 30 === 0) this.frame = (this.frame + 1) % this.frameCount;
+    if (this.counter % 30 === 0)
+      this.frame = (this.frame + 1) % this.frameCount;
   }
 
   draw(ctx) {
-    ctx.drawImage(this.image, this.frame * 40, 0, 40, 40, this.x, this.y, this.size, this.size);
+    ctx.drawImage(
+      this.image,
+      this.frame * 40,
+      0,
+      40,
+      40,
+      this.x,
+      this.y,
+      this.size,
+      this.size,
+    );
   }
 }

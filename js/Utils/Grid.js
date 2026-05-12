@@ -143,8 +143,7 @@ class Grid extends Sprite {
             sprites.push(new Grass(x, y, this.cellSize, this.images.Grass));
             break;
         }
-        const cell = new Cell(x, y, this.cellSize, this.cellSize);
-        cell.isMapTile = true;
+        const cell = new Cell(x, y, this.cellSize, this.cellSize,true);
         sprites.push(cell);
       }
     }

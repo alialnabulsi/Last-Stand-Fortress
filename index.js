@@ -217,7 +217,14 @@ MAP: {
   //Sounds
   Sounds: {
     storySound: "sounds/storySound.mp3",
-    musicAmbient: "sounds/music.mp3",
+    entryMusic: "sounds/entryMusic.mp3",
+    villageTracks: [
+      "sounds/Home_Village_Music1.mp3",
+      "sounds/Home_Village_Music2.mp3",
+      "sounds/Home_Village_Music3.mp3",
+    ],
+    planningMusic: "sounds/Combat_Planning_Music.mp3",
+    combatMusic: "sounds/HV_Combat_Music.mp3",
   },
 
   //Images
@@ -229,7 +236,7 @@ MAP: {
   Images: {
     Grass: (() => {
       const img = new Image();
-      img.src = "images/SpriteSheets/Grass.png";
+      img.src = "images/SpriteSheets/Tiles/Grass.png";
       return img;
     })(),
 
@@ -256,28 +263,28 @@ MAP: {
 
     Buildable: (() => {
       const img = new Image();
-      img.src = "images/SpriteSheets/Buildable.png";
+      img.src = "images/SpriteSheets/Tiles/Buildable.png";
       return img;
     })(),
 
     Path: (() => {
       const img = new Image();
-      img.src = "images/SpriteSheets/Paths.png";
+      img.src = "images/SpriteSheets/Tiles/Paths.png";
       return img;
     })(),
 
     Water: (() => {
       const img = new Image();
-      img.src = "images/SpriteSheets/Water.png";
+      img.src = "images/SpriteSheets/Tiles/Water.png";
       return img;
     })(),
 
     Forest: (() => {
       const image1 = new Image();
-      image1.src = "images/SpriteSheets/ForestAnimated.png";
+      image1.src = "images/SpriteSheets/Tiles/ForestAnimated.png";
 
       const image2 = new Image();
-      image2.src = "images/SpriteSheets/ForestObjects.png";
+      image2.src = "images/SpriteSheets/Tiles/ForestObjects.png";
 
       return {
         image1,
@@ -286,16 +293,17 @@ MAP: {
     })(),
     Spawner: (() => {
       const img = new Image();
-      img.src = "images/SpriteSheets/Spawner.png";
+      img.src = "images/SpriteSheets/Tiles/Spawner.png";
       return img;
     })(),
 
     TownHall: (() => {
       const img = new Image();
-      img.src = "images/SpriteSheets/TownHall.png";
+      img.src = "images/SpriteSheets/Tiles/TownHall.png";
       return img;
     })(),
   },
+
   // ===============================
   // ===============================
   // PANEL STATIC CONFIG (UI ONLY)
@@ -407,6 +415,20 @@ MAP: {
 };
 
 const game = new Game();
+
+const randomVillageTrack =
+  Utils.Sounds.villageTracks[
+    Math.floor(Math.random() * Utils.Sounds.villageTracks.length)
+  ];
+
+//should be edited to be handled outside the game object
+game.sounds = {
+  entryMusic: new SoundManager(Utils.Sounds.entryMusic, { loop: true, volume: 1.8 }),
+  villageMusic: new SoundManager(randomVillageTrack, { loop: true, volume: 0.18 }),
+  planningMusic: new SoundManager(Utils.Sounds.planningMusic, { loop: true, volume: 0.35 }),
+  combatMusic: new SoundManager(Utils.Sounds.combatMusic, { loop: true, volume: 0.35 }),
+  storySound: new SoundManager(Utils.Sounds.storySound, { loop: false, volume: 0.7 }),
+};
 
 Utils.MAP.map_2 = Utils.MAP.map_2 || Utils.MAP.map_1;
 Utils.MAP.map_3 = Utils.MAP.map_3 || Utils.MAP.map_1;

@@ -11,14 +11,45 @@ class Panel extends Sprite {
     this.width = this.config.layout.width;
     this.height = this.config.layout.height;
 
+    //All data objects should be moved for util in index
     this.shopRules = {
       buildable_tile: { cost: 25, unlockLevel: 1, placement: "grass" },
-      gold_mine: { cost: 100, unlockLevel: 1, placement: "buildable", goldRateBonus: 1 },
-      barracks: { cost: 150, unlockLevel: 1, placement: "buildable", troopCapacityBonus: 10 },
-      archer: { cost: 80, unlockLevel: 1, placement: "buildable", troopCost: 1 },
-      cannon: { cost: 120, unlockLevel: 2, placement: "buildable", troopCost: 2 },
-      wizard: { cost: 180, unlockLevel: 3, placement: "buildable", troopCost: 2 },
-      inferno_tower: { cost: 260, unlockLevel: 4, placement: "buildable", troopCost: 3 },
+      gold_mine: {
+        cost: 100,
+        unlockLevel: 1,
+        placement: "buildable",
+        goldRateBonus: 1,
+      },
+      barracks: {
+        cost: 150,
+        unlockLevel: 1,
+        placement: "buildable",
+        troopCapacityBonus: 10,
+      },
+      archer: {
+        cost: 80,
+        unlockLevel: 1,
+        placement: "buildable",
+        troopCost: 1,
+      },
+      cannon: {
+        cost: 120,
+        unlockLevel: 2,
+        placement: "buildable",
+        troopCost: 2,
+      },
+      wizard: {
+        cost: 180,
+        unlockLevel: 3,
+        placement: "buildable",
+        troopCost: 2,
+      },
+      inferno_tower: {
+        cost: 260,
+        unlockLevel: 4,
+        placement: "buildable",
+        troopCost: 3,
+      },
     };
 
     this.playerState = {
@@ -46,7 +77,7 @@ class Panel extends Sprite {
     };
 
     this.defenseState = {
-      state: "PREPARATION",
+      state: "IDLE",
       preparationTimer: 30,
       breakTimer: 10,
       timerRunning: false,
@@ -67,6 +98,7 @@ class Panel extends Sprite {
 
     this.shopButtons = [];
     this.controlButtons = [];
+    this.townHallDestroyedHandled = false;
 
     this.createShopButtons();
     this.createGameButtons();
@@ -87,13 +119,22 @@ class Panel extends Sprite {
       const x = config.startX + col * (config.width + config.gap);
       const y = config.startY + row * (config.height + config.gap);
 
-      const btn = new PanelButton(x, y, config.width, config.height, item.label, () => this.selectShopItem(item), {
-        item,
-        icon: item.icon,
-        description: item.description,
-        cost: (this.shopRules[item.id] && this.shopRules[item.id].cost) || null,
-        style,
-      });
+      const btn = new PanelButton(
+        x,
+        y,
+        config.width,
+        config.height,
+        item.label,
+        () => this.selectShopItem(item),
+        {
+          item,
+          icon: item.icon,
+          description: item.description,
+          cost:
+            (this.shopRules[item.id] && this.shopRules[item.id].cost) || null,
+          style,
+        },
+      );
 
       this.shopButtons.push(btn);
     }
@@ -103,44 +144,63 @@ class Panel extends Sprite {
     const style = this.config.style;
     const gameBox = this.config.layout.game;
 
-    this.startDefenseButton = new PanelButton(gameBox.x + 16, gameBox.y + 75, 120, 44, "START", () => {
-      if (this.defenseState.state === "UNDER_ATTACK") {
-        this.setMessage("Defense already started.");
-        return;
-      }
+    this.startDefenseButton = new PanelButton(
+      gameBox.x + 16,
+      gameBox.y + 75,
+      120,
+      44,
+      "START",
+      () => {
+        if (this.defenseState.state === "UNDER_ATTACK") {
+          this.setMessage("Defense already started.");
+          return;
+        }
 
-      if (this.defenseState.state === "BREAK") {
-        this.setMessage("Cannot start while on break.");
-        return;
-      }
+        if (this.defenseState.state === "BREAK") {
+          this.setMessage("Cannot start while on break.");
+          return;
+        }
 
-      this.defenseState.timerRunning = true;
-      this.defenseState.lastTickAt = performance.now();
-      this.updateEnemyInfo();
-      this.setMessage("Preparation timer started.");
-    }, {
-      icon: "⚔",
-      description: "Start wave",
-      style,
-    });
+        this.defenseState.timerRunning = true;
+        this.defenseState.state = "PREPARATION";
+        this.defenseState.lastTickAt = performance.now();
+        this.onPlanningStarted();
+        this.updateEnemyInfo();
+        this.setMessage("Preparation timer started.");
+      },
+      {
+        icon: "⚔",
+        description: "Start wave",
+        style,
+      },
+    );
 
-    this.takeBreakButton = new PanelButton(gameBox.x + 150, gameBox.y + 75, 120, 44, "TAKE BREAK", () => {
-      if (this.defenseState.breaksUsed >= this.defenseState.breaksAllowed) {
-        this.setMessage("No breaks left.");
-        return;
-      }
+    this.takeBreakButton = new PanelButton(
+      gameBox.x + 150,
+      gameBox.y + 75,
+      120,
+      44,
+      "TAKE BREAK",
+      () => {
+        if (this.defenseState.breaksUsed >= this.defenseState.breaksAllowed) {
+          this.setMessage("No breaks left.");
+          return;
+        }
 
-      this.defenseState.breaksUsed += 1;
-      this.defenseState.state = "BREAK";
-      this.defenseState.breakTimer = 10;
-      this.defenseState.timerRunning = true;
-      this.defenseState.lastTickAt = performance.now();
-      this.setMessage("Break activated.");
-    }, {
-      icon: "☕",
-      description: "Pause phase",
-      style,
-    });
+        this.defenseState.breaksUsed += 1;
+        this.defenseState.state = "BREAK";
+        this.defenseState.breakTimer = 10;
+        this.defenseState.timerRunning = true;
+        this.defenseState.lastTickAt = performance.now();
+        this.onDefenseEnded({ townHallAlive: true });
+        this.setMessage("Break activated.");
+      },
+      {
+        icon: "☕",
+        description: "Pause phase",
+        style,
+      },
+    );
 
     this.controlButtons = [this.startDefenseButton, this.takeBreakButton];
   }
@@ -159,16 +219,23 @@ class Panel extends Sprite {
     }
 
     if (this.playerState.level < rule.unlockLevel) {
-      this.setMessage(`${item.fullName} is locked. Unlocks at level ${rule.unlockLevel}.`);
+      this.setMessage(
+        `${item.fullName} is locked. Unlocks at level ${rule.unlockLevel}.`,
+      );
       return;
     }
 
     if (!this.canAfford(rule.cost)) {
-      this.setMessage(`Not enough gold for ${item.fullName}. Need ${rule.cost}G.`);
+      this.setMessage(
+        `Not enough gold for ${item.fullName}. Need ${rule.cost}G.`,
+      );
       return;
     }
 
-    if (rule.troopCost && this.armyState.currentTroops >= this.armyState.maxTroops) {
+    if (
+      rule.troopCost &&
+      this.armyState.currentTroops >= this.armyState.maxTroops
+    ) {
       this.setMessage("Troop capacity is full.");
       return;
     }
@@ -178,11 +245,25 @@ class Panel extends Sprite {
     this.setMessage(`${item.fullName} selected. Placement is not enabled yet.`);
   }
 
-  clearSelection() { this.shopState.selectedItem = null; this.shopState.selectedItemId = null; }
-  canAfford(cost) { return this.playerState.gold >= cost; }
-  spendGold(amount) { if (!this.canAfford(amount)) return false; this.playerState.gold -= amount; return true; }
-  addGold(amount) { this.playerState.gold += Math.max(0, amount); }
-  addXP(amount) { this.playerState.xp += Math.max(0, amount); this.levelUpIfNeeded(); }
+  clearSelection() {
+    this.shopState.selectedItem = null;
+    this.shopState.selectedItemId = null;
+  }
+  canAfford(cost) {
+    return this.playerState.gold >= cost;
+  }
+  spendGold(amount) {
+    if (!this.canAfford(amount)) return false;
+    this.playerState.gold -= amount;
+    return true;
+  }
+  addGold(amount) {
+    this.playerState.gold += Math.max(0, amount);
+  }
+  addXP(amount) {
+    this.playerState.xp += Math.max(0, amount);
+    this.levelUpIfNeeded();
+  }
 
   levelUpIfNeeded() {
     let didLevelUp = false;
@@ -190,13 +271,17 @@ class Panel extends Sprite {
     while (this.playerState.xp >= this.playerState.xpToNextLevel) {
       this.playerState.xp -= this.playerState.xpToNextLevel;
       this.playerState.level += 1;
-      this.playerState.xpToNextLevel = Math.floor(this.playerState.xpToNextLevel * 1.2);
+      this.playerState.xpToNextLevel = Math.floor(
+        this.playerState.xpToNextLevel * 1.2,
+      );
       this.updateEnemyInfo();
       didLevelUp = true;
     }
 
     if (didLevelUp && this.game.currentGameLevel) {
-      this.game.currentGameLevel.changeMapForPlayerLevel(this.playerState.level);
+      this.game.currentGameLevel.changeMapForPlayerLevel(
+        this.playerState.level,
+      );
     }
   }
 
@@ -208,7 +293,9 @@ class Panel extends Sprite {
     this.defenseState.enemySpeed = 1 + (level - 1) * 0.08;
   }
 
-  setMessage(message) { this.shopState.message = message; }
+  setMessage(message) {
+    this.shopState.message = message;
+  }
 
   findTownHall(arrayOfSprites) {
     const hasTownHallClass = typeof TownHall !== "undefined";
@@ -233,6 +320,10 @@ class Panel extends Sprite {
     if (this.townHallState.townHall) {
       this.townHallState.hp = this.townHallState.townHall.hp;
       this.townHallState.maxHp = this.townHallState.townHall.maxHp;
+      if (this.townHallState.hp <= 0 && !this.townHallDestroyedHandled) {
+        this.townHallDestroyedHandled = true;
+        this.onDefenseEnded({ townHallAlive: false });
+      }
     }
 
     for (const btn of this.shopButtons) {
@@ -247,13 +338,15 @@ class Panel extends Sprite {
 
     this.updateDefenseTimer();
 
-    this.startDefenseButton.disabled = this.defenseState.state === "UNDER_ATTACK";
-    this.takeBreakButton.disabled = this.defenseState.breaksUsed >= this.defenseState.breaksAllowed;
-    for (const btn of this.controlButtons) btn.update(arrayOfSprites, keys, mouse);
+    this.startDefenseButton.disabled =
+      this.defenseState.state === "UNDER_ATTACK";
+    this.takeBreakButton.disabled =
+      this.defenseState.breaksUsed >= this.defenseState.breaksAllowed;
+    for (const btn of this.controlButtons)
+      btn.update(arrayOfSprites, keys, mouse);
 
     return false;
   }
-
 
   updateDefenseTimer() {
     if (!this.defenseState.timerRunning) return;
@@ -264,23 +357,57 @@ class Panel extends Sprite {
     this.defenseState.lastTickAt = now;
 
     if (this.defenseState.state === "PREPARATION") {
-      this.defenseState.preparationTimer = Math.max(0, this.defenseState.preparationTimer - elapsedSeconds);
+      this.defenseState.preparationTimer = Math.max(
+        0,
+        this.defenseState.preparationTimer - elapsedSeconds,
+      );
       if (this.defenseState.preparationTimer === 0) {
+        this.onPlanningEnded();
         this.defenseState.state = "UNDER_ATTACK";
         this.defenseState.timerRunning = false;
+        this.onDefenseStarted();
         this.setMessage("Preparation ended. Under attack.");
       }
       return;
     }
 
     if (this.defenseState.state === "BREAK") {
-      this.defenseState.breakTimer = Math.max(0, this.defenseState.breakTimer - elapsedSeconds);
+      this.defenseState.breakTimer = Math.max(
+        0,
+        this.defenseState.breakTimer - elapsedSeconds,
+      );
       if (this.defenseState.breakTimer === 0) {
         this.defenseState.state = "UNDER_ATTACK";
         this.defenseState.timerRunning = false;
+        this.onDefenseStarted();
         this.setMessage("Break ended. Under attack.");
       }
     }
+  }
+
+  onPlanningStarted() {
+    if (!this.game.sounds) return;
+    this.game.sounds.villageMusic.pause();
+    this.game.sounds.combatMusic.stop();
+    this.game.sounds.planningMusic.play();
+  }
+
+  onPlanningEnded() {
+    if (!this.game.sounds) return;
+    this.game.sounds.planningMusic.stop();
+  }
+
+  onDefenseStarted() {
+    if (!this.game.sounds) return;
+    this.game.sounds.planningMusic.stop();
+    this.game.sounds.combatMusic.play();
+  }
+
+  onDefenseEnded({ townHallAlive = true } = {}) {
+    if (!this.game.sounds) return;
+    this.game.sounds.planningMusic.stop();
+    this.game.sounds.combatMusic.stop();
+    if (townHallAlive) this.game.sounds.villageMusic.play();
   }
   draw(ctx) {
     this.drawPanelBackground(ctx);
@@ -290,9 +417,66 @@ class Panel extends Sprite {
     this.drawInfoSection(ctx);
   }
 
-  drawPanelBackground(ctx) { const style = this.config.style; ctx.save(); const bg = ctx.createLinearGradient(this.x, this.y, this.x, this.y + this.height); bg.addColorStop(0, style.panelTop); bg.addColorStop(0.5, style.panelMiddle); bg.addColorStop(1, style.panelBottom); ctx.fillStyle = bg; ctx.fillRect(this.x, this.y, this.width, this.height); ctx.strokeStyle = style.border; ctx.lineWidth = 4; ctx.strokeRect(this.x + 2, this.y + 2, this.width - 4, this.height - 4); this.drawSectionBox(ctx, this.config.layout.shop); this.drawSectionBox(ctx, this.config.layout.game); this.drawSectionBox(ctx, this.config.layout.info); ctx.restore(); }
-  drawSectionBox(ctx, section) { const style = this.config.style; ctx.save(); ctx.fillStyle = style.sectionFill; ctx.strokeStyle = style.sectionBorder; ctx.lineWidth = 2; ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(section.x, section.y, section.width, section.height, 12); else ctx.rect(section.x, section.y, section.width, section.height); ctx.fill(); ctx.stroke(); ctx.restore(); }
-  drawSectionTitles(ctx) { const style = this.config.style; ctx.save(); ctx.font = "bold 22px Arial"; ctx.fillStyle = style.titleColor; ctx.textAlign = "left"; ctx.textBaseline = "top"; ctx.fillText(this.config.titles.shop, this.config.layout.shop.x + 15, this.config.layout.shop.y + 12); ctx.fillText(this.config.titles.game, this.config.layout.game.x + 15, this.config.layout.game.y + 12); ctx.fillText(this.config.titles.info, this.config.layout.info.x + 15, this.config.layout.info.y + 12); ctx.restore(); }
+  drawPanelBackground(ctx) {
+    const style = this.config.style;
+    ctx.save();
+    const bg = ctx.createLinearGradient(
+      this.x,
+      this.y,
+      this.x,
+      this.y + this.height,
+    );
+    bg.addColorStop(0, style.panelTop);
+    bg.addColorStop(0.5, style.panelMiddle);
+    bg.addColorStop(1, style.panelBottom);
+    ctx.fillStyle = bg;
+    ctx.fillRect(this.x, this.y, this.width, this.height);
+    ctx.strokeStyle = style.border;
+    ctx.lineWidth = 4;
+    ctx.strokeRect(this.x + 2, this.y + 2, this.width - 4, this.height - 4);
+    this.drawSectionBox(ctx, this.config.layout.shop);
+    this.drawSectionBox(ctx, this.config.layout.game);
+    this.drawSectionBox(ctx, this.config.layout.info);
+    ctx.restore();
+  }
+  drawSectionBox(ctx, section) {
+    const style = this.config.style;
+    ctx.save();
+    ctx.fillStyle = style.sectionFill;
+    ctx.strokeStyle = style.sectionBorder;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    if (ctx.roundRect)
+      ctx.roundRect(section.x, section.y, section.width, section.height, 12);
+    else ctx.rect(section.x, section.y, section.width, section.height);
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+  }
+  drawSectionTitles(ctx) {
+    const style = this.config.style;
+    ctx.save();
+    ctx.font = "bold 22px Arial";
+    ctx.fillStyle = style.titleColor;
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+    ctx.fillText(
+      this.config.titles.shop,
+      this.config.layout.shop.x + 15,
+      this.config.layout.shop.y + 12,
+    );
+    ctx.fillText(
+      this.config.titles.game,
+      this.config.layout.game.x + 15,
+      this.config.layout.game.y + 12,
+    );
+    ctx.fillText(
+      this.config.titles.info,
+      this.config.layout.info.x + 15,
+      this.config.layout.info.y + 12,
+    );
+    ctx.restore();
+  }
 
   drawShop(ctx) {
     const shop = this.config.layout.shop;
@@ -303,7 +487,11 @@ class Panel extends Sprite {
     ctx.fillStyle = style.mutedText;
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
-    ctx.fillText("Select what you want to place on the map.", shop.x + 15, shop.y + 42);
+    ctx.fillText(
+      "Select what you want to place on the map.",
+      shop.x + 15,
+      shop.y + 42,
+    );
 
     for (const btn of this.shopButtons) btn.draw(ctx);
     ctx.restore();
@@ -319,16 +507,43 @@ class Panel extends Sprite {
     ctx.font = "bold 15px Arial";
     ctx.fillStyle = style.textColor;
 
-    ctx.fillText(`State: ${this.defenseState.state}`, gameBox.x + 20, gameBox.y + 45);
+    ctx.fillText(
+      `State: ${this.defenseState.state}`,
+      gameBox.x + 20,
+      gameBox.y + 45,
+    );
 
     ctx.font = "14px Arial";
     ctx.fillStyle = style.mutedText;
-    const activeTimer = this.defenseState.state === "BREAK" ? this.defenseState.breakTimer : this.defenseState.preparationTimer;
-    ctx.fillText(`Timer: ${this.formatTimer(activeTimer)}`, gameBox.x + 20, gameBox.y + 130);
-    ctx.fillText(`Enemy Lvl: ${this.defenseState.enemyLevel}`, gameBox.x + 20, gameBox.y + 150);
-    ctx.fillText(`Enemy #: ${this.defenseState.enemyCount}`, gameBox.x + 150, gameBox.y + 130);
-    ctx.fillText(`Enemy HP: x${this.defenseState.enemyHp.toFixed(2)}`, gameBox.x + 150, gameBox.y + 150);
-    ctx.fillText(`Enemy Spd: x${this.defenseState.enemySpeed.toFixed(2)}`, gameBox.x + 20, gameBox.y + 168);
+    const activeTimer =
+      this.defenseState.state === "BREAK"
+        ? this.defenseState.breakTimer
+        : this.defenseState.preparationTimer;
+    ctx.fillText(
+      `Timer: ${this.formatTimer(activeTimer)}`,
+      gameBox.x + 20,
+      gameBox.y + 130,
+    );
+    ctx.fillText(
+      `Enemy Lvl: ${this.defenseState.enemyLevel}`,
+      gameBox.x + 20,
+      gameBox.y + 150,
+    );
+    ctx.fillText(
+      `Enemy #: ${this.defenseState.enemyCount}`,
+      gameBox.x + 150,
+      gameBox.y + 130,
+    );
+    ctx.fillText(
+      `Enemy HP: x${this.defenseState.enemyHp.toFixed(2)}`,
+      gameBox.x + 150,
+      gameBox.y + 150,
+    );
+    ctx.fillText(
+      `Enemy Spd: x${this.defenseState.enemySpeed.toFixed(2)}`,
+      gameBox.x + 20,
+      gameBox.y + 168,
+    );
 
     for (const btn of this.controlButtons) btn.draw(ctx);
     ctx.restore();
@@ -345,13 +560,23 @@ class Panel extends Sprite {
     ctx.fillStyle = style.textColor;
     ctx.fillText(`Gold: ${this.playerState.gold}G`, info.x + 16, info.y + 44);
     ctx.fillText(`Level: ${this.playerState.level}`, info.x + 160, info.y + 44);
-    ctx.fillText(`XP: ${this.playerState.xp}/${this.playerState.xpToNextLevel}`, info.x + 250, info.y + 44);
+    ctx.fillText(
+      `XP: ${this.playerState.xp}/${this.playerState.xpToNextLevel}`,
+      info.x + 250,
+      info.y + 44,
+    );
 
     ctx.font = "14px Arial";
     ctx.fillStyle = style.mutedText;
-    const selectedName = this.shopState.selectedItem ? this.shopState.selectedItem.fullName : "None";
+    const selectedName = this.shopState.selectedItem
+      ? this.shopState.selectedItem.fullName
+      : "None";
     ctx.fillText(`Selected: ${selectedName}`, info.x + 16, info.y + 74);
-    ctx.fillText(`Town Hall HP: ${this.townHallState.hp}/${this.townHallState.maxHp}`, info.x + 16, info.y + 96);
+    ctx.fillText(
+      `Town Hall HP: ${this.townHallState.hp}/${this.townHallState.maxHp}`,
+      info.x + 16,
+      info.y + 96,
+    );
     ctx.fillText(this.shopState.message, info.x + 16, info.y + 122);
 
     ctx.restore();

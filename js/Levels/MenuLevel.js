@@ -11,6 +11,14 @@ class MenuLevel extends Level {
   }
 
   initialize() {
+    //change this when we change how the soundManager works
+    if (this.game.sounds) {
+      this.game.sounds.storySound.stop();
+      this.game.sounds.villageMusic.stop();
+      this.game.sounds.planningMusic.stop();
+      this.game.sounds.combatMusic.stop();
+      this.game.sounds.entryMusic.play();
+    }
     this.game.addSprite(new Background(this.MenuBackgroundImage));
     this.game.addSprite(
       new Text(800, 350, this.title, {
@@ -22,15 +30,7 @@ class MenuLevel extends Level {
     );
     this.game.addSprite(
       new Button(650, 425, 300, 50, this.startButtonTitle, () => {
-        SoundManager.loadSound("music", this.utils.Sounds.musicAmbient, { loop: true, volume: 0.12 });
-
-        SoundManager.playLoop("music", 0.12);
-
-        const gameMap = this.utils.MAP ? this.utils.MAP.map_1 : null;
-        const hasWater = typeof GameLevel !== "undefined" && GameLevel.mapHasWater(gameMap);
-        if (hasWater) SoundManager.playLoop("water", 0.15);
-        else SoundManager.stop("water");
-
+        if (this.game.sounds) this.game.sounds.entryMusic.stop();
         this.game.changeLevel(3);
       }),
     );
