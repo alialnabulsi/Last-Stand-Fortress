@@ -12,7 +12,6 @@ class GameLevel extends Level {
   }
   initialize() {
     this.game.currentGameLevel = this;
-    this.initializeSounds(this.utils.Sounds.gameLevelSounds);
     let panel = this.findPanel();
     if (!panel) {
       panel = new Panel(this.game, this.utils);
@@ -20,40 +19,10 @@ class GameLevel extends Level {
     }
     if (!panel) return;
 
-    const villageTracks = Sound.findAll(this.game.arrayOfSprites).filter((sound) => {
-      return sound && sound.id && sound.id.startsWith("villageMusic");
-    });
-
-    for (const track of villageTracks) track.stop();
-
-    if (villageTracks.length > 0) {
-      const randomIndex = Math.floor(Math.random() * villageTracks.length);
-      villageTracks[randomIndex].play();
-    }
     this.changeMapForPlayerLevel(panel.playerState.level);
      console.log("GameLevel",this.game.arrayOfSprites);
   }
 
-  initializeSounds(sounds) {
-    if (!Array.isArray(sounds)) return;
-
-    for (let i = 0; i < sounds.length; i++) {
-      const soundData = sounds[i];
-      if (!soundData) continue;
-      if (Sound.find(this.game.arrayOfSprites, soundData.id)) continue;
-
-      this.game.addSprite(
-        new Sound(
-          soundData.id,
-          soundData.title,
-          soundData.src,
-          soundData.volume,
-          soundData.loop,
-          soundData.autoplay,
-        ),
-      );
-    }
-  }
   findPanel() {
     return this.game.arrayOfSprites.find((sprite) => sprite instanceof Panel) || null;
   }
@@ -77,7 +46,7 @@ class GameLevel extends Level {
     new Grid(40, this.game.arrayOfSprites, this.utils, mapArray);
     this.currentMap = mapArray;
     this.rebuildTileDataFromMap();
-    this.setupAmbientWaterSound();
+    this.setupAmbientWater();
   }
   rebuildTileDataFromMap() {
     const rows = this.currentMap ? this.currentMap.length : 0;
@@ -106,7 +75,7 @@ class GameLevel extends Level {
       if (tile.tileType === "WATER") this.hasWater = true;
     }
   }
-  setupAmbientWaterSound() {
+  setupAmbientWater() {
     return;
   }
 

@@ -10,11 +10,6 @@ class StoryLevel extends Level {
   }
 
   initialize() {
-    this.initializeSounds(this.utils.Sounds.storyLevelSounds);
-
-    const storySound = Sound.find(this.game.arrayOfSprites, "storySound");
-    if (storySound) storySound.play();
-
     this.game.addSprite(new Background(this.MenuBackgroundImage));
     for (let i = 0; i < this.shortStoryIntro.length; i++) {
       const isLastLine = i === this.shortStoryIntro.length - 1;
@@ -31,33 +26,10 @@ class StoryLevel extends Level {
 
     this.game.addSprite(
       new Button(100, 800, 300, 50, this.backButtonTitle, () => {
-        const storySound = Sound.find(this.game.arrayOfSprites, "storySound");
-        if (storySound) storySound.stop();
         this.game.changeLevel(0);
       }),
     );
         console.log("StoryLevel",this.game.arrayOfSprites);
 
-  }
-
-  initializeSounds(sounds) {
-    if (!Array.isArray(sounds)) return;
-
-    for (let i = 0; i < sounds.length; i++) {
-      const soundData = sounds[i];
-      if (!soundData) continue;
-      if (Sound.find(this.game.arrayOfSprites, soundData.id)) continue;
-
-      this.game.addSprite(
-        new Sound(
-          soundData.id,
-          soundData.title,
-          soundData.src,
-          soundData.volume,
-          soundData.loop,
-          soundData.autoplay,
-        ),
-      );
-    }
   }
 }

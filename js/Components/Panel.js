@@ -386,44 +386,15 @@ class Panel extends Sprite {
   }
 
   onPlanningStarted() {
-    const villageTracks = Sound.findAll(this.game.arrayOfSprites).filter((sound) => {
-      return sound && sound.id && sound.id.startsWith("villageMusic");
-    });
-    const planningMusic = Sound.find(this.game.arrayOfSprites, "planningMusic");
-    const combatMusic = Sound.find(this.game.arrayOfSprites, "combatMusic");
-
-    for (const track of villageTracks) track.pause();
-    if (combatMusic) combatMusic.stop();
-    if (planningMusic) planningMusic.play();
   }
 
   onPlanningEnded() {
-    const planningMusic = Sound.find(this.game.arrayOfSprites, "planningMusic");
-    if (planningMusic) planningMusic.stop();
   }
 
   onDefenseStarted() {
-    const planningMusic = Sound.find(this.game.arrayOfSprites, "planningMusic");
-    const combatMusic = Sound.find(this.game.arrayOfSprites, "combatMusic");
-    if (planningMusic) planningMusic.stop();
-    if (combatMusic) combatMusic.play();
   }
 
   onDefenseEnded({ townHallAlive = true } = {}) {
-    const villageTracks = Sound.findAll(this.game.arrayOfSprites).filter((sound) => {
-      return sound && sound.id && sound.id.startsWith("villageMusic");
-    });
-    const planningMusic = Sound.find(this.game.arrayOfSprites, "planningMusic");
-    const combatMusic = Sound.find(this.game.arrayOfSprites, "combatMusic");
-
-    if (planningMusic) planningMusic.stop();
-    if (combatMusic) combatMusic.stop();
-
-    if (townHallAlive && villageTracks.length > 0) {
-      for (const track of villageTracks) track.stop();
-      const randomIndex = Math.floor(Math.random() * villageTracks.length);
-      villageTracks[randomIndex].play();
-    }
   }
   draw(ctx) {
     this.drawPanelBackground(ctx);
