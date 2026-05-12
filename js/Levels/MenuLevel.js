@@ -11,19 +11,13 @@ class MenuLevel extends Level {
   }
 
   initialize() {
-    //change this when we change how the soundManager works
-    if (this.game.sounds) {
-      this.game.sounds.storySound.stop();
-      this.game.sounds.villageMusic.stop();
-      this.game.sounds.planningMusic.stop();
-      this.game.sounds.combatMusic.stop();
-      this.game.sounds.entryMusic.play();
-    }
+    this.initializeSounds();
+
     this.game.addSprite(new Background(this.MenuBackgroundImage));
     this.game.addSprite(
       new Text(800, 350, this.title, {
         color: "#e8d174",
-        font:  "bold 64px Georgia",
+        font: "bold 64px Georgia",
         shadow: false,
         stroke: false,
       }),
@@ -44,5 +38,54 @@ class MenuLevel extends Level {
         this.game.changeLevel(2);
       }),
     );
+  }
+  initializeSounds() {
+    const sounds = this.utils.Sounds;
+
+    for (const soundKey in sounds) {
+      const soundData = sounds[soundKey];
+
+      if (Array.isArray(soundData)) {
+        for (let i = 0; i < soundData.length; i++) {
+          this.addSoundSprite(soundData[i]);
+        }
+      } else {
+        this.addSoundSprite(soundData);
+      }
+    }
+  }
+
+  addSoundSprite(soundData) {
+    if (!soundData) return;
+
+    if (Sound.find(this.game.arrayOfSprites, soundData.id)) {
+      return;
+    }
+
+    this.game.addSprite(
+      new Sound(
+        soundData.id,
+        soundData.title,
+        soundData.src,
+        soundData.volume,
+        soundData.loop,
+        soundData.autoplay,
+      ),
+    );
+  }
+  getSoundVolume(soundKey) {
+    if (soundKey === "entryMusic") return 0.25;
+    if (soundKey === "villageTracks") return 0.18;
+    if (soundKey === "planningMusic") return 0.25;
+    if (soundKey === "combatMusic") return 0.28;
+    if (soundKey === "storySound") return 0.35;
+
+    return 0.2;
+  }
+
+  getSoundLoop(soundKey) {
+    if (soundKey === "storySound") return false;
+
+    return true;
   }
 }

@@ -11,15 +11,16 @@ class GameLevel extends Level {
     this.hasWater = false;
   }
   initialize() {
-     //change this when we change how the soundManager works
+    //change this when we change how the soundManager works
     this.game.currentGameLevel = this;
-    if (!this.game.panel) this.game.panel = new Panel(this.game, this.utils);
-    if (this.game.sounds) {
-      this.game.sounds.entryMusic.stop();
-      this.game.sounds.storySound.stop();
-      this.game.sounds.planningMusic.stop();
-      this.game.sounds.combatMusic.stop();
-      this.game.sounds.villageMusic.play();
+    const randomIndex = Math.floor(Math.random() * 3) + 1;
+    const villageMusic = Sound.find(
+      this.game.arrayOfSprites,
+      `villageTracks${randomIndex}`,
+    );
+
+    if (villageMusic) {
+      villageMusic.play();
     }
     this.changeMapForPlayerLevel(this.game.panel.playerState.level);
   }
