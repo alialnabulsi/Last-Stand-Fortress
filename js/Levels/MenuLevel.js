@@ -8,11 +8,12 @@ class MenuLevel extends Level {
     this.startButtonTitle = utils.LevelsTexts.MenuLevel.startButtonTitle;
     this.helpButtonTitle = utils.LevelsTexts.MenuLevel.helpButtonTitle;
     this.storyButtonTitle = utils.LevelsTexts.MenuLevel.storyButtonTitle;
+    this.unlockHandlerAttached = false;
   }
 
   initialize() {
     this.initializeSounds();
-
+    this.game.changeLevel(0);
     this.game.addSprite(new Background(this.MenuBackgroundImage));
     this.game.addSprite(
       new Text(800, 350, this.title, {
@@ -24,8 +25,8 @@ class MenuLevel extends Level {
     );
     this.game.addSprite(
       new Button(650, 425, 300, 50, this.startButtonTitle, () => {
-        const entryMusic = Sound.find(this.game.arrayOfSprites, "entryMusic");
-        if (entryMusic) entryMusic.stop();
+        this.stopMenuAndStoryMusic();
+        this.playRandomVillageTrack();
         this.game.changeLevel(3);
       }),
     );
@@ -36,10 +37,15 @@ class MenuLevel extends Level {
     );
     this.game.addSprite(
       new Button(650, 625, 300, 50, this.storyButtonTitle, () => {
+        this.stopMenuAndStoryMusic();
         this.game.changeLevel(2);
       }),
     );
+
+    this.playEntryMusic();
+    this.attachMenuAudioUnlock();
   }
+
   initializeSounds() {
     const sounds = this.utils.Sounds;
 
@@ -74,19 +80,57 @@ class MenuLevel extends Level {
       ),
     );
   }
-  getSoundVolume(soundKey) {
-    if (soundKey === "entryMusic") return 0.25;
-    if (soundKey === "villageTracks") return 0.18;
-    if (soundKey === "planningMusic") return 0.25;
-    if (soundKey === "combatMusic") return 0.28;
-    if (soundKey === "storySound") return 0.35;
 
-    return 0.2;
+  stopMenuAndStoryMusic() {
+    const entryMusic = Sound.find(this.game.arrayOfSprites, "entryMusic");
+    const storySound = Sound.find(this.game.arrayOfSprites, "storySound");
+    const villageTracks = Sound.findAll(this.game.arrayOfSprites).filter(
+      (sound) => {
+        return sound && sound.id && sound.id.startsWith("villageMusic");
+      },
+    );
+
+    if (entryMusic) entryMusic.stop();
+    if (storySound) storySound.stop();
+    for (const track of villageTracks) track.stop();
   }
 
-  getSoundLoop(soundKey) {
-    if (soundKey === "storySound") return false;
+  playRandomVillageTrack() {
+    const villageTracks = Sound.findAll(this.game.arrayOfSprites).filter(
+      (sound) => {
+        return sound && sound.id && sound.id.startsWith("villageMusic");
+      },
+    );
 
-    return true;
+    for (const track of villageTracks) track.stop();
+    if (villageTracks.length === 0) return;
+
+    const randomIndex = Math.floor(Math.random() * villageTracks.length);
+    villageTracks[randomIndex].play();
   }
+
+  playEntryMusic() {
+    const entryMusic = Sound.find(this.game.arrayOfSprites, "entryMusic");
+    if (!entryMusic) return;
+
+    entryMusic.play();
+  }
+
+  attachMenuAudioUnlock() {
+    if (this.unlockHandlerAttached) return;
+    this.unlockHandlerAttached = true;
+
+    const unlock = () => {
+      const entryMusic = Sound.find(this.game.arrayOfSprites, "entryMusic");
+      if (entryMusic) entryMusic.play();
+      window.removeEventListener("pointerdown", unlock);
+      window.removeEventListener("keydown", unlock);
+      this.unlockHandlerAttached = false;
+    };
+
+    window.addEventListener("pointerdown", unlock, { once: true });
+    window.addEventListener("keydown", unlock, { once: true });
+  }
+
+  
 }

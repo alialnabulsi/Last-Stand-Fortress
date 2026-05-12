@@ -14,7 +14,7 @@ class StoryLevel extends Level {
     const combatMusic = Sound.find(this.game.arrayOfSprites, "combatMusic");
     const storySound = Sound.find(this.game.arrayOfSprites, "storySound");
     const villageTracks = Sound.findAll(this.game.arrayOfSprites).filter(
-      (sound) => sound && sound.title === "villageMusic",
+      (sound) => sound && sound.id && sound.id.startsWith("villageMusic"),
     );
 
     if (entryMusic) entryMusic.stop();

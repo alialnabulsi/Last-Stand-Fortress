@@ -16,18 +16,18 @@ class GameLevel extends Level {
     if (!panel) {
       panel = new Panel(this.game, this.utils);
       this.game.addSprite(panel);
-      this.game.panel = panel;
     }
     if (!panel) return;
 
-    const randomIndex = Math.floor(Math.random() * 3) + 1;
-    const villageMusic = Sound.find(
-      this.game.arrayOfSprites,
-      `villageTracks${randomIndex}`,
-    );
+    const villageTracks = Sound.findAll(this.game.arrayOfSprites).filter((sound) => {
+      return sound && sound.id && sound.id.startsWith("villageMusic");
+    });
 
-    if (villageMusic) {
-      villageMusic.play();
+    for (const track of villageTracks) track.stop();
+
+    if (villageTracks.length > 0) {
+      const randomIndex = Math.floor(Math.random() * villageTracks.length);
+      villageTracks[randomIndex].play();
     }
     this.changeMapForPlayerLevel(panel.playerState.level);
   }

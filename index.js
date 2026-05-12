@@ -470,7 +470,7 @@ const Utils = {
       id: "entryMusic",
       title: "Entry Music",
       src: "sounds/entryMusic.mp3",
-      volume: 0.25,
+      volume: 0.8,
       loop: true,
       autoplay: false,
     },
