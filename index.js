@@ -461,7 +461,7 @@ const Utils = {
       id: "storySound",
       title: "Story Sound",
       src: "sounds/storySound.mp3",
-      volume: 0.35,
+      volume: 0.8,
       loop: false,
       autoplay: false,
     },

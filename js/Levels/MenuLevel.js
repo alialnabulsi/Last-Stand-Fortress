@@ -24,7 +24,8 @@ class MenuLevel extends Level {
     );
     this.game.addSprite(
       new Button(650, 425, 300, 50, this.startButtonTitle, () => {
-        if (this.game.sounds) this.game.sounds.entryMusic.stop();
+        const entryMusic = Sound.find(this.game.arrayOfSprites, "entryMusic");
+        if (entryMusic) entryMusic.stop();
         this.game.changeLevel(3);
       }),
     );

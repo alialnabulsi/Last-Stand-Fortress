@@ -9,14 +9,19 @@ class StoryLevel extends Level {
   }
 
   initialize() {
-     //change this when we change how the soundManager works
-    if (this.game.sounds) {
-      this.game.sounds.entryMusic.stop();
-      this.game.sounds.villageMusic.stop();
-      this.game.sounds.planningMusic.stop();
-      this.game.sounds.combatMusic.stop();
-      this.game.sounds.storySound.play();
-    }
+    const entryMusic = Sound.find(this.game.arrayOfSprites, "entryMusic");
+    const planningMusic = Sound.find(this.game.arrayOfSprites, "planningMusic");
+    const combatMusic = Sound.find(this.game.arrayOfSprites, "combatMusic");
+    const storySound = Sound.find(this.game.arrayOfSprites, "storySound");
+    const villageTracks = Sound.findAll(this.game.arrayOfSprites).filter(
+      (sound) => sound && sound.title === "villageMusic",
+    );
+
+    if (entryMusic) entryMusic.stop();
+    if (planningMusic) planningMusic.stop();
+    if (combatMusic) combatMusic.stop();
+    for (const villageTrack of villageTracks) villageTrack.stop();
+    if (storySound) storySound.play();
     this.game.addSprite(new Background(this.MenuBackgroundImage));
     for (let i = 0; i < this.shortStoryIntro.length; i++) {
       const isLastLine = i === this.shortStoryIntro.length - 1;
@@ -33,7 +38,8 @@ class StoryLevel extends Level {
 
     this.game.addSprite(
       new Button(100, 800, 300, 50, this.backButtonTitle, () => {
-        if (this.game.sounds) this.game.sounds.storySound.stop();
+        const storySound = Sound.find(this.game.arrayOfSprites, "storySound");
+        if (storySound) storySound.stop();
         this.game.changeLevel(0);
       }),
     );

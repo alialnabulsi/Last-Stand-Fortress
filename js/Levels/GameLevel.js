@@ -11,8 +11,15 @@ class GameLevel extends Level {
     this.hasWater = false;
   }
   initialize() {
-    //change this when we change how the soundManager works
     this.game.currentGameLevel = this;
+    let panel = this.findPanel();
+    if (!panel) {
+      panel = new Panel(this.game, this.utils);
+      this.game.addSprite(panel);
+      this.game.panel = panel;
+    }
+    if (!panel) return;
+
     const randomIndex = Math.floor(Math.random() * 3) + 1;
     const villageMusic = Sound.find(
       this.game.arrayOfSprites,
@@ -22,7 +29,10 @@ class GameLevel extends Level {
     if (villageMusic) {
       villageMusic.play();
     }
-    this.changeMapForPlayerLevel(this.game.panel.playerState.level);
+    this.changeMapForPlayerLevel(panel.playerState.level);
+  }
+  findPanel() {
+    return this.game.arrayOfSprites.find((sprite) => sprite instanceof Panel) || null;
   }
   getMapForPlayerLevel(level) {
     if (level >= 4) return this.utils.MAP.map_4 || this.utils.MAP.map_1;
@@ -31,8 +41,9 @@ class GameLevel extends Level {
     return this.utils.MAP.map_1;
   }
   clearBattlefieldSprites() {
+    const panel = this.findPanel();
     this.game.arrayOfSprites = this.game.arrayOfSprites.filter((sprite) => {
-      if (sprite === this.game.panel) return true;
+      if (panel && sprite === panel) return true;
       if (sprite.isMapTile) return false;
       if (sprite.isEnemy || sprite.isProjectile || sprite.isPlacedObject)
         return false;
@@ -156,11 +167,14 @@ class GameLevel extends Level {
   }
   changeMapForPlayerLevel(level) {
     const map = this.getMapForPlayerLevel(level);
+    const panel = this.findPanel();
     this.clearBattlefieldSprites();
     this.buildMap(map);
-    this.game.arrayOfSprites = this.game.arrayOfSprites.filter(
-      (sprite) => sprite !== this.game.panel,
-    );
-    this.game.addSprite(this.game.panel);
+    if (panel) {
+      this.game.arrayOfSprites = this.game.arrayOfSprites.filter(
+        (sprite) => sprite !== panel,
+      );
+      this.game.addSprite(panel);
+    }
   }
 }

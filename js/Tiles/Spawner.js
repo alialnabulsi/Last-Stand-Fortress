@@ -27,8 +27,8 @@ class Spawner extends Sprite {
   }
 
   getSpawnData() {
-    const defense =
-      this.game && this.game.panel ? this.game.panel.defenseState : null;
+    const panel = this.findPanelSprite();
+    const defense = panel ? panel.defenseState : null;
     const remaining = defense
       ? typeof defense.enemiesRemaining === "number"
         ? defense.enemiesRemaining
@@ -50,9 +50,9 @@ class Spawner extends Sprite {
   }
 
   canSpawn() {
-    if (!this.game || !this.game.panel || !this.game.panel.defenseState)
-      return false;
-    const defense = this.game.panel.defenseState;
+    const panel = this.findPanelSprite();
+    if (!panel || !panel.defenseState) return false;
+    const defense = panel.defenseState;
     const state = defense.state;
     const remaining =
       typeof defense.enemiesRemaining === "number"
@@ -65,6 +65,14 @@ class Spawner extends Sprite {
 
   update() {
     if (this.spawn) this.animateSpawner();
+  }
+  findPanelSprite() {
+    if (!this.game || !Array.isArray(this.game.arrayOfSprites)) return null;
+    for (let i = 0; i < this.game.arrayOfSprites.length; i++) {
+      const sprite = this.game.arrayOfSprites[i];
+      if (sprite instanceof Panel) return sprite;
+    }
+    return null;
   }
   animateSpawner() {
     this.counter++;

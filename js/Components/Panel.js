@@ -386,28 +386,35 @@ class Panel extends Sprite {
   }
 
   onPlanningStarted() {
-    if (!this.game.sounds) return;
-    this.game.sounds.villageMusic.pause();
-    this.game.sounds.combatMusic.stop();
-    this.game.sounds.planningMusic.play();
+    const villageMusic = Sound.findByTitle(this.game.arrayOfSprites, "villageMusic");
+    const planningMusic = Sound.find(this.game.arrayOfSprites, "planningMusic");
+    const combatMusic = Sound.find(this.game.arrayOfSprites, "combatMusic");
+
+    if (villageMusic) villageMusic.pause();
+    if (combatMusic) combatMusic.stop();
+    if (planningMusic) planningMusic.play();
   }
 
   onPlanningEnded() {
-    if (!this.game.sounds) return;
-    this.game.sounds.planningMusic.stop();
+    const planningMusic = Sound.find(this.game.arrayOfSprites, "planningMusic");
+    if (planningMusic) planningMusic.stop();
   }
 
   onDefenseStarted() {
-    if (!this.game.sounds) return;
-    this.game.sounds.planningMusic.stop();
-    this.game.sounds.combatMusic.play();
+    const planningMusic = Sound.find(this.game.arrayOfSprites, "planningMusic");
+    const combatMusic = Sound.find(this.game.arrayOfSprites, "combatMusic");
+    if (planningMusic) planningMusic.stop();
+    if (combatMusic) combatMusic.play();
   }
 
   onDefenseEnded({ townHallAlive = true } = {}) {
-    if (!this.game.sounds) return;
-    this.game.sounds.planningMusic.stop();
-    this.game.sounds.combatMusic.stop();
-    if (townHallAlive) this.game.sounds.villageMusic.play();
+    const villageMusic = Sound.findByTitle(this.game.arrayOfSprites, "villageMusic");
+    const planningMusic = Sound.find(this.game.arrayOfSprites, "planningMusic");
+    const combatMusic = Sound.find(this.game.arrayOfSprites, "combatMusic");
+
+    if (planningMusic) planningMusic.stop();
+    if (combatMusic) combatMusic.stop();
+    if (townHallAlive && villageMusic) villageMusic.play();
   }
   draw(ctx) {
     this.drawPanelBackground(ctx);
