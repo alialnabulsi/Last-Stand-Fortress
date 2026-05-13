@@ -545,21 +545,63 @@ const Utils = {
   },
 
   WaveData: {
-    // TODO: Replace/adjust this when the full enemy/wave system is implemented.
+    maxLevel: 4,
     default: {
-      maxWaves: 1,
-      enemyLevel: 1,
-      enemyCount: 6,
-      enemyHp: 10,
-      enemySpeed: 1,
-      enemyDamage: 1,
-      spawnDelaySeconds: 1,
+      level: 1,
+      totalEnemies: 20,
+      maxWaves: 4,
+      waves: [
+        { wave: 1, enemyLevel: 1, enemyCount: 5, enemyHp: 10, enemySpeed: 1, enemyDamage: 1, spawnDelaySeconds: 1 },
+        { wave: 2, enemyLevel: 1, enemyCount: 5, enemyHp: 10, enemySpeed: 1, enemyDamage: 1, spawnDelaySeconds: 0.95 },
+        { wave: 3, enemyLevel: 1, enemyCount: 5, enemyHp: 10, enemySpeed: 1.05, enemyDamage: 1, spawnDelaySeconds: 0.9 },
+        { wave: 4, enemyLevel: 1, enemyCount: 5, enemyHp: 11, enemySpeed: 1.05, enemyDamage: 1, spawnDelaySeconds: 0.85 },
+      ],
     },
-    byPlayerLevel: {
-      1: { maxWaves: 1, enemyLevel: 1, enemyCount: 6, enemyHp: 10, enemySpeed: 1, enemyDamage: 1, spawnDelaySeconds: 1 },
-      2: { maxWaves: 2, enemyLevel: 2, enemyCount: 8, enemyHp: 12, enemySpeed: 1.05, enemyDamage: 1.1, spawnDelaySeconds: 0.95 },
-      3: { maxWaves: 3, enemyLevel: 3, enemyCount: 10, enemyHp: 14, enemySpeed: 1.1, enemyDamage: 1.2, spawnDelaySeconds: 0.9 },
-      4: { maxWaves: 4, enemyLevel: 4, enemyCount: 12, enemyHp: 16, enemySpeed: 1.15, enemyDamage: 1.3, spawnDelaySeconds: 0.85 },
+    levels: {
+      1: {
+        level: 1,
+        totalEnemies: 20,
+        maxWaves: 4,
+        waves: [
+          { wave: 1, enemyLevel: 1, enemyCount: 5, enemyHp: 10, enemySpeed: 1, enemyDamage: 1, spawnDelaySeconds: 1 },
+          { wave: 2, enemyLevel: 1, enemyCount: 5, enemyHp: 10, enemySpeed: 1.02, enemyDamage: 1, spawnDelaySeconds: 0.95 },
+          { wave: 3, enemyLevel: 1, enemyCount: 5, enemyHp: 11, enemySpeed: 1.04, enemyDamage: 1, spawnDelaySeconds: 0.9 },
+          { wave: 4, enemyLevel: 1, enemyCount: 5, enemyHp: 12, enemySpeed: 1.06, enemyDamage: 1, spawnDelaySeconds: 0.85 },
+        ],
+      },
+      2: {
+        level: 2,
+        totalEnemies: 28,
+        maxWaves: 4,
+        waves: [
+          { wave: 1, enemyLevel: 2, enemyCount: 7, enemyHp: 12, enemySpeed: 1.06, enemyDamage: 1.1, spawnDelaySeconds: 0.95 },
+          { wave: 2, enemyLevel: 2, enemyCount: 7, enemyHp: 13, enemySpeed: 1.08, enemyDamage: 1.1, spawnDelaySeconds: 0.9 },
+          { wave: 3, enemyLevel: 2, enemyCount: 7, enemyHp: 14, enemySpeed: 1.1, enemyDamage: 1.15, spawnDelaySeconds: 0.85 },
+          { wave: 4, enemyLevel: 2, enemyCount: 7, enemyHp: 15, enemySpeed: 1.12, enemyDamage: 1.15, spawnDelaySeconds: 0.8 },
+        ],
+      },
+      3: {
+        level: 3,
+        totalEnemies: 36,
+        maxWaves: 4,
+        waves: [
+          { wave: 1, enemyLevel: 3, enemyCount: 9, enemyHp: 15, enemySpeed: 1.12, enemyDamage: 1.2, spawnDelaySeconds: 0.9 },
+          { wave: 2, enemyLevel: 3, enemyCount: 9, enemyHp: 16, enemySpeed: 1.14, enemyDamage: 1.2, spawnDelaySeconds: 0.85 },
+          { wave: 3, enemyLevel: 3, enemyCount: 9, enemyHp: 17, enemySpeed: 1.16, enemyDamage: 1.25, spawnDelaySeconds: 0.8 },
+          { wave: 4, enemyLevel: 3, enemyCount: 9, enemyHp: 18, enemySpeed: 1.18, enemyDamage: 1.25, spawnDelaySeconds: 0.75 },
+        ],
+      },
+      4: {
+        level: 4,
+        totalEnemies: 44,
+        maxWaves: 4,
+        waves: [
+          { wave: 1, enemyLevel: 4, enemyCount: 11, enemyHp: 18, enemySpeed: 1.18, enemyDamage: 1.3, spawnDelaySeconds: 0.85 },
+          { wave: 2, enemyLevel: 4, enemyCount: 11, enemyHp: 19, enemySpeed: 1.2, enemyDamage: 1.35, spawnDelaySeconds: 0.8 },
+          { wave: 3, enemyLevel: 4, enemyCount: 11, enemyHp: 20, enemySpeed: 1.22, enemyDamage: 1.35, spawnDelaySeconds: 0.75 },
+          { wave: 4, enemyLevel: 4, enemyCount: 11, enemyHp: 21, enemySpeed: 1.24, enemyDamage: 1.4, spawnDelaySeconds: 0.7 },
+        ],
+      },
     },
   },
 

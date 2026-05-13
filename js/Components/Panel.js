@@ -78,6 +78,8 @@ class Panel extends Sprite {
 
     this.defenseState = {
       state: "IDLE",
+      maxLevel: 4,
+      currentLevel: 1,
       preparationTimer: 10,
       breakDurationSeconds: 10,
       breakTimer: 10,
@@ -99,6 +101,18 @@ class Panel extends Sprite {
       activeEnemies: 0,
       enemiesRemaining: 0,
       totalEnemiesThisWave: 0,
+      currentLevelTotalEnemies: 0,
+      currentLevelRemainingEnemies: 0,
+      completedEnemies: 0,
+      remainingEnemiesInWave: 0,
+      waveActive: false,
+      waveCompleted: false,
+      levelCompleted: false,
+      finalProgressionCompleted: false,
+      winReady: false,
+      loseReady: false,
+      gameOverPending: false,
+      pendingResultState: null,
       spawnDelaySeconds: 1,
     };
 
@@ -163,6 +177,10 @@ class Panel extends Sprite {
       44,
       "START",
       () => {
+        if (this.defenseState.gameOverPending || this.defenseState.finalProgressionCompleted) {
+          this.setMessage("Progression has ended.");
+          return;
+        }
         if (this.defenseState.state === "UNDER_ATTACK") {
           this.setMessage("Defense already started.");
           return;
@@ -301,23 +319,32 @@ class Panel extends Sprite {
     }
   }
 
+  getLevelWaveConfig(level) {
+    const waveData = this.utils.WaveData || {};
+    return (waveData.levels && waveData.levels[level]) || waveData.default || null;
+  }
+  getCurrentWaveConfig() {
+    const levelConfig = this.getLevelWaveConfig(this.defenseState.currentLevel);
+    if (!levelConfig || !Array.isArray(levelConfig.waves)) return null;
+    return levelConfig.waves[this.defenseState.currentWave - 1] || null;
+  }
   updateEnemyInfo() {
-    const level = this.playerState.level;
-    const waveConfig = this.utils.WaveData || {};
-    const levelWave = (waveConfig.byPlayerLevel && waveConfig.byPlayerLevel[level]) || waveConfig.default || {};
-
-    this.defenseState.enemyLevel = levelWave.enemyLevel || level;
-    this.defenseState.maxWaves = levelWave.maxWaves || 1;
-    this.defenseState.currentWave = Math.min(this.defenseState.currentWave || 1, this.defenseState.maxWaves);
-    this.defenseState.enemyCount = levelWave.enemyCount || (5 + (level - 1) * 2);
-    this.defenseState.enemyHp = levelWave.enemyHp || (1 + (level - 1) * 0.18);
-    this.defenseState.enemySpeed = levelWave.enemySpeed || (1 + (level - 1) * 0.08);
-    this.defenseState.enemyDamage = levelWave.enemyDamage || 1;
-    this.defenseState.spawnDelaySeconds = levelWave.spawnDelaySeconds || 1;
-
+    const levelConfig = this.getLevelWaveConfig(this.defenseState.currentLevel);
+    if (!levelConfig) return;
+    const waveConfig = this.getCurrentWaveConfig() || levelConfig.waves[0] || {};
+    this.defenseState.maxLevel = (this.utils.WaveData && this.utils.WaveData.maxLevel) || 4;
+    this.defenseState.maxWaves = levelConfig.maxWaves || levelConfig.waves.length || 1;
+    this.defenseState.currentLevelTotalEnemies = levelConfig.totalEnemies || 0;
+    this.defenseState.currentLevelRemainingEnemies = Math.max(0, this.defenseState.currentLevelTotalEnemies - this.defenseState.completedEnemies);
+    this.defenseState.enemyLevel = waveConfig.enemyLevel || this.defenseState.currentLevel;
+    this.defenseState.enemyCount = waveConfig.enemyCount || 1;
+    this.defenseState.enemyHp = waveConfig.enemyHp || 1;
+    this.defenseState.enemySpeed = waveConfig.enemySpeed || 1;
+    this.defenseState.enemyDamage = waveConfig.enemyDamage || 1;
+    this.defenseState.spawnDelaySeconds = waveConfig.spawnDelaySeconds || 1;
     this.defenseState.totalEnemiesThisWave = this.defenseState.enemyCount;
-    this.defenseState.enemiesRemaining =
-      this.defenseState.totalEnemiesThisWave - this.defenseState.spawnedEnemies;
+    this.defenseState.enemiesRemaining = Math.max(0, this.defenseState.totalEnemiesThisWave - this.defenseState.spawnedEnemies);
+    this.defenseState.remainingEnemiesInWave = Math.max(0, this.defenseState.totalEnemiesThisWave - this.defenseState.defeatedEnemies);
   }
 
   setMessage(message) {
@@ -474,6 +501,9 @@ class Panel extends Sprite {
   }
 
   onPlanningStarted() {
+    this.defenseState.preparationTimer = 10;
+    this.defenseState.waveCompleted = false;
+    this.defenseState.waveActive = false;
   }
 
   onPlanningEnded() {
@@ -481,9 +511,20 @@ class Panel extends Sprite {
 
   onDefenseStarted() {
     this.resetWaveRuntimeCounters();
+    this.defenseState.waveActive = true;
   }
 
   onDefenseEnded({ townHallAlive = true } = {}) {
+    if (!townHallAlive) {
+      this.defenseState.loseReady = true;
+      this.defenseState.gameOverPending = true;
+      this.defenseState.pendingResultState = "LOSE_READY";
+      this.defenseState.state = "IDLE";
+      this.defenseState.waveActive = false;
+      this.defenseState.timerRunning = false;
+      // TODO: Trigger final lose message/screen in the result system task.
+      this.setMessage("Town Hall destroyed. Defense failed.");
+    }
   }
 
   resetWaveRuntimeCounters() {
@@ -492,6 +533,7 @@ class Panel extends Sprite {
     this.defenseState.activeEnemies = 0;
     this.defenseState.totalEnemiesThisWave = this.defenseState.enemyCount;
     this.defenseState.enemiesRemaining = this.defenseState.enemyCount;
+    this.defenseState.remainingEnemiesInWave = this.defenseState.enemyCount;
   }
 
   getWaveRuntimeState() {
@@ -519,19 +561,55 @@ class Panel extends Sprite {
       this.defenseState.totalEnemiesThisWave - this.defenseState.spawnedEnemies,
     );
 
-    // TODO: Replace/adjust this when the full enemy/wave system is implemented.
-    this.setMessage(
-      `Wave ${this.defenseState.currentWave}: ${this.defenseState.spawnedEnemies}/${this.defenseState.totalEnemiesThisWave} enemies spawned.`,
+    this.defenseState.remainingEnemiesInWave = Math.max(
+      0,
+      this.defenseState.totalEnemiesThisWave - this.defenseState.defeatedEnemies,
     );
   }
+  onEnemyHandled() {
+    this.defenseState.defeatedEnemies += 1;
+    this.defenseState.completedEnemies += 1;
+    this.defenseState.activeEnemies = Math.max(0, this.defenseState.activeEnemies - 1);
+    this.defenseState.remainingEnemiesInWave = Math.max(0, this.defenseState.totalEnemiesThisWave - this.defenseState.defeatedEnemies);
+    this.defenseState.currentLevelRemainingEnemies = Math.max(0, this.defenseState.currentLevelTotalEnemies - this.defenseState.completedEnemies);
+    this.tryCompleteWave();
+  }
   onEnemyReachedTownHall(enemy) {
-    this.defenseState.activeEnemies = Math.max(
-      0,
-      this.defenseState.activeEnemies - 1,
-    );
-
-    // TODO: Replace/adjust this when full enemy/wave outcome logic is implemented.
+    this.onEnemyHandled();
     this.setMessage(`An enemy reached the Town Hall.`);
+  }
+
+  tryCompleteWave() {
+    const isDone = this.defenseState.spawnedEnemies >= this.defenseState.totalEnemiesThisWave && this.defenseState.activeEnemies === 0;
+    if (!isDone || this.defenseState.waveCompleted) return;
+    this.defenseState.waveCompleted = true;
+    this.defenseState.waveActive = false;
+    this.defenseState.state = "IDLE";
+    const isFinalWave = this.defenseState.currentLevel === this.defenseState.maxLevel && this.defenseState.currentWave === this.defenseState.maxWaves;
+    if (isFinalWave) {
+      this.defenseState.finalProgressionCompleted = true;
+      this.defenseState.winReady = this.townHallState.hp > 0;
+      this.defenseState.pendingResultState = this.defenseState.winReady ? "WIN_READY" : this.defenseState.pendingResultState;
+      // TODO: Trigger final win message/screen in the result system task.
+      this.setMessage("Final wave completed.");
+      return;
+    }
+    this.advanceProgression();
+  }
+
+  advanceProgression() {
+    if (this.defenseState.currentWave < this.defenseState.maxWaves) {
+      this.defenseState.currentWave += 1;
+      this.defenseState.levelCompleted = false;
+    } else {
+      this.defenseState.levelCompleted = true;
+      this.defenseState.currentLevel = Math.min(this.defenseState.maxLevel, this.defenseState.currentLevel + 1);
+      this.defenseState.currentWave = 1;
+      this.playerState.level = this.defenseState.currentLevel;
+      if (this.game.currentGameLevel) this.game.currentGameLevel.changeMapForPlayerLevel(this.playerState.level);
+    }
+    this.updateEnemyInfo();
+    this.setMessage(`Ready for Level ${this.defenseState.currentLevel} Wave ${this.defenseState.currentWave}. Press START.`);
   }
 
   updateTownHallInfo(townHall) {
@@ -658,6 +736,11 @@ class Panel extends Sprite {
         ? this.defenseState.preparationTimer
         : 0;
     ctx.fillText(
+      `Level: ${this.defenseState.currentLevel}/${this.defenseState.maxLevel}`,
+      gameBox.x + 20,
+      gameBox.y + 112,
+    );
+    ctx.fillText(
       `Timer: ${this.formatTimer(activeTimer)}`,
       gameBox.x + 20,
       gameBox.y + 130,
@@ -689,8 +772,13 @@ class Panel extends Sprite {
       gameBox.y + 168,
     );
     ctx.fillText(
-      `Remaining: ${this.defenseState.enemiesRemaining}`,
+      `Wave Left: ${this.defenseState.remainingEnemiesInWave}`,
       gameBox.x + 150,
+      gameBox.y + 186,
+    );
+    ctx.fillText(
+      `Level Left: ${this.defenseState.currentLevelRemainingEnemies}`,
+      gameBox.x + 20,
       gameBox.y + 186,
     );
 
