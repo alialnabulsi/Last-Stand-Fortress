@@ -536,12 +536,6 @@ const Utils = {
   // PANEL STATIC CONFIG (UI ONLY)
   // ===============================
   Panel: {
-    defenseStates: {
-      idle: "IDLE",
-      preparation: "PREPARATION",
-      underAttack: "UNDER_ATTACK",
-      break: "BREAK",
-    },
     layout: {
       x: 0,
       y: 800,
@@ -556,38 +550,6 @@ const Utils = {
       shop: "SHOP",
       game: "DEFENSE",
       info: "FORTRESS INFO",
-    },
-    labels: {
-      shopHint: "Select what you want to place on the map.",
-      state: "State",
-      timer: "Timer",
-      enemyLevel: "Enemy Lvl",
-      remainingEnemies: "Enemy #",
-      enemyHp: "Enemy HP",
-      enemySpeed: "Enemy Spd",
-      gold: "Gold",
-      level: "Level",
-      xp: "XP",
-      selected: "Selected",
-      townHallHp: "Town Hall HP",
-      noSelection: "None",
-    },
-    messages: {
-      default: "Select something from the shop.",
-      itemNotConfigured: "This item is not configured yet.",
-      selectionCancelled: "Selection cancelled.",
-      lockedAtLevel: "{name} is locked. Unlocks at level {level}.",
-      notEnoughGold: "Not enough gold for {name}. Need {cost}G.",
-      troopCapacityFull: "Troop capacity is full.",
-      selected: "{name} selected. Placement is not enabled yet.",
-      defenseAlreadyStarted: "Defense already started.",
-      cannotStartOnBreak: "Cannot start while on break.",
-      preparationStarted: "Preparation timer started.",
-      noBreaksLeft: "No breaks left.",
-      breakActivated: "Break activated.",
-      breakStopped: "Break stopped. Returning to {state}.",
-      preparationEnded: "Preparation ended. Under attack.",
-      breakEnded: "Break ended. Under attack.",
     },
 
     style: {
@@ -676,56 +638,6 @@ const Utils = {
         category: "tower",
       },
     ],
-    shopRules: {
-      buildable_tile: { cost: 25, unlockLevel: 1, placement: "grass" },
-      gold_mine: {
-        cost: 100,
-        unlockLevel: 1,
-        placement: "buildable",
-        goldRateBonus: 1,
-      },
-      barracks: {
-        cost: 150,
-        unlockLevel: 1,
-        placement: "buildable",
-        troopCapacityBonus: 10,
-      },
-      archer: {
-        cost: 80,
-        unlockLevel: 1,
-        placement: "buildable",
-        troopCost: 1,
-      },
-      cannon: {
-        cost: 120,
-        unlockLevel: 2,
-        placement: "buildable",
-        troopCost: 2,
-      },
-      wizard: {
-        cost: 180,
-        unlockLevel: 3,
-        placement: "buildable",
-        troopCost: 2,
-      },
-      inferno_tower: {
-        cost: 260,
-        unlockLevel: 4,
-        placement: "buildable",
-        troopCost: 3,
-      },
-    },
-    runtimeDefaults: {
-      gold: 250,
-      level: 1,
-      xp: 0,
-      xpToNextLevel: 100,
-      preparationDurationSeconds: 120,
-      breakDurationSeconds: 10,
-      breaksAllowed: 3,
-      townHallHp: 100,
-      townHallMaxHp: 100,
-    },
   },
 };
 
