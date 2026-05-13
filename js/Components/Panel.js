@@ -530,6 +530,8 @@ class Panel extends Sprite {
     );
   }
   onEnemyHandled() {
+    if (this.defenseState.gameOverPending || this.defenseState.finalProgressionCompleted) return;
+
     this.defenseState.defeatedEnemies += 1;
     this.defenseState.completedEnemies += 1;
     this.defenseState.activeEnemies = Math.max(0, this.defenseState.activeEnemies - 1);
@@ -551,6 +553,8 @@ class Panel extends Sprite {
   }
 
   tryCompleteWave() {
+    if (this.defenseState.gameOverPending || this.defenseState.finalProgressionCompleted) return;
+
     const isDone = this.defenseState.spawnedEnemies >= this.defenseState.totalEnemiesThisWave && this.defenseState.activeEnemies === 0;
     if (!isDone || this.defenseState.waveCompleted) return;
     this.completeWave();
@@ -593,6 +597,7 @@ class Panel extends Sprite {
     const previousTownHallHp = this.townHallState.hp;
     this.defenseState.currentLevel += 1;
     this.defenseState.currentWave = 1;
+    this.defenseState.completedEnemies = 0;
     this.playerState.level = this.defenseState.currentLevel;
     this.clearRuntimeEnemies();
     if (this.game.currentGameLevel) {
@@ -626,6 +631,8 @@ class Panel extends Sprite {
   }
 
   advanceProgression() {
+    if (this.defenseState.gameOverPending || this.defenseState.finalProgressionCompleted) return;
+
     if (this.advanceWave()) {
       this.updateEnemyInfo();
       this.startPreparationForCurrentWave(
