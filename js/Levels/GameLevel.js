@@ -9,6 +9,8 @@ class GameLevel extends Level {
     this.spawners = [];
     this.townHall = null;
     this.hasWater = false;
+    this.pendingMapLevel = null;
+    this.mapChangeQueued = false;
   }
   initialize() {
     this.game.currentGameLevel = this;
@@ -156,7 +158,7 @@ class GameLevel extends Level {
     );
     return candidates[0] || null;
   }
-  changeMapForPlayerLevel(level) {
+  applyMapForPlayerLevel(level) {
     const map = this.getMapForPlayerLevel(level);
     const panel = this.findPanel();
 
@@ -185,5 +187,18 @@ class GameLevel extends Level {
         paths: this.pathTiles.length,
       });
     }
+  }
+
+  changeMapForPlayerLevel(level) {
+    this.pendingMapLevel = level;
+    if (this.mapChangeQueued) return;
+    this.mapChangeQueued = true;
+
+    requestAnimationFrame(() => {
+      this.mapChangeQueued = false;
+      const nextLevel = this.pendingMapLevel;
+      this.pendingMapLevel = null;
+      this.applyMapForPlayerLevel(nextLevel);
+    });
   }
 }
