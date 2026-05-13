@@ -28,12 +28,12 @@ class Grass extends Sprite {
     if (!panel) return;
     const selected = panel.shopState.selectedItem;
     if (!selected) {
-      panel.setMessage("Select an item before placing.");
+      panel.setMessage("No item selected. Select Buildable first, then click grass.");
       this.flashUntil = performance.now() + 220;
       return;
     }
     if (selected.id !== "buildable_tile") {
-      panel.setMessage("Place Build Tile first, then place that item on the foundation.");
+      panel.setMessage(`${selected.fullName} needs a Buildable foundation. Place Buildable on grass first.`);
       this.flashUntil = performance.now() + 220;
       return;
     }
@@ -48,7 +48,7 @@ class Grass extends Sprite {
       return;
     }
     if (!panel.canAfford(selected.cost)) {
-      panel.setMessage(`Not enough gold for ${selected.fullName}.`);
+      panel.setMessage(`Not enough gold for ${selected.fullName}. Need ${selected.cost}G.`);
       this.flashUntil = performance.now() + 220;
       return;
     }
@@ -58,7 +58,7 @@ class Grass extends Sprite {
         sprite instanceof Buildable && sprite.row === this.row && sprite.col === this.col,
     );
     if (hasBuildableAlready) {
-      panel.setMessage("This grass tile already has a build foundation.");
+      panel.setMessage("This grass tile already has a Buildable foundation.");
       this.flashUntil = performance.now() + 220;
       return;
     }
@@ -73,7 +73,7 @@ class Grass extends Sprite {
     );
     panel.game.addSprite(buildable);
     panel.spendGold(selected.cost);
-    panel.setMessage(`${selected.fullName} placed.`);
+    panel.setMessage(`Buildable placed on grass. Spend gold: ${selected.cost}G.`);
   }
 
   update(arrayOfSprites, keys, mouse) {

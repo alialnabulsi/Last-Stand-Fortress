@@ -32,7 +32,7 @@ class Buildable extends Sprite {
     const panel = this.findPanel(arrayOfSprites);
     if (!panel) return;
     if (!panel.shopState.selectedItem) {
-      panel.setMessage("Select an item before placing.");
+      panel.setMessage("No item selected. Select a building/tower, then click Buildable.");
       this.flashUntil = performance.now() + 220;
       return;
     }
@@ -46,12 +46,12 @@ class Buildable extends Sprite {
       return;
     }
     if (panel.shopState.selectedItem.id === "buildable_tile") {
-      panel.setMessage("Build Tile can only be placed on grass.");
+      panel.setMessage("Buildable can only be placed on grass, not on Buildable.");
       this.flashUntil = performance.now() + 220;
       return;
     }
     if (this.occupied || !this.canPlaceObject) {
-      panel.setMessage("This tile is already occupied.");
+      panel.setMessage("This Buildable is occupied. Choose an empty Buildable tile.");
       this.flashUntil = performance.now() + 220;
       return;
     }
@@ -65,7 +65,7 @@ class Buildable extends Sprite {
       return;
     }
     if (!panel.canAfford(itemConfig.cost)) {
-      panel.setMessage(`Not enough gold for ${panel.shopState.selectedItem.fullName}.`);
+      panel.setMessage(`Not enough gold for ${panel.shopState.selectedItem.fullName}. Need ${itemConfig.cost}G.`);
       this.flashUntil = performance.now() + 220;
       return;
     }
@@ -100,7 +100,7 @@ class Buildable extends Sprite {
       this.flashUntil = performance.now() + 220;
       return;
     }
-    panel.setMessage(`${panel.shopState.selectedItem.fullName} placed.`);
+    panel.setMessage(`${panel.shopState.selectedItem.fullName} placed on Buildable. Spend gold: ${itemConfig.cost}G.`);
     this.flashUntil = performance.now() + 180;
   }
 

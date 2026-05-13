@@ -159,7 +159,7 @@ class Panel extends Sprite {
         this.defenseState.lastTickAt = performance.now();
         this.onPlanningStarted();
         this.updateEnemyInfo();
-        this.setMessage("Preparation timer started.");
+        this.setMessage(`Preparation started for Wave ${this.defenseState.currentWave}/${this.defenseState.maxWaves}. Build now, then defend.`);
       },
       {
         icon: "⚔",
@@ -240,7 +240,7 @@ class Panel extends Sprite {
     this.shopState.selectedItem = { ...item, ...rule };
     this.shopState.selectedItemId = item.id;
     const targetHint = item.id === "buildable_tile" ? "grass" : "buildable tile";
-    this.setMessage(`${item.fullName} selected. Click ${targetHint} to place it.`);
+    this.setMessage(`${item.fullName} selected. Place on ${targetHint}.`);
   }
 
   clearSelection() {
@@ -485,7 +485,7 @@ class Panel extends Sprite {
         this.defenseState.state = "UNDER_ATTACK";
         this.defenseState.timerRunning = false;
         this.onDefenseStarted();
-        this.setMessage("Preparation ended. Under attack.");
+        this.setMessage(`Wave ${this.defenseState.currentWave} started. Enemies are attacking.`);
       }
       return;
     }
@@ -592,7 +592,7 @@ class Panel extends Sprite {
     this.addGold(this.defenseState.enemyGoldReward);
     this.addXP(this.defenseState.enemyXpReward);
     this.onEnemyHandled();
-    this.setMessage(`An enemy was defeated. +${this.defenseState.enemyGoldReward}G`);
+    this.setMessage(`Enemy defeated. +${this.defenseState.enemyGoldReward}G. Wave left: ${this.defenseState.remainingEnemiesInWave}.`);
   }
   onEnemyReachedTownHall(enemy) {
     this.onEnemyHandled();
@@ -614,7 +614,7 @@ class Panel extends Sprite {
       this.defenseState.winReady = this.townHallState.hp > 0;
       this.defenseState.pendingResultState = this.defenseState.winReady ? "WIN_READY" : this.defenseState.pendingResultState;
       // TODO: Trigger final win message/screen in the result system task.
-      this.setMessage("Final wave completed.");
+      this.setMessage("Final wave completed. Victory!");
       return;
     }
     this.advanceProgression();
@@ -693,7 +693,7 @@ class Panel extends Sprite {
       if (!this.advanceLevel()) return;
       this.updateEnemyInfo();
       this.startPreparationForCurrentWave(
-        `Level ${this.defenseState.currentLevel} started. Prepare defenses.`,
+        `Level ${this.defenseState.currentLevel} started. New map loaded; place Buildable on grass first.`,
       );
     }
   }
@@ -831,7 +831,7 @@ class Panel extends Sprite {
     ctx.fillStyle = style.textColor;
 
     ctx.fillText(
-      `State: ${this.defenseState.state}`,
+      `Phase: ${this.getPhaseLabel()}`,
       gameBox.x + 20,
       gameBox.y + 45,
     );
@@ -875,12 +875,12 @@ class Panel extends Sprite {
     );
 
     ctx.fillText(
-      `Spawned: ${this.defenseState.spawnedEnemies}/${this.defenseState.totalEnemiesThisWave}`,
+      `Wave Progress: ${this.defenseState.defeatedEnemies}/${this.defenseState.totalEnemiesThisWave}`,
       gameBox.x + 150,
       gameBox.y + 168,
     );
     ctx.fillText(
-      `Wave Left: ${this.defenseState.remainingEnemiesInWave}`,
+      `Enemies Alive: ${this.defenseState.activeEnemies}`,
       gameBox.x + 150,
       gameBox.y + 186,
     );
@@ -932,9 +932,35 @@ class Panel extends Sprite {
       info.x + 16,
       info.y + 96,
     );
-    ctx.fillText(this.shopState.message, info.x + 16, info.y + 122);
+    this.drawWrappedText(ctx, this.shopState.message, info.x + 16, info.y + 122, info.width - 30, 18);
 
     ctx.restore();
+  }
+
+  
+
+  getPhaseLabel() {
+    if (this.defenseState.pendingResultState === "WIN_READY") return "VICTORY";
+    if (this.defenseState.pendingResultState === "LOSE_READY") return "DEFEAT";
+    if (this.defenseState.state === "PREPARATION") return "PREPARATION";
+    if (this.defenseState.state === "UNDER_ATTACK") return "UNDER ATTACK";
+    if (this.defenseState.state === "BREAK") return "BREAK";
+    return "IDLE";
+  }
+
+  drawWrappedText(ctx, text, x, y, maxWidth, lineHeight) {
+    const words = String(text || "").split(" ");
+    let line = "";
+    let lineY = y;
+    for (let i = 0; i < words.length; i++) {
+      const nextLine = line ? `${line} ${words[i]}` : words[i];
+      if (ctx.measureText(nextLine).width > maxWidth && line) {
+        ctx.fillText(line, x, lineY);
+        line = words[i];
+        lineY += lineHeight;
+      } else line = nextLine;
+    }
+    if (line) ctx.fillText(line, x, lineY);
   }
 
   formatTimer(seconds) {
