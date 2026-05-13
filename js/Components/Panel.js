@@ -11,46 +11,7 @@ class Panel extends Sprite {
     this.width = this.config.layout.width;
     this.height = this.config.layout.height;
 
-    //All data objects should be moved for util in index
-    this.shopRules = {
-      buildable_tile: { cost: 25, unlockLevel: 1, placement: "grass" },
-      gold_mine: {
-        cost: 100,
-        unlockLevel: 1,
-        placement: "buildable",
-        goldRateBonus: 1,
-      },
-      barracks: {
-        cost: 150,
-        unlockLevel: 1,
-        placement: "buildable",
-        troopCapacityBonus: 10,
-      },
-      archer: {
-        cost: 80,
-        unlockLevel: 1,
-        placement: "buildable",
-        troopCost: 1,
-      },
-      cannon: {
-        cost: 120,
-        unlockLevel: 2,
-        placement: "buildable",
-        troopCost: 2,
-      },
-      wizard: {
-        cost: 180,
-        unlockLevel: 3,
-        placement: "buildable",
-        troopCost: 2,
-      },
-      inferno_tower: {
-        cost: 260,
-        unlockLevel: 4,
-        placement: "buildable",
-        troopCost: 3,
-      },
-    };
+    this.shopRules = this.utils.ShopItemsData || {};
 
     this.playerState = {
       gold: 250,
@@ -276,7 +237,7 @@ class Panel extends Sprite {
 
     this.shopState.selectedItem = { ...item, ...rule };
     this.shopState.selectedItemId = item.id;
-    this.setMessage(`${item.fullName} selected. Placement is not enabled yet.`);
+    this.setMessage(`${item.fullName} selected. Click a buildable tile to place it.`);
   }
 
   clearSelection() {
@@ -285,6 +246,10 @@ class Panel extends Sprite {
   }
   canAfford(cost) {
     return this.playerState.gold >= cost;
+  }
+  isShopItemUnlocked(itemId) {
+    const rule = this.shopRules[itemId];
+    return !!rule && this.playerState.level >= rule.unlockLevel;
   }
   spendGold(amount) {
     if (!this.canAfford(amount)) return false;

@@ -531,6 +531,18 @@ const Utils = {
     })(),
   },
 
+
+
+  ShopItemsData: {
+    buildable_tile: { id: "buildable_tile", type: "utility", cost: 25, unlockLevel: 1, placement: "grass", image: null, placeholderColor: "#5c6b73" },
+    gold_mine: { id: "gold_mine", type: "resource", cost: 100, unlockLevel: 1, placement: "buildable", image: null, placeholderColor: "#d6b14a", productionRate: 1 },
+    barracks: { id: "barracks", type: "military", cost: 150, unlockLevel: 1, placement: "buildable", image: null, placeholderColor: "#8e9aa7", troopCapacityBonus: 10 },
+    archer: { id: "archer", type: "defense", cost: 80, unlockLevel: 1, placement: "buildable", image: null, placeholderColor: "#7cb342", range: 100, damage: 5 },
+    cannon: { id: "cannon", type: "defense", cost: 120, unlockLevel: 2, placement: "buildable", image: null, placeholderColor: "#616161", range: 110, damage: 9 },
+    wizard: { id: "wizard", type: "defense", cost: 180, unlockLevel: 3, placement: "buildable", image: null, placeholderColor: "#9575cd", range: 120, damage: 12 },
+    inferno_tower: { id: "inferno_tower", type: "defense", cost: 260, unlockLevel: 4, placement: "buildable", image: null, placeholderColor: "#ef6c00", range: 130, damage: 14 },
+  },
+
   EnemyData: {
     // TODO: Replace/adjust this when the full enemy/wave system is implemented.
     default: {
@@ -722,6 +734,11 @@ const Utils = {
   },
 };
 
+
+
+Utils.ShopItemsData.gold_mine.image = (() => { const img = new Image(); img.src = "images/SpriteSheets/Shop/GoldMine.png"; return img; })();
+Utils.ShopItemsData.barracks.image = (() => { const img = new Image(); img.src = "images/SpriteSheets/Shop/Barrack.png"; return img; })();
+Utils.ShopItemsData.archer.image = (() => { const img = new Image(); img.src = "images/SpriteSheets/Shop/Archer.png"; return img; })();
 
 Utils.EnemyData.byLevel = {
   1: { ...Utils.EnemyData.default, image: Utils.Images.Enemies.E1 },
