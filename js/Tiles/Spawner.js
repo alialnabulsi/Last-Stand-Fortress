@@ -60,8 +60,16 @@ class Spawner extends Sprite {
         ? defense.enemiesRemaining
         : defense.enemyRemaining;
     return (
-      state === "UNDER_ATTACK" && typeof remaining === "number" && remaining > 0
+      state === "UNDER_ATTACK" && typeof remaining === "number" && remaining > 0 && this.isCurrentMapSpawner()
     );
+  }
+
+  isCurrentMapSpawner() {
+    if (!this.game || !this.game.currentGameLevel) return false;
+    const level = this.game.currentGameLevel;
+    if (typeof level.getSpawnerTiles !== "function") return false;
+    const activeSpawners = level.getSpawnerTiles();
+    return Array.isArray(activeSpawners) && activeSpawners.includes(this);
   }
 
   update(arrayOfSprites) {
@@ -88,7 +96,7 @@ class Spawner extends Sprite {
     if (!panel || !this.game || !Array.isArray(arrayOfSprites)) return;
 
     const wave = panel.getWaveRuntimeState();
-    if (!wave || wave.spawnedEnemies >= wave.totalEnemies) return;
+    if (!wave || !panel.defenseState.waveActive || wave.spawnedEnemies >= wave.totalEnemies) return;
 
     if (!this.lastSpawnTickAt) this.lastSpawnTickAt = performance.now();
     const now = performance.now();

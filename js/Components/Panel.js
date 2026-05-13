@@ -499,6 +499,20 @@ class Panel extends Sprite {
     }
   }
 
+  resetSpawnerRuntimeCounters() {
+    const level = this.game ? this.game.currentGameLevel : null;
+    if (!level || typeof level.getSpawnerTiles !== "function") return;
+    const spawners = level.getSpawnerTiles();
+    for (let i = 0; i < spawners.length; i++) {
+      const spawner = spawners[i];
+      if (!spawner) continue;
+      spawner.spawnedCount = 0;
+      spawner.spawnElapsedMs = 0;
+      spawner.lastSpawnTickAt = 0;
+      spawner.spawn = false;
+    }
+  }
+
   resetWaveRuntimeCounters() {
     this.defenseState.spawnedEnemies = 0;
     this.defenseState.defeatedEnemies = 0;
@@ -506,6 +520,7 @@ class Panel extends Sprite {
     this.defenseState.totalEnemiesThisWave = this.defenseState.enemyCount;
     this.defenseState.enemiesRemaining = this.defenseState.enemyCount;
     this.defenseState.remainingEnemiesInWave = this.defenseState.enemyCount;
+    this.resetSpawnerRuntimeCounters();
   }
 
   getWaveRuntimeState() {
@@ -672,6 +687,7 @@ class Panel extends Sprite {
     this.defenseState.enemiesRemaining = 0;
     this.defenseState.remainingEnemiesInWave = 0;
     this.townHallDestroyedHandled = false;
+    this.resetSpawnerRuntimeCounters();
     this.findTownHall(this.game.arrayOfSprites);
     this.updateEnemyInfo();
     this.setMessage(`Level ${level} loaded. Select buildable tile to rebuild defenses.`);
