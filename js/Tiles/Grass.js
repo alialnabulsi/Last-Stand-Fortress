@@ -32,7 +32,11 @@ class Grass extends Sprite {
       this.flashUntil = performance.now() + 220;
       return;
     }
-    if (selected.id !== "buildable_tile") return;
+    if (selected.id !== "buildable_tile") {
+      panel.setMessage("Place Build Tile first, then place that item on the foundation.");
+      this.flashUntil = performance.now() + 220;
+      return;
+    }
     if (!panel.canPlaceDuringCurrentPhase()) {
       panel.setMessage("Placement is only allowed during preparation or under attack.");
       this.flashUntil = performance.now() + 220;
@@ -49,9 +53,25 @@ class Grass extends Sprite {
       return;
     }
 
-    const buildable = new Buildable(this.x, this.y, this.size, panel.utils.Images.Buildable, this.row, this.col);
-    const index = arrayOfSprites.indexOf(this);
-    if (index >= 0) arrayOfSprites[index] = buildable;
+    const hasBuildableAlready = arrayOfSprites.some(
+      (sprite) =>
+        sprite instanceof Buildable && sprite.row === this.row && sprite.col === this.col,
+    );
+    if (hasBuildableAlready) {
+      panel.setMessage("This grass tile already has a build foundation.");
+      this.flashUntil = performance.now() + 220;
+      return;
+    }
+
+    const buildable = new Buildable(
+      this.x,
+      this.y,
+      this.size,
+      panel.utils.Images.Buildable,
+      this.row,
+      this.col,
+    );
+    panel.game.addSprite(buildable);
     panel.spendGold(selected.cost);
     panel.setMessage(`${selected.fullName} placed.`);
   }

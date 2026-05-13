@@ -77,11 +77,29 @@ class Buildable extends Sprite {
       return;
     }
 
-    const placed = new Constructor(this, { ...panel.shopState.selectedItem, ...itemConfig }, panel.game, panel.utils);
+    const placed = new Constructor(
+      this,
+      { ...panel.shopState.selectedItem, ...itemConfig },
+      panel.game,
+      panel.utils,
+    );
+    if (!placed) {
+      panel.setMessage("Placement failed.");
+      this.flashUntil = performance.now() + 220;
+      return;
+    }
     panel.game.addSprite(placed);
     this.occupied = true;
     this.placedObjectId = itemId;
-    panel.spendGold(itemConfig.cost);
+    if (!panel.spendGold(itemConfig.cost)) {
+      this.occupied = false;
+      this.placedObjectId = null;
+      const placedIndex = panel.game.arrayOfSprites.indexOf(placed);
+      if (placedIndex >= 0) panel.game.arrayOfSprites.splice(placedIndex, 1);
+      panel.setMessage("Not enough gold.");
+      this.flashUntil = performance.now() + 220;
+      return;
+    }
     panel.setMessage(`${panel.shopState.selectedItem.fullName} placed.`);
     this.flashUntil = performance.now() + 180;
   }
