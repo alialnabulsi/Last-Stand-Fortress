@@ -545,6 +545,10 @@ class Panel extends Sprite {
     this.onEnemyHandled();
     this.setMessage(`An enemy reached the Town Hall.`);
   }
+  onEnemyPathFailed(enemy) {
+    this.onEnemyHandled();
+    this.setMessage("Enemy could not find a path to the Town Hall.");
+  }
 
   tryCompleteWave() {
     const isDone = this.defenseState.spawnedEnemies >= this.defenseState.totalEnemiesThisWave && this.defenseState.activeEnemies === 0;
@@ -586,6 +590,7 @@ class Panel extends Sprite {
   advanceLevel() {
     if (this.isFinalLevel()) return false;
     this.defenseState.levelCompleted = true;
+    const previousTownHallHp = this.townHallState.hp;
     this.defenseState.currentLevel += 1;
     this.defenseState.currentWave = 1;
     this.playerState.level = this.defenseState.currentLevel;
@@ -594,6 +599,11 @@ class Panel extends Sprite {
       this.game.currentGameLevel.changeMapForPlayerLevel(this.playerState.level);
     }
     this.findTownHall(this.game.arrayOfSprites);
+    if (this.townHallState.townHall && typeof previousTownHallHp === "number") {
+      this.townHallState.townHall.hp = Math.max(0, Math.min(this.townHallState.townHall.maxHp, previousTownHallHp));
+      this.townHallState.townHall.destroyed = this.townHallState.townHall.hp <= 0;
+      this.updateTownHallInfo(this.townHallState.townHall);
+    }
     // TODO: Decide whether Town Hall HP should reset per level. Current behavior preserves HP across levels.
     return true;
   }

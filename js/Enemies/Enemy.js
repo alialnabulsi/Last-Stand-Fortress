@@ -55,7 +55,12 @@ class Enemy extends Sprite {
 
     if (!this.routeBuilt) this.buildRouteFromLevel();
 
-    if (this.routePoints.length === 0 || this.routeIndex >= this.routePoints.length) {
+    if (this.routePoints.length === 0) {
+      this.handlePathFailure(panel);
+      return !this.alive;
+    }
+
+    if (this.routeIndex >= this.routePoints.length) {
       this.markReachedTownHall(panel);
       return !this.alive;
     }
@@ -85,10 +90,16 @@ class Enemy extends Sprite {
 
     const startTile = this.findCurrentPathTile(level);
     const townHallTile = level.getTownHallTile();
-    if (!startTile || !townHallTile) return;
+    if (!startTile || !townHallTile) {
+      console.warn("Enemy route build skipped: missing start or town hall tile.");
+      return;
+    }
 
     const pathTilesToTownHall = this.findPathTilesToTownHall(level, startTile, townHallTile);
-    if (pathTilesToTownHall.length === 0) return;
+    if (pathTilesToTownHall.length === 0) {
+      console.warn("Enemy route build failed: no path to town hall.");
+      return;
+    }
 
     this.routePoints = pathTilesToTownHall.map((tile) => this.getTileCenter(tile));
     this.routePoints.push(this.getTownHallCenter(townHallTile));
@@ -194,6 +205,17 @@ class Enemy extends Sprite {
 
     if (panel && typeof panel.onEnemyReachedTownHall === "function") {
       panel.onEnemyReachedTownHall(this, townHall);
+    } else if (panel && panel.defenseState) {
+      panel.defenseState.activeEnemies = Math.max(0, panel.defenseState.activeEnemies - 1);
+    }
+  }
+  handlePathFailure(panel) {
+    if (this.handled) return;
+    this.alive = false;
+    this.handled = true;
+    this.movementCompleted = true;
+    if (panel && typeof panel.onEnemyPathFailed === "function") {
+      panel.onEnemyPathFailed(this);
     } else if (panel && panel.defenseState) {
       panel.defenseState.activeEnemies = Math.max(0, panel.defenseState.activeEnemies - 1);
     }
