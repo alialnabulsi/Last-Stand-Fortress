@@ -534,13 +534,13 @@ const Utils = {
 
 
   ShopItemsData: {
-    buildable_tile: { id: "buildable_tile", type: "utility", cost: 25, unlockLevel: 1, placement: "grass", image: null, placeholderColor: "#5c6b73" },
-    gold_mine: { id: "gold_mine", type: "resource", cost: 100, unlockLevel: 1, placement: "buildable", image: null, placeholderColor: "#d6b14a", productionAmount: 15, productionIntervalMs: 5000 },
-    barracks: { id: "barracks", type: "military", cost: 150, unlockLevel: 1, placement: "buildable", image: null, placeholderColor: "#8e9aa7", troopCapacityBonus: 10 },
-    archer: { id: "archer", type: "defense", cost: 80, unlockLevel: 1, placement: "buildable", image: null, placeholderColor: "#7cb342", range: 120, damage: 4, attackCooldownMs: 550, targetType: "ground" },
-    cannon: { id: "cannon", type: "defense", cost: 120, unlockLevel: 2, placement: "buildable", image: null, placeholderColor: "#616161", range: 130, damage: 10, attackCooldownMs: 1100, targetType: "ground" },
-    wizard: { id: "wizard", type: "defense", cost: 180, unlockLevel: 3, placement: "buildable", image: null, placeholderColor: "#9575cd", range: 150, damage: 8, attackCooldownMs: 800, targetType: "ground" },
-    inferno_tower: { id: "inferno_tower", type: "defense", cost: 260, unlockLevel: 4, placement: "buildable", image: null, placeholderColor: "#ef6c00", range: 165, damage: 16, attackCooldownMs: 1400, targetType: "ground" },
+    buildable_tile: { id: "buildable_tile", type: "utility", cost: 20, unlockLevel: 1, placement: "grass", image: null, placeholderColor: "#5c6b73" },
+    gold_mine: { id: "gold_mine", type: "resource", cost: 95, unlockLevel: 1, placement: "buildable", image: null, placeholderColor: "#d6b14a", productionAmount: 12, productionIntervalMs: 4500 },
+    barracks: { id: "barracks", type: "military", cost: 140, unlockLevel: 2, placement: "buildable", image: null, placeholderColor: "#8e9aa7", troopCapacityBonus: 10 },
+    archer: { id: "archer", type: "defense", cost: 70, unlockLevel: 1, placement: "buildable", image: null, placeholderColor: "#7cb342", range: 120, damage: 4, attackCooldownMs: 550, targetType: "ground" },
+    cannon: { id: "cannon", type: "defense", cost: 125, unlockLevel: 2, placement: "buildable", image: null, placeholderColor: "#616161", range: 130, damage: 10, attackCooldownMs: 1100, targetType: "ground" },
+    wizard: { id: "wizard", type: "defense", cost: 195, unlockLevel: 3, placement: "buildable", image: null, placeholderColor: "#9575cd", range: 150, damage: 8, attackCooldownMs: 800, targetType: "ground" },
+    inferno_tower: { id: "inferno_tower", type: "defense", cost: 290, unlockLevel: 4, placement: "buildable", image: null, placeholderColor: "#ef6c00", range: 165, damage: 16, attackCooldownMs: 1400, targetType: "ground" },
   },
 
   EnemyData: {
@@ -560,58 +560,58 @@ const Utils = {
     maxLevel: 4,
     default: {
       level: 1,
-      totalEnemies: 20,
+      totalEnemies: 24,
       maxWaves: 4,
       waves: [
-        { wave: 1, enemyLevel: 1, enemyCount: 5, enemyHp: 10, enemySpeed: 1, enemyDamage: 1, spawnDelaySeconds: 1 },
-        { wave: 2, enemyLevel: 1, enemyCount: 5, enemyHp: 10, enemySpeed: 1, enemyDamage: 1, spawnDelaySeconds: 0.95 },
-        { wave: 3, enemyLevel: 1, enemyCount: 5, enemyHp: 10, enemySpeed: 1.05, enemyDamage: 1, spawnDelaySeconds: 0.9 },
-        { wave: 4, enemyLevel: 1, enemyCount: 5, enemyHp: 11, enemySpeed: 1.05, enemyDamage: 1, spawnDelaySeconds: 0.85 },
+        { wave: 1, enemyLevel: 1, enemyCount: 5, enemyHp: 12, enemySpeed: 0.95, enemyDamage: 6, enemyGoldReward: 14, enemyXpReward: 6, spawnDelaySeconds: 1.15 },
+        { wave: 2, enemyLevel: 1, enemyCount: 6, enemyHp: 13, enemySpeed: 0.98, enemyDamage: 6, enemyGoldReward: 14, enemyXpReward: 6, spawnDelaySeconds: 1.05 },
+        { wave: 3, enemyLevel: 1, enemyCount: 6, enemyHp: 14, enemySpeed: 1.0, enemyDamage: 7, enemyGoldReward: 15, enemyXpReward: 7, spawnDelaySeconds: 1.0 },
+        { wave: 4, enemyLevel: 1, enemyCount: 7, enemyHp: 15, enemySpeed: 1.03, enemyDamage: 7, enemyGoldReward: 15, enemyXpReward: 7, spawnDelaySeconds: 0.95 },
       ],
     },
     levels: {
       1: {
         level: 1,
-        totalEnemies: 20,
+        totalEnemies: 24,
         maxWaves: 4,
         waves: [
-          { wave: 1, enemyLevel: 1, enemyCount: 5, enemyHp: 10, enemySpeed: 1, enemyDamage: 1, spawnDelaySeconds: 1 },
-          { wave: 2, enemyLevel: 1, enemyCount: 5, enemyHp: 10, enemySpeed: 1.02, enemyDamage: 1, spawnDelaySeconds: 0.95 },
-          { wave: 3, enemyLevel: 1, enemyCount: 5, enemyHp: 11, enemySpeed: 1.04, enemyDamage: 1, spawnDelaySeconds: 0.9 },
-          { wave: 4, enemyLevel: 1, enemyCount: 5, enemyHp: 12, enemySpeed: 1.06, enemyDamage: 1, spawnDelaySeconds: 0.85 },
+          { wave: 1, enemyLevel: 1, enemyCount: 5, enemyHp: 12, enemySpeed: 0.95, enemyDamage: 6, enemyGoldReward: 14, enemyXpReward: 6, spawnDelaySeconds: 1.15 },
+          { wave: 2, enemyLevel: 1, enemyCount: 6, enemyHp: 13, enemySpeed: 0.98, enemyDamage: 6, enemyGoldReward: 14, enemyXpReward: 6, spawnDelaySeconds: 1.05 },
+          { wave: 3, enemyLevel: 1, enemyCount: 6, enemyHp: 14, enemySpeed: 1.0, enemyDamage: 7, enemyGoldReward: 15, enemyXpReward: 7, spawnDelaySeconds: 1.0 },
+          { wave: 4, enemyLevel: 1, enemyCount: 7, enemyHp: 15, enemySpeed: 1.03, enemyDamage: 7, enemyGoldReward: 15, enemyXpReward: 7, spawnDelaySeconds: 0.95 },
         ],
       },
       2: {
         level: 2,
-        totalEnemies: 28,
+        totalEnemies: 32,
         maxWaves: 4,
         waves: [
-          { wave: 1, enemyLevel: 2, enemyCount: 7, enemyHp: 12, enemySpeed: 1.06, enemyDamage: 1.1, spawnDelaySeconds: 0.95 },
-          { wave: 2, enemyLevel: 2, enemyCount: 7, enemyHp: 13, enemySpeed: 1.08, enemyDamage: 1.1, spawnDelaySeconds: 0.9 },
-          { wave: 3, enemyLevel: 2, enemyCount: 7, enemyHp: 14, enemySpeed: 1.1, enemyDamage: 1.15, spawnDelaySeconds: 0.85 },
-          { wave: 4, enemyLevel: 2, enemyCount: 7, enemyHp: 15, enemySpeed: 1.12, enemyDamage: 1.15, spawnDelaySeconds: 0.8 },
+          { wave: 1, enemyLevel: 2, enemyCount: 7, enemyHp: 17, enemySpeed: 1.03, enemyDamage: 8, enemyGoldReward: 16, enemyXpReward: 8, spawnDelaySeconds: 1.0 },
+          { wave: 2, enemyLevel: 2, enemyCount: 8, enemyHp: 18, enemySpeed: 1.05, enemyDamage: 8, enemyGoldReward: 16, enemyXpReward: 8, spawnDelaySeconds: 0.95 },
+          { wave: 3, enemyLevel: 2, enemyCount: 8, enemyHp: 20, enemySpeed: 1.08, enemyDamage: 9, enemyGoldReward: 17, enemyXpReward: 9, spawnDelaySeconds: 0.9 },
+          { wave: 4, enemyLevel: 2, enemyCount: 9, enemyHp: 22, enemySpeed: 1.1, enemyDamage: 9, enemyGoldReward: 17, enemyXpReward: 9, spawnDelaySeconds: 0.85 },
         ],
       },
       3: {
         level: 3,
-        totalEnemies: 36,
+        totalEnemies: 40,
         maxWaves: 4,
         waves: [
-          { wave: 1, enemyLevel: 3, enemyCount: 9, enemyHp: 15, enemySpeed: 1.12, enemyDamage: 1.2, spawnDelaySeconds: 0.9 },
-          { wave: 2, enemyLevel: 3, enemyCount: 9, enemyHp: 16, enemySpeed: 1.14, enemyDamage: 1.2, spawnDelaySeconds: 0.85 },
-          { wave: 3, enemyLevel: 3, enemyCount: 9, enemyHp: 17, enemySpeed: 1.16, enemyDamage: 1.25, spawnDelaySeconds: 0.8 },
-          { wave: 4, enemyLevel: 3, enemyCount: 9, enemyHp: 18, enemySpeed: 1.18, enemyDamage: 1.25, spawnDelaySeconds: 0.75 },
+          { wave: 1, enemyLevel: 3, enemyCount: 9, enemyHp: 24, enemySpeed: 1.08, enemyDamage: 10, enemyGoldReward: 18, enemyXpReward: 10, spawnDelaySeconds: 0.9 },
+          { wave: 2, enemyLevel: 3, enemyCount: 10, enemyHp: 26, enemySpeed: 1.1, enemyDamage: 10, enemyGoldReward: 18, enemyXpReward: 10, spawnDelaySeconds: 0.85 },
+          { wave: 3, enemyLevel: 3, enemyCount: 10, enemyHp: 28, enemySpeed: 1.12, enemyDamage: 11, enemyGoldReward: 19, enemyXpReward: 11, spawnDelaySeconds: 0.8 },
+          { wave: 4, enemyLevel: 3, enemyCount: 11, enemyHp: 30, enemySpeed: 1.14, enemyDamage: 11, enemyGoldReward: 19, enemyXpReward: 11, spawnDelaySeconds: 0.75 },
         ],
       },
       4: {
         level: 4,
-        totalEnemies: 44,
+        totalEnemies: 48,
         maxWaves: 4,
         waves: [
-          { wave: 1, enemyLevel: 4, enemyCount: 11, enemyHp: 18, enemySpeed: 1.18, enemyDamage: 1.3, spawnDelaySeconds: 0.85 },
-          { wave: 2, enemyLevel: 4, enemyCount: 11, enemyHp: 19, enemySpeed: 1.2, enemyDamage: 1.35, spawnDelaySeconds: 0.8 },
-          { wave: 3, enemyLevel: 4, enemyCount: 11, enemyHp: 20, enemySpeed: 1.22, enemyDamage: 1.35, spawnDelaySeconds: 0.75 },
-          { wave: 4, enemyLevel: 4, enemyCount: 11, enemyHp: 21, enemySpeed: 1.24, enemyDamage: 1.4, spawnDelaySeconds: 0.7 },
+          { wave: 1, enemyLevel: 4, enemyCount: 11, enemyHp: 34, enemySpeed: 1.13, enemyDamage: 12, enemyGoldReward: 20, enemyXpReward: 12, spawnDelaySeconds: 0.8 },
+          { wave: 2, enemyLevel: 4, enemyCount: 12, enemyHp: 36, enemySpeed: 1.15, enemyDamage: 13, enemyGoldReward: 20, enemyXpReward: 12, spawnDelaySeconds: 0.75 },
+          { wave: 3, enemyLevel: 4, enemyCount: 12, enemyHp: 38, enemySpeed: 1.17, enemyDamage: 13, enemyGoldReward: 21, enemyXpReward: 13, spawnDelaySeconds: 0.7 },
+          { wave: 4, enemyLevel: 4, enemyCount: 13, enemyHp: 40, enemySpeed: 1.2, enemyDamage: 14, enemyGoldReward: 21, enemyXpReward: 13, spawnDelaySeconds: 0.65 },
         ],
       },
     },
@@ -619,7 +619,7 @@ const Utils = {
 
   TownHallData: {
     // TODO: Replace/adjust this when full fortress upgrade/balance system is implemented.
-    maxHp: 1000,
+    maxHp: 1200,
   },
 
   // ===============================

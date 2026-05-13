@@ -14,7 +14,7 @@ class Panel extends Sprite {
     this.shopRules = this.utils.ShopItemsData || {};
 
     this.playerState = {
-      gold: 250,
+      gold: 280,
       xp: 0,
       level: 1,
       xpToNextLevel: 100,
@@ -41,9 +41,9 @@ class Panel extends Sprite {
       state: "IDLE",
       maxLevel: 4,
       currentLevel: 1,
-      preparationTimer: 10,
-      breakDurationSeconds: 10,
-      breakTimer: 10,
+      preparationTimer: 12,
+      breakDurationSeconds: 8,
+      breakTimer: 8,
       timerRunning: false,
       lastTickAt: 0,
       breakLastTickAt: 0,
@@ -75,6 +75,8 @@ class Panel extends Sprite {
       gameOverPending: false,
       pendingResultState: null,
       spawnDelaySeconds: 1,
+      enemyGoldReward: 10,
+      enemyXpReward: 5,
     };
 
     this.townHallState = {
@@ -304,6 +306,8 @@ class Panel extends Sprite {
     this.defenseState.enemySpeed = waveConfig.enemySpeed || 1;
     this.defenseState.enemyDamage = waveConfig.enemyDamage || 1;
     this.defenseState.spawnDelaySeconds = waveConfig.spawnDelaySeconds || 1;
+    this.defenseState.enemyGoldReward = waveConfig.enemyGoldReward || 10;
+    this.defenseState.enemyXpReward = waveConfig.enemyXpReward || 5;
     this.defenseState.totalEnemiesThisWave = this.defenseState.enemyCount;
     this.defenseState.enemiesRemaining = Math.max(0, this.defenseState.totalEnemiesThisWave - this.defenseState.spawnedEnemies);
     this.defenseState.remainingEnemiesInWave = Math.max(0, this.defenseState.totalEnemiesThisWave - this.defenseState.defeatedEnemies);
@@ -489,7 +493,7 @@ class Panel extends Sprite {
   }
 
   onPlanningStarted() {
-    this.defenseState.preparationTimer = 10;
+    this.defenseState.preparationTimer = 12;
     this.defenseState.waveCompleted = false;
     this.defenseState.waveActive = false;
   }
@@ -585,8 +589,10 @@ class Panel extends Sprite {
     this.tryCompleteWave();
   }
   onEnemyKilled(enemy) {
+    this.addGold(this.defenseState.enemyGoldReward);
+    this.addXP(this.defenseState.enemyXpReward);
     this.onEnemyHandled();
-    this.setMessage("An enemy was defeated.");
+    this.setMessage(`An enemy was defeated. +${this.defenseState.enemyGoldReward}G`);
   }
   onEnemyReachedTownHall(enemy) {
     this.onEnemyHandled();
