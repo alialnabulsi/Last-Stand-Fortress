@@ -11,24 +11,34 @@ class StoryLevel extends Level {
 
   initialize() {
     this.game.addSprite(new Background(this.MenuBackgroundImage));
+
+    this.game.addSprite(
+      new Text(800, 110, "Story", {
+        font: "bold 58px Georgia",
+        color: "#e8d174",
+        shadow: true,
+        stroke: true,
+      }),
+    );
+
     for (let i = 0; i < this.shortStoryIntro.length; i++) {
       const isLastLine = i === this.shortStoryIntro.length - 1;
 
       this.game.addSprite(
-        new Text(800, 160 + i * 105, this.shortStoryIntro[i], {
-          font: isLastLine ? "bold 32px Georgia" : "26px Georgia",
+        new Text(800, 235 + i * 85, this.shortStoryIntro[i], {
+          font: isLastLine ? "bold 36px Georgia" : "30px Georgia",
           color: isLastLine ? "#ffd27d" : "#f2f2f2",
           shadow: true,
           stroke: true,
+          maxWidth: 1380,
         }),
       );
     }
 
     this.game.addSprite(
-      new Button(100, 800, 300, 50, this.backButtonTitle, () => {
+      new Button(100, 800, 300, 56, this.backButtonTitle, () => {
         this.game.changeLevel(0);
       }),
     );
-
   }
 }
