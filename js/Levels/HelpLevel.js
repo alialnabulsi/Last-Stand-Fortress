@@ -20,8 +20,8 @@ class HelpLevel extends Level {
 
     const helpLines = [
       "Objective: defend your Town Hall from every enemy wave.",
-      "Start by placing Buildable tiles on grass where you want to construct.",
-      "Towers, buildings, and mines can only be placed on Buildable tiles.",
+      "Start by placing Buildable foundations on grass where you want to construct.",
+      "Towers, buildings, and mines can only be placed on Buildable foundations.",
       "Waves begin after the build phase and get stronger as levels progress.",
       "Protect the Town Hall at all costs. If it falls, you lose the game.",
       "Win by surviving the waves and clearing each map level.",

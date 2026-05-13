@@ -63,13 +63,18 @@ class Grass extends Sprite {
       return;
     }
 
-    const buildable = new Buildable(
-      this.x,
-      this.y,
-      this.size,
-      panel.utils.Images.Buildable,
-      this.row,
-      this.col,
+    const Constructor = ShopPlaceableRegistry[selected.id];
+    if (!Constructor) {
+      panel.setMessage("This item cannot be placed yet.");
+      this.flashUntil = performance.now() + 220;
+      return;
+    }
+
+    const buildable = new Constructor(
+      this,
+      { ...selected, image: panel.utils.Images.Buildable },
+      panel.game,
+      panel.utils,
     );
     panel.game.addSprite(buildable);
     panel.spendGold(selected.cost);

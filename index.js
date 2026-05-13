@@ -23,7 +23,6 @@ const Utils = {
   //Tiles
   TILE_TYPES: {
     GRASS: 1, // Normal ground / decoration
-    BUILDABLE: 0, // Player can place towers/buildings here
     BLOCKED: 2, // Rocks, ruins, obstacles
     TOWN_HALL: 3, // Main base / enemy target
     CROSS: 40,
@@ -534,7 +533,7 @@ const Utils = {
 
 
   ShopItemsData: {
-    buildable_tile: { id: "buildable_tile", type: "utility", cost: 20, unlockLevel: 1, placement: "grass", image: null, placeholderColor: "#5c6b73" },
+    buildable_tile: { id: "buildable_tile", type: "foundation", cost: 20, unlockLevel: 1, placement: "grass", image: null, placeholderColor: "#5c6b73" },
     gold_mine: { id: "gold_mine", type: "resource", cost: 95, unlockLevel: 1, placement: "buildable", image: null, placeholderColor: "#d6b14a", productionAmount: 12, productionIntervalMs: 4500 },
     barracks: { id: "barracks", type: "military", cost: 140, unlockLevel: 2, placement: "buildable", image: null, placeholderColor: "#8e9aa7", troopCapacityBonus: 10 },
     archer: { id: "archer", type: "defense", cost: 70, unlockLevel: 1, placement: "buildable", image: null, placeholderColor: "#7cb342", range: 120, damage: 4, attackCooldownMs: 550, targetType: "ground" },
@@ -665,19 +664,19 @@ const Utils = {
     },
 
     shopButton: {
-      width: 150,
+      width: 100,
       height: 58,
       gap: 10,
       startX: 28,
       startY: 872,
-      columns: 5,
+      columns: 7,
     },
 
     shopItems: [
       {
         id: "buildable_tile",
         label: "Build",
-        fullName: "Build Tile",
+        fullName: "Buildable",
         icon: "⬚",
         description: "Create slot",
         category: "buildable",
@@ -739,6 +738,9 @@ const Utils = {
 Utils.ShopItemsData.gold_mine.image = (() => { const img = new Image(); img.src = "images/SpriteSheets/Shop/GoldMine.png"; return img; })();
 Utils.ShopItemsData.barracks.image = (() => { const img = new Image(); img.src = "images/SpriteSheets/Shop/Barrack.png"; return img; })();
 Utils.ShopItemsData.archer.image = (() => { const img = new Image(); img.src = "images/SpriteSheets/Shop/Archer.png"; return img; })();
+Utils.ShopItemsData.buildable_tile.image = Utils.Images.Buildable;
+Utils.ShopItemsData.cannon.image = (() => { const img = new Image(); img.src = "images/SpriteSheets/Shop/Cannon.png"; return img; })();
+Utils.ShopItemsData.inferno_tower.image = (() => { const img = new Image(); img.src = "images/SpriteSheets/Shop/Inferno.png"; return img; })();
 
 Utils.EnemyData.byLevel = {
   1: { ...Utils.EnemyData.default, image: Utils.Images.Enemies.E1 },

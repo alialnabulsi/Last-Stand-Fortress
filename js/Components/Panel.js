@@ -239,7 +239,7 @@ class Panel extends Sprite {
 
     this.shopState.selectedItem = { ...item, ...rule };
     this.shopState.selectedItemId = item.id;
-    const targetHint = item.id === "buildable_tile" ? "grass" : "buildable tile";
+    const targetHint = item.id === "buildable_tile" ? "grass" : "Buildable foundation";
     this.setMessage(`${item.fullName} selected. Place on ${targetHint}.`);
   }
 
@@ -693,7 +693,7 @@ class Panel extends Sprite {
       if (!this.advanceLevel()) return;
       this.updateEnemyInfo();
       this.startPreparationForCurrentWave(
-        `Level ${this.defenseState.currentLevel} started. New map loaded; place Buildable on grass first.`,
+        `Level ${this.defenseState.currentLevel} started. New map loaded; place a Buildable foundation on grass first.`,
       );
     }
   }
@@ -717,7 +717,7 @@ class Panel extends Sprite {
     this.resetSpawnerRuntimeCounters();
     this.findTownHall(this.game.arrayOfSprites);
     this.updateEnemyInfo();
-    this.setMessage(`Level ${level} loaded. Select buildable tile to rebuild defenses.`);
+    this.setMessage(`Level ${level} loaded. Select Buildable to rebuild defenses.`);
   }
 
   updateTownHallInfo(townHall) {

@@ -18,9 +18,6 @@ class Grid extends Sprite {
       case this.TILE_TYPES.GRASS:
         return this.images.Grass;
 
-      case this.TILE_TYPES.BUILDABLE:
-        return this.images.Buildable;
-
       case this.TILE_TYPES.TOWN_HALL:
         return this.images.TownHall;
 
@@ -71,10 +68,6 @@ class Grid extends Sprite {
         switch (tileType) {
           case this.TILE_TYPES.GRASS:
             sprites.push(new Grass(x, y, this.cellSize, image, row, col));
-            break;
-
-          case this.TILE_TYPES.BUILDABLE:
-            sprites.push(new Buildable(x, y, this.cellSize, image, row, col));
             break;
 
           case this.TILE_TYPES.TOWN_HALL:
