@@ -36,10 +36,9 @@ class GameLevel extends Level {
     const panel = this.findPanel();
     this.game.arrayOfSprites = this.game.arrayOfSprites.filter((sprite) => {
       if (panel && sprite === panel) return true;
-      if (sprite.isMapTile) return false;
-      if (sprite.isEnemy || sprite.isProjectile || sprite.isPlacedObject)
-        return false;
-      return true;
+      if (!sprite) return false;
+      if (sprite.isMapTile || sprite.isEnemy || sprite.isProjectile || sprite.isPlacedObject) return false;
+      return !(sprite instanceof Cell);
     });
   }
   buildMap(mapArray) {
@@ -160,13 +159,31 @@ class GameLevel extends Level {
   changeMapForPlayerLevel(level) {
     const map = this.getMapForPlayerLevel(level);
     const panel = this.findPanel();
+
     this.clearBattlefieldSprites();
     this.buildMap(map);
+
+    if (panel && typeof panel.onMapChanged === "function") panel.onMapChanged(level);
+
     if (panel) {
       this.game.arrayOfSprites = this.game.arrayOfSprites.filter(
         (sprite) => sprite !== panel,
       );
       this.game.addSprite(panel);
+    }
+
+    const hasSpawner = this.spawners.length > 0;
+    const hasTownHall = !!this.townHall;
+    const hasPaths = this.pathTiles.length > 0;
+    if (!hasSpawner || !hasTownHall || !hasPaths) {
+      console.warn("Map sync warning:", {
+        level,
+        hasSpawner,
+        hasTownHall,
+        hasPaths,
+        spawners: this.spawners.length,
+        paths: this.pathTiles.length,
+      });
     }
   }
 }

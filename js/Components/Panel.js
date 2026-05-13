@@ -656,6 +656,27 @@ class Panel extends Sprite {
     }
   }
 
+
+  onMapChanged(level) {
+    this.clearSelection();
+    this.defenseState.waveActive = false;
+    this.defenseState.waveCompleted = false;
+    this.defenseState.timerRunning = false;
+    this.defenseState.lastTickAt = 0;
+    this.defenseState.breakLastTickAt = 0;
+    this.defenseState.breakTimer = this.defenseState.breakDurationSeconds;
+    this.defenseState.state = "IDLE";
+    this.defenseState.spawnedEnemies = 0;
+    this.defenseState.defeatedEnemies = 0;
+    this.defenseState.activeEnemies = 0;
+    this.defenseState.enemiesRemaining = 0;
+    this.defenseState.remainingEnemiesInWave = 0;
+    this.townHallDestroyedHandled = false;
+    this.findTownHall(this.game.arrayOfSprites);
+    this.updateEnemyInfo();
+    this.setMessage(`Level ${level} loaded. Select buildable tile to rebuild defenses.`);
+  }
+
   updateTownHallInfo(townHall) {
     if (!townHall) return;
     if (typeof townHall.getHPInfo === "function") {

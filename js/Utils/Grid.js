@@ -85,57 +85,57 @@ class Grid extends Sprite {
                 this.map[row][col - 1] !== this.TILE_TYPES.TOWN_HALL);
 
             if (isTopLeftTownHall) {
-              sprites.push(new TownHall(x, y, this.cellSize * 2, image, 1));
+              sprites.push(new TownHall(x, y, this.cellSize * 2, image, 1, row, col));
             }
             break;
 
           case this.TILE_TYPES.CROSS:
             sprites.push(
-              new Path(x, y, this.cellSize, image, this.TILE_TYPES.CROSS),
+              new Path(x, y, this.cellSize, image, this.TILE_TYPES.CROSS, row, col),
             );
             break;
           case this.TILE_TYPES.HORZ:
             sprites.push(
-              new Path(x, y, this.cellSize, image, this.TILE_TYPES.HORZ),
+              new Path(x, y, this.cellSize, image, this.TILE_TYPES.HORZ, row, col),
             );
             break;
 
           case this.TILE_TYPES.VERT:
             sprites.push(
-              new Path(x, y, this.cellSize, image, this.TILE_TYPES.VERT),
+              new Path(x, y, this.cellSize, image, this.TILE_TYPES.VERT, row, col),
             );
             break;
           case this.TILE_TYPES.BRIGHT:
             sprites.push(
-              new Path(x, y, this.cellSize, image, this.TILE_TYPES.BRIGHT),
+              new Path(x, y, this.cellSize, image, this.TILE_TYPES.BRIGHT, row, col),
             );
             break;
           case this.TILE_TYPES.BLEFT:
             sprites.push(
-              new Path(x, y, this.cellSize, image, this.TILE_TYPES.BLEFT),
+              new Path(x, y, this.cellSize, image, this.TILE_TYPES.BLEFT, row, col),
             );
             break;
           case this.TILE_TYPES.TRIGHT:
             sprites.push(
-              new Path(x, y, this.cellSize, image, this.TILE_TYPES.TRIGHT),
+              new Path(x, y, this.cellSize, image, this.TILE_TYPES.TRIGHT, row, col),
             );
             break;
           case this.TILE_TYPES.TLEFT:
             sprites.push(
-              new Path(x, y, this.cellSize, image, this.TILE_TYPES.TLEFT),
+              new Path(x, y, this.cellSize, image, this.TILE_TYPES.TLEFT, row, col),
             );
             break;
 
           case this.TILE_TYPES.WATER:
-            sprites.push(new Water(x, y, this.cellSize, image));
+            sprites.push(new Water(x, y, this.cellSize, image, row, col));
             break;
 
           case this.TILE_TYPES.FOREST:
-            sprites.push(new Forest(x, y, this.cellSize, image));
+            sprites.push(new Forest(x, y, this.cellSize, image, row, col));
             break;
 
           case this.TILE_TYPES.SPAWNER:
-            sprites.push(new Spawner(x, y, this.cellSize, image));
+            sprites.push(new Spawner(x, y, this.cellSize, image, row, col));
             break;
 
 
