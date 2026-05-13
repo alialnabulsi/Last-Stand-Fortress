@@ -18,6 +18,7 @@ class Spawner extends Sprite {
     this.spawn = false;
     this.spawnTimer = 0;
     this.spawnCooldown = 120;
+    this.spawnElapsedMs = 0;
     this.active = true;
     this.spawnedCount = 0;
 
@@ -63,9 +64,57 @@ class Spawner extends Sprite {
     );
   }
 
-  update() {
-    if (this.spawn) this.animateSpawner();
+  update(arrayOfSprites) {
+    const panel = this.findPanelSprite();
+    this.spawn = this.canSpawn();
+
+    if (!this.spawn) {
+      this.spawnElapsedMs = 0;
+      return false;
+    }
+
+    if (panel && !panel.canRuntimeUpdate()) return false;
+
+    this.animateSpawner();
+    this.spawnEnemies(arrayOfSprites, panel);
+    return false;
   }
+
+  spawnEnemies(arrayOfSprites, panel) {
+    if (!panel || !this.game || !Array.isArray(arrayOfSprites)) return;
+
+    const wave = panel.getWaveRuntimeState();
+    if (!wave || wave.spawnedEnemies >= wave.totalEnemies) return;
+
+    if (!this.lastSpawnTickAt) this.lastSpawnTickAt = performance.now();
+    const now = performance.now();
+    this.spawnElapsedMs += now - this.lastSpawnTickAt;
+    this.lastSpawnTickAt = now;
+
+    const spawnDelayMs = (wave.spawnDelaySeconds || 1) * 1000;
+    if (this.spawnElapsedMs < spawnDelayMs) return;
+
+    this.spawnElapsedMs = 0;
+
+    const enemy = new Enemy(
+      this.x,
+      this.y,
+      this.size,
+      wave.currentEnemyLevel,
+      this.game.currentGameLevel ? this.game.currentGameLevel.utils : null,
+      {
+        maxHp: wave.enemyHp,
+        speed: wave.enemySpeed,
+        damage: wave.enemyDamage,
+      },
+    );
+
+    enemy.game = this.game;
+    this.game.addSprite(enemy);
+    this.spawnedCount += 1;
+    panel.onEnemySpawned(enemy);
+  }
+
   findPanelSprite() {
     if (!this.game || !Array.isArray(this.game.arrayOfSprites)) return null;
     for (let i = 0; i < this.game.arrayOfSprites.length; i++) {

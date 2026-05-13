@@ -78,7 +78,7 @@ class Panel extends Sprite {
 
     this.defenseState = {
       state: "IDLE",
-      preparationTimer: 120,
+      preparationTimer: 10,
       breakDurationSeconds: 10,
       breakTimer: 10,
       timerRunning: false,
@@ -91,6 +91,15 @@ class Panel extends Sprite {
       enemyCount: 0,
       enemyHp: 1,
       enemySpeed: 1,
+      enemyDamage: 1,
+      currentWave: 1,
+      maxWaves: 1,
+      spawnedEnemies: 0,
+      defeatedEnemies: 0,
+      activeEnemies: 0,
+      enemiesRemaining: 0,
+      totalEnemiesThisWave: 0,
+      spawnDelaySeconds: 1,
     };
 
     this.townHallState = {
@@ -294,10 +303,21 @@ class Panel extends Sprite {
 
   updateEnemyInfo() {
     const level = this.playerState.level;
-    this.defenseState.enemyLevel = level;
-    this.defenseState.enemyCount = 5 + (level - 1) * 2;
-    this.defenseState.enemyHp = 1 + (level - 1) * 0.18;
-    this.defenseState.enemySpeed = 1 + (level - 1) * 0.08;
+    const waveConfig = this.utils.WaveData || {};
+    const levelWave = (waveConfig.byPlayerLevel && waveConfig.byPlayerLevel[level]) || waveConfig.default || {};
+
+    this.defenseState.enemyLevel = levelWave.enemyLevel || level;
+    this.defenseState.maxWaves = levelWave.maxWaves || 1;
+    this.defenseState.currentWave = Math.min(this.defenseState.currentWave || 1, this.defenseState.maxWaves);
+    this.defenseState.enemyCount = levelWave.enemyCount || (5 + (level - 1) * 2);
+    this.defenseState.enemyHp = levelWave.enemyHp || (1 + (level - 1) * 0.18);
+    this.defenseState.enemySpeed = levelWave.enemySpeed || (1 + (level - 1) * 0.08);
+    this.defenseState.enemyDamage = levelWave.enemyDamage || 1;
+    this.defenseState.spawnDelaySeconds = levelWave.spawnDelaySeconds || 1;
+
+    this.defenseState.totalEnemiesThisWave = this.defenseState.enemyCount;
+    this.defenseState.enemiesRemaining =
+      this.defenseState.totalEnemiesThisWave - this.defenseState.spawnedEnemies;
   }
 
   setMessage(message) {
@@ -462,9 +482,49 @@ class Panel extends Sprite {
   }
 
   onDefenseStarted() {
+    this.resetWaveRuntimeCounters();
   }
 
   onDefenseEnded({ townHallAlive = true } = {}) {
+  }
+
+  resetWaveRuntimeCounters() {
+    this.defenseState.spawnedEnemies = 0;
+    this.defenseState.defeatedEnemies = 0;
+    this.defenseState.activeEnemies = 0;
+    this.defenseState.totalEnemiesThisWave = this.defenseState.enemyCount;
+    this.defenseState.enemiesRemaining = this.defenseState.enemyCount;
+  }
+
+  getWaveRuntimeState() {
+    return {
+      currentWave: this.defenseState.currentWave,
+      maxWaves: this.defenseState.maxWaves,
+      totalEnemies: this.defenseState.totalEnemiesThisWave,
+      spawnedEnemies: this.defenseState.spawnedEnemies,
+      defeatedEnemies: this.defenseState.defeatedEnemies,
+      activeEnemies: this.defenseState.activeEnemies,
+      enemiesRemaining: this.defenseState.enemiesRemaining,
+      currentEnemyLevel: this.defenseState.enemyLevel,
+      enemyHp: this.defenseState.enemyHp,
+      enemySpeed: this.defenseState.enemySpeed,
+      enemyDamage: this.defenseState.enemyDamage,
+      spawnDelaySeconds: this.defenseState.spawnDelaySeconds,
+    };
+  }
+
+  onEnemySpawned(enemy) {
+    this.defenseState.spawnedEnemies += 1;
+    this.defenseState.activeEnemies += 1;
+    this.defenseState.enemiesRemaining = Math.max(
+      0,
+      this.defenseState.totalEnemiesThisWave - this.defenseState.spawnedEnemies,
+    );
+
+    // TODO: Replace/adjust this when the full enemy/wave system is implemented.
+    this.setMessage(
+      `Wave ${this.defenseState.currentWave}: ${this.defenseState.spawnedEnemies}/${this.defenseState.totalEnemiesThisWave} enemies spawned.`,
+    );
   }
   draw(ctx) {
     this.drawPanelBackground(ctx);
@@ -588,7 +648,7 @@ class Panel extends Sprite {
       gameBox.y + 150,
     );
     ctx.fillText(
-      `Enemy #: ${this.defenseState.enemyCount}`,
+      `Wave: ${this.defenseState.currentWave}/${this.defenseState.maxWaves}`,
       gameBox.x + 150,
       gameBox.y + 130,
     );
@@ -601,6 +661,17 @@ class Panel extends Sprite {
       `Enemy Spd: x${this.defenseState.enemySpeed.toFixed(2)}`,
       gameBox.x + 20,
       gameBox.y + 168,
+    );
+
+    ctx.fillText(
+      `Spawned: ${this.defenseState.spawnedEnemies}/${this.defenseState.totalEnemiesThisWave}`,
+      gameBox.x + 150,
+      gameBox.y + 168,
+    );
+    ctx.fillText(
+      `Remaining: ${this.defenseState.enemiesRemaining}`,
+      gameBox.x + 150,
+      gameBox.y + 186,
     );
 
     for (const btn of this.controlButtons) btn.draw(ctx);

@@ -531,6 +531,38 @@ const Utils = {
     })(),
   },
 
+  EnemyData: {
+    // TODO: Replace/adjust this when the full enemy/wave system is implemented.
+    default: {
+      image: null,
+      maxHp: 10,
+      speed: 1,
+      damage: 1,
+      frameWidth: 40,
+      frameHeight: 40,
+    },
+    byLevel: {},
+  },
+
+  WaveData: {
+    // TODO: Replace/adjust this when the full enemy/wave system is implemented.
+    default: {
+      maxWaves: 1,
+      enemyLevel: 1,
+      enemyCount: 6,
+      enemyHp: 10,
+      enemySpeed: 1,
+      enemyDamage: 1,
+      spawnDelaySeconds: 1,
+    },
+    byPlayerLevel: {
+      1: { maxWaves: 1, enemyLevel: 1, enemyCount: 6, enemyHp: 10, enemySpeed: 1, enemyDamage: 1, spawnDelaySeconds: 1 },
+      2: { maxWaves: 2, enemyLevel: 2, enemyCount: 8, enemyHp: 12, enemySpeed: 1.05, enemyDamage: 1.1, spawnDelaySeconds: 0.95 },
+      3: { maxWaves: 3, enemyLevel: 3, enemyCount: 10, enemyHp: 14, enemySpeed: 1.1, enemyDamage: 1.2, spawnDelaySeconds: 0.9 },
+      4: { maxWaves: 4, enemyLevel: 4, enemyCount: 12, enemyHp: 16, enemySpeed: 1.15, enemyDamage: 1.3, spawnDelaySeconds: 0.85 },
+    },
+  },
+
   // ===============================
   // ===============================
   // PANEL STATIC CONFIG (UI ONLY)
@@ -641,6 +673,14 @@ const Utils = {
       },
     ],
   },
+};
+
+
+Utils.EnemyData.byLevel = {
+  1: { ...Utils.EnemyData.default, image: Utils.Images.Enemies.E1 },
+  2: { ...Utils.EnemyData.default, image: Utils.Images.Enemies.E2 },
+  3: { ...Utils.EnemyData.default, image: Utils.Images.Enemies.E3 },
+  4: { ...Utils.EnemyData.default, image: Utils.Images.Enemies.E4 },
 };
 
 const game = new Game();
