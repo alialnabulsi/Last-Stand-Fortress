@@ -70,10 +70,14 @@ class Spawner extends Sprite {
 
     if (!this.spawn) {
       this.spawnElapsedMs = 0;
+      this.lastSpawnTickAt = 0;
       return false;
     }
 
-    if (panel && !panel.canRuntimeUpdate()) return false;
+    if (panel && !panel.canRuntimeUpdate()) {
+      this.lastSpawnTickAt = 0;
+      return false;
+    }
 
     this.animateSpawner();
     this.spawnEnemies(arrayOfSprites, panel);

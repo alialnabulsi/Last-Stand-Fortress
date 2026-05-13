@@ -19,7 +19,8 @@ class GameLevel extends Level {
     }
     if (!panel) return;
 
-    this.changeMapForPlayerLevel(panel.playerState.level);
+    const level = panel.defenseState ? panel.defenseState.currentLevel : panel.playerState.level;
+    this.changeMapForPlayerLevel(level);
   }
 
   findPanel() {

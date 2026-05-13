@@ -312,11 +312,7 @@ class Panel extends Sprite {
       didLevelUp = true;
     }
 
-    if (didLevelUp && this.game.currentGameLevel) {
-      this.game.currentGameLevel.changeMapForPlayerLevel(
-        this.playerState.level,
-      );
-    }
+    if (didLevelUp) this.updateEnemyInfo();
   }
 
   getLevelWaveConfig(level) {
@@ -510,8 +506,10 @@ class Panel extends Sprite {
   }
 
   onDefenseStarted() {
+    this.updateEnemyInfo();
     this.resetWaveRuntimeCounters();
     this.defenseState.waveActive = true;
+    this.defenseState.waveCompleted = false;
   }
 
   onDefenseEnded({ townHallAlive = true } = {}) {
@@ -582,11 +580,8 @@ class Panel extends Sprite {
   tryCompleteWave() {
     const isDone = this.defenseState.spawnedEnemies >= this.defenseState.totalEnemiesThisWave && this.defenseState.activeEnemies === 0;
     if (!isDone || this.defenseState.waveCompleted) return;
-    this.defenseState.waveCompleted = true;
-    this.defenseState.waveActive = false;
-    this.defenseState.state = "IDLE";
-    const isFinalWave = this.defenseState.currentLevel === this.defenseState.maxLevel && this.defenseState.currentWave === this.defenseState.maxWaves;
-    if (isFinalWave) {
+    this.completeWave();
+    if (this.isFinalLevel() && this.isFinalWave()) {
       this.defenseState.finalProgressionCompleted = true;
       this.defenseState.winReady = this.townHallState.hp > 0;
       this.defenseState.pendingResultState = this.defenseState.winReady ? "WIN_READY" : this.defenseState.pendingResultState;
@@ -597,19 +592,73 @@ class Panel extends Sprite {
     this.advanceProgression();
   }
 
-  advanceProgression() {
-    if (this.defenseState.currentWave < this.defenseState.maxWaves) {
-      this.defenseState.currentWave += 1;
-      this.defenseState.levelCompleted = false;
-    } else {
-      this.defenseState.levelCompleted = true;
-      this.defenseState.currentLevel = Math.min(this.defenseState.maxLevel, this.defenseState.currentLevel + 1);
-      this.defenseState.currentWave = 1;
-      this.playerState.level = this.defenseState.currentLevel;
-      if (this.game.currentGameLevel) this.game.currentGameLevel.changeMapForPlayerLevel(this.playerState.level);
+  completeWave() {
+    this.defenseState.waveCompleted = true;
+    this.defenseState.waveActive = false;
+    this.defenseState.state = "IDLE";
+    this.defenseState.timerRunning = false;
+  }
+
+  isFinalLevel() {
+    return this.defenseState.currentLevel >= this.defenseState.maxLevel;
+  }
+
+  isFinalWave() {
+    return this.defenseState.currentWave >= this.defenseState.maxWaves;
+  }
+
+  advanceWave() {
+    if (this.isFinalWave()) return false;
+    this.defenseState.currentWave += 1;
+    this.defenseState.levelCompleted = false;
+    return true;
+  }
+
+  advanceLevel() {
+    if (this.isFinalLevel()) return false;
+    this.defenseState.levelCompleted = true;
+    this.defenseState.currentLevel += 1;
+    this.defenseState.currentWave = 1;
+    this.playerState.level = this.defenseState.currentLevel;
+    this.clearRuntimeEnemies();
+    if (this.game.currentGameLevel) {
+      this.game.currentGameLevel.changeMapForPlayerLevel(this.playerState.level);
     }
+    this.findTownHall(this.game.arrayOfSprites);
+    // TODO: Decide whether Town Hall HP should reset per level. Current behavior preserves HP across levels.
+    return true;
+  }
+
+  startPreparationForCurrentWave(message) {
+    this.defenseState.state = "PREPARATION";
+    this.defenseState.timerRunning = true;
+    this.defenseState.lastTickAt = performance.now();
+    this.onPlanningStarted();
     this.updateEnemyInfo();
-    this.setMessage(`Ready for Level ${this.defenseState.currentLevel} Wave ${this.defenseState.currentWave}. Press START.`);
+    this.setMessage(message);
+  }
+
+  clearRuntimeEnemies() {
+    if (!this.game || !Array.isArray(this.game.arrayOfSprites)) return;
+    this.game.arrayOfSprites = this.game.arrayOfSprites.filter(
+      (sprite) => !(sprite && sprite.isEnemy === true),
+    );
+    this.defenseState.activeEnemies = 0;
+  }
+
+  advanceProgression() {
+    if (this.advanceWave()) {
+      this.updateEnemyInfo();
+      this.startPreparationForCurrentWave(
+        `Wave ${this.defenseState.currentWave} is next. Prepare defenses.`,
+      );
+    } else {
+      if (!this.advanceLevel()) return;
+      this.updateEnemyInfo();
+      this.startPreparationForCurrentWave(
+        `Level ${this.defenseState.currentLevel} started. Prepare defenses.`,
+      );
+    }
   }
 
   updateTownHallInfo(townHall) {
