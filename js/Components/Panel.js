@@ -79,9 +79,12 @@ class Panel extends Sprite {
     this.defenseState = {
       state: "IDLE",
       preparationTimer: 120,
+      breakDurationSeconds: 10,
       breakTimer: 10,
       timerRunning: false,
       lastTickAt: 0,
+      breakLastTickAt: 0,
+      previousStateBeforeBreak: null,
       breaksUsed: 0,
       breaksAllowed: 3,
       enemyLevel: 1,
@@ -180,20 +183,24 @@ class Panel extends Sprite {
       gameBox.y + 75,
       120,
       44,
-      "TAKE BREAK",
+      this.getBreakButtonLabel(),
       () => {
+        if (this.isBreakActive()) {
+          this.endBreak({ manual: true });
+          return;
+        }
+
+        if (!this.canStartBreak()) {
+          this.setMessage("Break can only be used during preparation or defense.");
+          return;
+        }
+
         if (this.defenseState.breaksUsed >= this.defenseState.breaksAllowed) {
           this.setMessage("No breaks left.");
           return;
         }
 
-        this.defenseState.breaksUsed += 1;
-        this.defenseState.state = "BREAK";
-        this.defenseState.breakTimer = 10;
-        this.defenseState.timerRunning = true;
-        this.defenseState.lastTickAt = performance.now();
-        this.onDefenseEnded({ townHallAlive: true });
-        this.setMessage("Break activated.");
+        this.startBreak();
       },
       {
         icon: "☕",
@@ -297,6 +304,65 @@ class Panel extends Sprite {
     this.shopState.message = message;
   }
 
+  getBreakButtonLabel() {
+    const nextBreakNumber = this.defenseState.breaksUsed + 1;
+    return this.config.breakLabelTemplate.replace("{n}", nextBreakNumber);
+  }
+
+  canStartBreak() {
+    return (
+      this.defenseState.state === "PREPARATION" ||
+      this.defenseState.state === "UNDER_ATTACK"
+    );
+  }
+
+  isBreakActive() {
+    return this.defenseState.state === "BREAK";
+  }
+
+  isRuntimePaused() {
+    return this.isBreakActive();
+  }
+
+  canRuntimeUpdate() {
+    return !this.isRuntimePaused();
+  }
+
+  startBreak() {
+    const now = performance.now();
+    this.defenseState.previousStateBeforeBreak = this.defenseState.state;
+    this.defenseState.state = "BREAK";
+    this.defenseState.breakTimer = this.defenseState.breakDurationSeconds;
+    this.defenseState.breakLastTickAt = now;
+    this.setMessage("Break activated.");
+
+    // TODO: Runtime sprites (enemies/spawners/gold mines/towers) should find Panel
+    // and skip runtime updates when panel.canRuntimeUpdate() returns false.
+  }
+
+  endBreak({ manual = false } = {}) {
+    if (!this.isBreakActive()) return;
+
+    const resumeState =
+      this.defenseState.previousStateBeforeBreak === "PREPARATION"
+        ? "PREPARATION"
+        : "UNDER_ATTACK";
+
+    this.defenseState.state = resumeState;
+    this.defenseState.previousStateBeforeBreak = null;
+    this.defenseState.breakTimer = this.defenseState.breakDurationSeconds;
+    this.defenseState.breakLastTickAt = 0;
+    this.defenseState.breaksUsed += 1;
+    this.defenseState.lastTickAt = performance.now();
+
+    this.takeBreakButton.text = this.getBreakButtonLabel();
+    this.setMessage(
+      manual
+        ? `Break ended early. Resuming ${resumeState.toLowerCase()}.`
+        : `Break ended. Resuming ${resumeState.toLowerCase()}.`,
+    );
+  }
+
   findTownHall(arrayOfSprites) {
     const hasTownHallClass = typeof TownHall !== "undefined";
     for (let i = 0; i < arrayOfSprites.length; i++) {
@@ -339,9 +405,11 @@ class Panel extends Sprite {
     this.updateDefenseTimer();
 
     this.startDefenseButton.disabled =
-      this.defenseState.state === "UNDER_ATTACK";
+      this.defenseState.state === "UNDER_ATTACK" || this.isBreakActive();
     this.takeBreakButton.disabled =
+      (!this.canStartBreak() && !this.isBreakActive()) ||
       this.defenseState.breaksUsed >= this.defenseState.breaksAllowed;
+    this.takeBreakButton.text = this.getBreakButtonLabel();
     for (const btn of this.controlButtons)
       btn.update(arrayOfSprites, keys, mouse);
 
@@ -349,9 +417,23 @@ class Panel extends Sprite {
   }
 
   updateDefenseTimer() {
-    if (!this.defenseState.timerRunning) return;
-
     const now = performance.now();
+
+    if (this.defenseState.state === "BREAK") {
+      if (!this.defenseState.breakLastTickAt) this.defenseState.breakLastTickAt = now;
+      const breakElapsedSeconds = (now - this.defenseState.breakLastTickAt) / 1000;
+      this.defenseState.breakLastTickAt = now;
+      this.defenseState.breakTimer = Math.max(
+        0,
+        this.defenseState.breakTimer - breakElapsedSeconds,
+      );
+
+      if (this.defenseState.breakTimer === 0) this.endBreak();
+      return;
+    }
+
+    if (!this.defenseState.timerRunning || this.isRuntimePaused()) return;
+
     if (!this.defenseState.lastTickAt) this.defenseState.lastTickAt = now;
     const elapsedSeconds = (now - this.defenseState.lastTickAt) / 1000;
     this.defenseState.lastTickAt = now;
@@ -371,18 +453,6 @@ class Panel extends Sprite {
       return;
     }
 
-    if (this.defenseState.state === "BREAK") {
-      this.defenseState.breakTimer = Math.max(
-        0,
-        this.defenseState.breakTimer - elapsedSeconds,
-      );
-      if (this.defenseState.breakTimer === 0) {
-        this.defenseState.state = "UNDER_ATTACK";
-        this.defenseState.timerRunning = false;
-        this.onDefenseStarted();
-        this.setMessage("Break ended. Under attack.");
-      }
-    }
   }
 
   onPlanningStarted() {
@@ -502,10 +572,11 @@ class Panel extends Sprite {
 
     ctx.font = "14px Arial";
     ctx.fillStyle = style.mutedText;
-    const activeTimer =
-      this.defenseState.state === "BREAK"
-        ? this.defenseState.breakTimer
-        : this.defenseState.preparationTimer;
+    const activeTimer = this.isBreakActive()
+      ? this.defenseState.breakTimer
+      : this.defenseState.state === "PREPARATION"
+        ? this.defenseState.preparationTimer
+        : 0;
     ctx.fillText(
       `Timer: ${this.formatTimer(activeTimer)}`,
       gameBox.x + 20,

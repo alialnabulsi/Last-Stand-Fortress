@@ -552,6 +552,8 @@ const Utils = {
       info: "FORTRESS INFO",
     },
 
+    breakLabelTemplate: "Break {n}",
+
     style: {
       panelTop: "#3a2a1b",
       panelMiddle: "#1d1510",
