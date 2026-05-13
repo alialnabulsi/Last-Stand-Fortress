@@ -526,6 +526,16 @@ class Panel extends Sprite {
       `Wave ${this.defenseState.currentWave}: ${this.defenseState.spawnedEnemies}/${this.defenseState.totalEnemiesThisWave} enemies spawned.`,
     );
   }
+  onEnemyReachedTownHall(enemy) {
+    this.defenseState.activeEnemies = Math.max(
+      0,
+      this.defenseState.activeEnemies - 1,
+    );
+
+    // TODO: Replace/adjust this when full enemy/wave outcome logic is implemented.
+    this.setMessage(`An enemy reached the Town Hall.`);
+  }
+
   draw(ctx) {
     this.drawPanelBackground(ctx);
     this.drawSectionTitles(ctx);
