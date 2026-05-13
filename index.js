@@ -563,6 +563,11 @@ const Utils = {
     },
   },
 
+  TownHallData: {
+    // TODO: Replace/adjust this when full fortress upgrade/balance system is implemented.
+    maxHp: 1000,
+  },
+
   // ===============================
   // ===============================
   // PANEL STATIC CONFIG (UI ONLY)

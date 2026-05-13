@@ -18,6 +18,7 @@ class Enemy extends Sprite {
 
     this.alive = true;
     this.reachedTownHall = false;
+    this.hasDamagedTownHall = false;
     this.movementCompleted = false;
 
     this.routePoints = [];
@@ -183,13 +184,17 @@ class Enemy extends Sprite {
     this.movementCompleted = true;
     this.alive = false;
 
+    const townHall = this.findTownHallSprite();
+    if (townHall && !this.hasDamagedTownHall && typeof townHall.takeDamage === "function") {
+      townHall.takeDamage(this.damage);
+      this.hasDamagedTownHall = true;
+    }
+
     if (panel && typeof panel.onEnemyReachedTownHall === "function") {
-      panel.onEnemyReachedTownHall(this);
+      panel.onEnemyReachedTownHall(this, townHall);
     } else if (panel && panel.defenseState) {
       panel.defenseState.activeEnemies = Math.max(0, panel.defenseState.activeEnemies - 1);
     }
-
-    // TODO: Apply Town Hall damage when Town Hall damage system is implemented.
   }
 
   getTileCenter(tile) {
@@ -208,6 +213,17 @@ class Enemy extends Sprite {
     for (let i = 0; i < arrayOfSprites.length; i++) {
       const sprite = arrayOfSprites[i];
       if (sprite instanceof Panel) return sprite;
+    }
+    return null;
+  }
+
+  findTownHallSprite() {
+    if (!this.game || !Array.isArray(this.game.arrayOfSprites)) return null;
+    for (let i = 0; i < this.game.arrayOfSprites.length; i++) {
+      const sprite = this.game.arrayOfSprites[i];
+      if (sprite && (sprite.isTownHall === true || (typeof TownHall !== "undefined" && sprite instanceof TownHall))) {
+        return sprite;
+      }
     }
     return null;
   }

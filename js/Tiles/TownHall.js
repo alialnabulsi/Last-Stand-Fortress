@@ -18,8 +18,58 @@ class TownHall extends Sprite {
     this.level = level;
     this.frame = this.level - 1;
     this.isTownHall = true;
-    this.maxHp = 1000;
+    this.hpConfig = this.resolveTownHallConfig();
+    this.maxHp = this.hpConfig.maxHp;
     this.hp = this.maxHp;
+    this.destroyed = false;
+  }
+
+  resolveTownHallConfig() {
+    const townHallData =
+      this.game &&
+      this.game.currentGameLevel &&
+      this.game.currentGameLevel.utils &&
+      this.game.currentGameLevel.utils.TownHallData
+        ? this.game.currentGameLevel.utils.TownHallData
+        : null;
+
+    return {
+      // TODO: Replace/adjust this when full fortress upgrade/balance system is implemented.
+      maxHp:
+        townHallData && typeof townHallData.maxHp === "number"
+          ? townHallData.maxHp
+          : 1000,
+    };
+  }
+
+  takeDamage(amount) {
+    if (this.destroyed) return this.getHPInfo();
+    const damage = Math.max(0, Number(amount) || 0);
+    this.hp = Math.max(0, this.hp - damage);
+    if (this.hp <= 0) {
+      this.destroyed = true;
+      // TODO: Trigger final lose logic when wave progression/result system is implemented.
+    }
+    return this.getHPInfo();
+  }
+
+  isDestroyed() {
+    return this.destroyed;
+  }
+
+  getHPInfo() {
+    return {
+      hp: this.hp,
+      maxHp: this.maxHp,
+      destroyed: this.destroyed,
+      level: this.level,
+    };
+  }
+
+  resetHP() {
+    this.maxHp = this.resolveTownHallConfig().maxHp;
+    this.hp = this.maxHp;
+    this.destroyed = false;
   }
   setLevel(level) {
     this.level = Math.max(1, Math.min(4, level));

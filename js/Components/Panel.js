@@ -391,8 +391,7 @@ class Panel extends Sprite {
 
       if (sprite && (isTownHallInstance || sprite.isTownHall === true)) {
         this.townHallState.townHall = sprite;
-        this.townHallState.hp = sprite.hp;
-        this.townHallState.maxHp = sprite.maxHp;
+        this.updateTownHallInfo(sprite);
         return sprite;
       }
     }
@@ -404,8 +403,7 @@ class Panel extends Sprite {
   update(arrayOfSprites, keys, mouse) {
     if (!this.townHallState.townHall) this.findTownHall(arrayOfSprites);
     if (this.townHallState.townHall) {
-      this.townHallState.hp = this.townHallState.townHall.hp;
-      this.townHallState.maxHp = this.townHallState.townHall.maxHp;
+      this.updateTownHallInfo(this.townHallState.townHall);
       if (this.townHallState.hp <= 0 && !this.townHallDestroyedHandled) {
         this.townHallDestroyedHandled = true;
         this.onDefenseEnded({ townHallAlive: false });
@@ -534,6 +532,18 @@ class Panel extends Sprite {
 
     // TODO: Replace/adjust this when full enemy/wave outcome logic is implemented.
     this.setMessage(`An enemy reached the Town Hall.`);
+  }
+
+  updateTownHallInfo(townHall) {
+    if (!townHall) return;
+    if (typeof townHall.getHPInfo === "function") {
+      const hpInfo = townHall.getHPInfo();
+      this.townHallState.hp = hpInfo.hp;
+      this.townHallState.maxHp = hpInfo.maxHp;
+      return;
+    }
+    this.townHallState.hp = townHall.hp;
+    this.townHallState.maxHp = townHall.maxHp;
   }
 
   draw(ctx) {
