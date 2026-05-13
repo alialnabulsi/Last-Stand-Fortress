@@ -17,6 +17,7 @@ class Enemy extends Sprite {
     this.damage = enemyConfig.damage;
 
     this.alive = true;
+    this.handled = false;
     this.reachedTownHall = false;
     this.hasDamagedTownHall = false;
     this.movementCompleted = false;
@@ -50,7 +51,7 @@ class Enemy extends Sprite {
 
   update(arrayOfSprites) {
     const panel = this.findPanelSprite(arrayOfSprites);
-    if (!panel || !this.shouldMove(panel)) return false;
+    if (!panel || !this.shouldMove(panel) || !this.isAlive()) return false;
 
     if (!this.routeBuilt) this.buildRouteFromLevel();
 
@@ -178,11 +179,12 @@ class Enemy extends Sprite {
   }
 
   markReachedTownHall(panel) {
-    if (this.reachedTownHall) return;
+    if (this.reachedTownHall || this.handled) return;
 
     this.reachedTownHall = true;
     this.movementCompleted = true;
     this.alive = false;
+    this.handled = true;
 
     const townHall = this.findTownHallSprite();
     if (townHall && !this.hasDamagedTownHall && typeof townHall.takeDamage === "function") {
@@ -195,6 +197,27 @@ class Enemy extends Sprite {
     } else if (panel && panel.defenseState) {
       panel.defenseState.activeEnemies = Math.max(0, panel.defenseState.activeEnemies - 1);
     }
+  }
+
+  isAlive() {
+    return this.alive && !this.handled && !this.reachedTownHall;
+  }
+
+  takeDamage(amount) {
+    if (!this.isAlive()) return false;
+    const damage = Math.max(0, amount || 0);
+    if (damage <= 0) return false;
+    this.hp = Math.max(0, this.hp - damage);
+    if (this.hp <= 0) this.die();
+    return true;
+  }
+
+  die() {
+    if (!this.isAlive()) return;
+    this.alive = false;
+    this.handled = true;
+    const panel = this.findPanelSprite(this.game && this.game.arrayOfSprites ? this.game.arrayOfSprites : []);
+    if (panel && typeof panel.onEnemyKilled === "function") panel.onEnemyKilled(this);
   }
 
   getTileCenter(tile) {
@@ -229,7 +252,7 @@ class Enemy extends Sprite {
   }
 
   draw(ctx) {
-    if (!this.alive) return;
+    if (!this.isAlive()) return;
 
     if (this.image) {
       ctx.drawImage(

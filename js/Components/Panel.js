@@ -537,6 +537,10 @@ class Panel extends Sprite {
     this.defenseState.currentLevelRemainingEnemies = Math.max(0, this.defenseState.currentLevelTotalEnemies - this.defenseState.completedEnemies);
     this.tryCompleteWave();
   }
+  onEnemyKilled(enemy) {
+    this.onEnemyHandled();
+    this.setMessage("An enemy was defeated.");
+  }
   onEnemyReachedTownHall(enemy) {
     this.onEnemyHandled();
     this.setMessage(`An enemy reached the Town Hall.`);
