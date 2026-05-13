@@ -30,9 +30,24 @@ class Buildable extends Sprite {
 
   tryPlaceSelectedItem(arrayOfSprites) {
     const panel = this.findPanel(arrayOfSprites);
-    if (!panel || !panel.shopState.selectedItem) return;
+    if (!panel) return;
+    if (!panel.shopState.selectedItem) {
+      panel.setMessage("Select an item before placing.");
+      this.flashUntil = performance.now() + 220;
+      return;
+    }
+    if (!panel.canPlaceDuringCurrentPhase()) {
+      panel.setMessage("Placement is only allowed during preparation or under attack.");
+      this.flashUntil = performance.now() + 220;
+      return;
+    }
     if (panel.isRuntimePaused()) {
       panel.setMessage("Cannot place while on break.");
+      return;
+    }
+    if (panel.shopState.selectedItem.id === "buildable_tile") {
+      panel.setMessage("Build Tile can only be placed on grass.");
+      this.flashUntil = performance.now() + 220;
       return;
     }
     if (this.occupied || !this.canPlaceObject) {

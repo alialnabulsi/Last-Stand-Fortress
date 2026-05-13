@@ -237,7 +237,8 @@ class Panel extends Sprite {
 
     this.shopState.selectedItem = { ...item, ...rule };
     this.shopState.selectedItemId = item.id;
-    this.setMessage(`${item.fullName} selected. Click a buildable tile to place it.`);
+    const targetHint = item.id === "buildable_tile" ? "grass" : "buildable tile";
+    this.setMessage(`${item.fullName} selected. Click ${targetHint} to place it.`);
   }
 
   clearSelection() {
@@ -318,6 +319,14 @@ class Panel extends Sprite {
   }
 
   canStartBreak() {
+    return (
+      this.defenseState.state === "PREPARATION" ||
+      this.defenseState.state === "UNDER_ATTACK"
+    );
+  }
+
+
+  canPlaceDuringCurrentPhase() {
     return (
       this.defenseState.state === "PREPARATION" ||
       this.defenseState.state === "UNDER_ATTACK"

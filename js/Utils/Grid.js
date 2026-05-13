@@ -70,11 +70,11 @@ class Grid extends Sprite {
         const image = this.getTileImage(tileType);
         switch (tileType) {
           case this.TILE_TYPES.GRASS:
-            sprites.push(new Grass(x, y, this.cellSize, image));
+            sprites.push(new Grass(x, y, this.cellSize, image, row, col));
             break;
 
           case this.TILE_TYPES.BUILDABLE:
-            sprites.push(new Buildable(x, y, this.cellSize, image));
+            sprites.push(new Buildable(x, y, this.cellSize, image, row, col));
             break;
 
           case this.TILE_TYPES.TOWN_HALL:
