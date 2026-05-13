@@ -8,15 +8,30 @@ class Button extends Sprite {
         this.text = text;
         this.onClick = onClick;
         this.isHovered = false;
+        this.wasMouseDown = false;
+        this.pressStartedInside = false;
     }
 
     update(arrayOfSprites, keys, mouse) {
         this.isHovered = this.isMouseOver(mouse);
 
-        if (mouse.clicked && this.isHovered) {
-            this.onClick();
-            mouse.clicked = false; // Prevent multiple triggers
+        const isMouseDown = !!mouse?.down;
+        const justPressed = isMouseDown && !this.wasMouseDown;
+        const justReleased = !isMouseDown && this.wasMouseDown;
+
+        if (justPressed) {
+            this.pressStartedInside = this.isHovered;
         }
+
+        if (justReleased && this.pressStartedInside && this.isHovered) {
+            this.onClick();
+        }
+
+        if (!isMouseDown) {
+            this.pressStartedInside = false;
+        }
+
+        this.wasMouseDown = isMouseDown;
     }
 
     isMouseOver(mouse) {

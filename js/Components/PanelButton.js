@@ -18,6 +18,8 @@ class PanelButton extends Sprite {
     this.disabled = false;
     this.selected = false;
     this.hovered = false;
+    this.wasMouseDown = false;
+    this.pressStartedInside = false;
 
     this.style = options.style || {};
   }
@@ -29,10 +31,23 @@ class PanelButton extends Sprite {
       mouse.y >= this.y &&
       mouse.y <= this.y + this.height;
 
-    if (this.hovered && mouse.clicked && !this.disabled) {
-      if (this.onClick) this.onClick();
-      mouse.clicked = false;
+    const isMouseDown = !!mouse?.down;
+    const justPressed = isMouseDown && !this.wasMouseDown;
+    const justReleased = !isMouseDown && this.wasMouseDown;
+
+    if (justPressed) {
+      this.pressStartedInside = this.hovered;
     }
+
+    if (justReleased && this.pressStartedInside && this.hovered && !this.disabled) {
+      if (this.onClick) this.onClick();
+    }
+
+    if (!isMouseDown) {
+      this.pressStartedInside = false;
+    }
+
+    this.wasMouseDown = isMouseDown;
 
     return false;
   }
