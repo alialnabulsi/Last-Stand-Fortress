@@ -381,6 +381,16 @@ class Panel extends Sprite {
   }
 
   findTownHall(arrayOfSprites) {
+    const activeLevel = this.game && this.game.currentGameLevel ? this.game.currentGameLevel : null;
+    if (activeLevel && typeof activeLevel.getTownHallTile === "function") {
+      const levelTownHall = activeLevel.getTownHallTile();
+      if (levelTownHall && this.isTownHallSpriteActive(levelTownHall, arrayOfSprites)) {
+        this.townHallState.townHall = levelTownHall;
+        this.updateTownHallInfo(levelTownHall);
+        return levelTownHall;
+      }
+    }
+
     const hasTownHallClass = typeof TownHall !== "undefined";
     for (let i = 0; i < arrayOfSprites.length; i++) {
       const sprite = arrayOfSprites[i];
@@ -397,7 +407,15 @@ class Panel extends Sprite {
     return null;
   }
 
+  isTownHallSpriteActive(townHall, arrayOfSprites) {
+    if (!townHall || !Array.isArray(arrayOfSprites)) return false;
+    return arrayOfSprites.includes(townHall);
+  }
+
   update(arrayOfSprites, keys, mouse) {
+    if (!this.isTownHallSpriteActive(this.townHallState.townHall, arrayOfSprites)) {
+      this.townHallState.townHall = null;
+    }
     if (!this.townHallState.townHall) this.findTownHall(arrayOfSprites);
     if (this.townHallState.townHall) {
       this.updateTownHallInfo(this.townHallState.townHall);
@@ -491,9 +509,12 @@ class Panel extends Sprite {
       this.defenseState.loseReady = true;
       this.defenseState.gameOverPending = true;
       this.defenseState.pendingResultState = "LOSE_READY";
+      this.defenseState.finalProgressionCompleted = true;
       this.defenseState.state = "IDLE";
       this.defenseState.waveActive = false;
       this.defenseState.timerRunning = false;
+      this.clearRuntimeEnemies();
+      this.resetSpawnerRuntimeCounters();
       // TODO: Trigger final lose message/screen in the result system task.
       this.setMessage("Town Hall destroyed. Defense failed.");
     }
@@ -569,7 +590,7 @@ class Panel extends Sprite {
   }
   onEnemyReachedTownHall(enemy) {
     this.onEnemyHandled();
-    this.setMessage(`An enemy reached the Town Hall.`);
+    this.setMessage(`An enemy reached the Town Hall for ${enemy && enemy.damage ? enemy.damage : 0} damage.`);
   }
   onEnemyPathFailed(enemy) {
     this.onEnemyHandled();
@@ -862,6 +883,16 @@ class Panel extends Sprite {
       gameBox.x + 20,
       gameBox.y + 186,
     );
+
+    if (this.defenseState.pendingResultState === "WIN_READY") {
+      ctx.fillStyle = "#2ecc71";
+      ctx.font = "bold 14px Arial";
+      ctx.fillText("VICTORY: Final wave cleared!", gameBox.x + 20, gameBox.y + 206);
+    } else if (this.defenseState.pendingResultState === "LOSE_READY") {
+      ctx.fillStyle = "#e74c3c";
+      ctx.font = "bold 14px Arial";
+      ctx.fillText("DEFEAT: Town Hall destroyed.", gameBox.x + 20, gameBox.y + 206);
+    }
 
     for (const btn of this.controlButtons) btn.draw(ctx);
     ctx.restore();

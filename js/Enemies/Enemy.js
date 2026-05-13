@@ -263,6 +263,13 @@ class Enemy extends Sprite {
   }
 
   findTownHallSprite() {
+    const level = this.game ? this.game.currentGameLevel : null;
+    if (level && typeof level.getTownHallTile === "function") {
+      const activeTownHall = level.getTownHallTile();
+      if (activeTownHall && this.game && Array.isArray(this.game.arrayOfSprites) && this.game.arrayOfSprites.includes(activeTownHall)) {
+        return activeTownHall;
+      }
+    }
     if (!this.game || !Array.isArray(this.game.arrayOfSprites)) return null;
     for (let i = 0; i < this.game.arrayOfSprites.length; i++) {
       const sprite = this.game.arrayOfSprites[i];
