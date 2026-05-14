@@ -786,6 +786,13 @@ const Utils = {
       frameWidth: 40,
       frameHeight: 40,
     },
+    animation: {
+      totalFrames: 14,
+      walkFrames: [3, 4, 5, 6, 7, 8],
+      deathFrames: [11, 12, 13],
+      frameDurationMs: 110,
+      deathFrameDurationMs: 135,
+    },
     byLevel: {
       1: { image: (() => { const img = new Image(); img.src = "images/SpriteSheets/Enemies/1.png"; return img; })(), maxHp: 10, speed: 1, damage: 1, frameWidth: 40, frameHeight: 40 },
       2: { image: (() => { const img = new Image(); img.src = "images/SpriteSheets/Enemies/2.png"; return img; })(), maxHp: 10, speed: 1, damage: 1, frameWidth: 40, frameHeight: 40 },

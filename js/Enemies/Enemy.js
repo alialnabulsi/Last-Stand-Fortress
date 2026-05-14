@@ -18,6 +18,8 @@ class Enemy extends Sprite {
 
     this.alive = true;
     this.handled = false;
+    this.isDying = false;
+    this.deathAnimationDone = false;
     this.reachedTownHall = false;
     this.hasDamagedTownHall = false;
     this.movementCompleted = false;
@@ -26,10 +28,40 @@ class Enemy extends Sprite {
     this.routeIndex = 0;
     this.routeBuilt = false;
 
-    this.frame = 0;
+    this.animationConfig = this.getAnimationConfig();
+    this.frame = this.animationConfig.walkFrames[0] || 0;
+    this.animationFrameIndex = 0;
+    this.animationElapsedMs = 0;
+    this.lastAnimationAt = this.getNow();
     this.frameWidth = enemyConfig.frameWidth || 40;
     this.frameHeight = enemyConfig.frameHeight || 40;
     this.image = enemyConfig.image;
+  }
+
+  getAnimationConfig() {
+    const enemyData = this.utils && this.utils.EnemyData ? this.utils.EnemyData : {};
+    const animation = enemyData.animation || {};
+    return {
+      walkFrames: Array.isArray(animation.walkFrames) && animation.walkFrames.length > 0
+        ? animation.walkFrames
+        : [3, 4, 5, 6, 7, 8],
+      deathFrames: Array.isArray(animation.deathFrames) && animation.deathFrames.length > 0
+        ? animation.deathFrames
+        : [11, 12, 13],
+      frameDurationMs: animation.frameDurationMs || 110,
+      deathFrameDurationMs: animation.deathFrameDurationMs || animation.frameDurationMs || 135,
+    };
+  }
+
+  getNow() {
+    return typeof performance !== "undefined" && performance.now ? performance.now() : Date.now();
+  }
+
+  getAnimationDelta() {
+    const now = this.getNow();
+    const delta = now - this.lastAnimationAt;
+    this.lastAnimationAt = now;
+    return Math.max(0, delta);
   }
 
   getEnemyConfig(config) {
@@ -50,8 +82,12 @@ class Enemy extends Sprite {
   }
 
   update(arrayOfSprites) {
+    if (this.isDying) return this.updateDeathAnimation();
+
     const panel = this.findPanelSprite(arrayOfSprites);
     if (!panel || !this.shouldMove(panel) || !this.isAlive()) return false;
+
+    this.updateWalkAnimation();
 
     if (!this.routeBuilt) this.buildRouteFromLevel();
 
@@ -73,6 +109,39 @@ class Enemy extends Sprite {
     }
 
     return !this.alive;
+  }
+
+  updateWalkAnimation() {
+    const frames = this.animationConfig.walkFrames;
+    if (frames.length <= 1) {
+      this.frame = frames[0] || 0;
+      this.getAnimationDelta();
+      return;
+    }
+
+    this.animationElapsedMs += this.getAnimationDelta();
+    while (this.animationElapsedMs >= this.animationConfig.frameDurationMs) {
+      this.animationElapsedMs -= this.animationConfig.frameDurationMs;
+      this.animationFrameIndex = (this.animationFrameIndex + 1) % frames.length;
+    }
+    this.frame = frames[this.animationFrameIndex];
+  }
+
+  updateDeathAnimation() {
+    const frames = this.animationConfig.deathFrames;
+    if (this.deathAnimationDone || frames.length === 0) return true;
+
+    this.animationElapsedMs += this.getAnimationDelta();
+    while (this.animationElapsedMs >= this.animationConfig.deathFrameDurationMs) {
+      this.animationElapsedMs -= this.animationConfig.deathFrameDurationMs;
+      this.animationFrameIndex += 1;
+      if (this.animationFrameIndex >= frames.length) {
+        this.deathAnimationDone = true;
+        return true;
+      }
+    }
+    this.frame = frames[Math.min(this.animationFrameIndex, frames.length - 1)];
+    return false;
   }
 
   shouldMove(panel) {
@@ -222,7 +291,7 @@ class Enemy extends Sprite {
   }
 
   isAlive() {
-    return this.alive && !this.handled && !this.reachedTownHall;
+    return this.alive && !this.handled && !this.reachedTownHall && !this.isDying;
   }
 
   takeDamage(amount) {
@@ -238,6 +307,12 @@ class Enemy extends Sprite {
     if (!this.isAlive()) return;
     this.alive = false;
     this.handled = true;
+    this.isDying = true;
+    this.deathAnimationDone = false;
+    this.animationFrameIndex = 0;
+    this.animationElapsedMs = 0;
+    this.lastAnimationAt = this.getNow();
+    this.frame = this.animationConfig.deathFrames[0] || this.frame;
     const panel = this.findPanelSprite(this.game && this.game.arrayOfSprites ? this.game.arrayOfSprites : []);
     if (panel && typeof panel.onEnemyKilled === "function") panel.onEnemyKilled(this);
   }
@@ -281,7 +356,7 @@ class Enemy extends Sprite {
   }
 
   draw(ctx) {
-    if (!this.isAlive()) return;
+    if (!this.isAlive() && !this.isDying) return;
 
     if (this.image) {
       ctx.drawImage(
