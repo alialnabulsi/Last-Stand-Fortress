@@ -34,7 +34,6 @@ class TownHall extends Sprite {
         : null;
 
     return {
-      // TODO: Replace/adjust this when full fortress upgrade/balance system is implemented.
       maxHp:
         townHallData && typeof townHallData.maxHp === "number"
           ? townHallData.maxHp
@@ -48,7 +47,6 @@ class TownHall extends Sprite {
     this.hp = Math.max(0, this.hp - damage);
     if (this.hp <= 0) {
       this.destroyed = true;
-      // TODO: Trigger final lose logic when wave progression/result system is implemented.
     }
     return this.getHPInfo();
   }

@@ -134,10 +134,10 @@ class Panel extends Sprite {
     const gameBox = this.config.layout.game;
 
     this.startDefenseButton = new PanelButton(
-      gameBox.x + 16,
-      gameBox.y + 75,
-      120,
-      44,
+      gameBox.x + 18,
+      gameBox.y + 132,
+      100,
+      40,
       "START",
       () => {
         if (this.defenseState.gameOverPending || this.defenseState.finalProgressionCompleted) {
@@ -169,10 +169,10 @@ class Panel extends Sprite {
     );
 
     this.takeBreakButton = new PanelButton(
-      gameBox.x + 150,
-      gameBox.y + 75,
-      120,
-      44,
+      gameBox.x + 151,
+      gameBox.y + 132,
+      116,
+      40,
       this.getBreakButtonLabel(),
       () => {
         if (this.isBreakActive()) {
@@ -318,6 +318,7 @@ class Panel extends Sprite {
   }
 
   getBreakButtonLabel() {
+    if (this.isBreakActive()) return "Skip Break";
     const nextBreakNumber = this.defenseState.breaksUsed + 1;
     return this.config.breakLabelTemplate.replace("{n}", nextBreakNumber);
   }
@@ -447,6 +448,9 @@ class Panel extends Sprite {
       (!this.canStartBreak() && !this.isBreakActive()) ||
       this.defenseState.breaksUsed >= this.defenseState.breaksAllowed;
     this.takeBreakButton.text = this.getBreakButtonLabel();
+    this.takeBreakButton.description = this.isBreakActive()
+      ? "Resume now"
+      : "Pause phase";
     for (const btn of this.controlButtons)
       btn.update(arrayOfSprites, keys, mouse);
 
@@ -823,20 +827,22 @@ class Panel extends Sprite {
   drawDefenseSection(ctx) {
     const gameBox = this.config.layout.game;
     const style = this.config.style;
+    const leftX = gameBox.x + 18;
+    const rightX = gameBox.x + 145;
 
     ctx.save();
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
-    ctx.font = "bold 15px Arial";
+    ctx.font = "bold 14px Arial";
     ctx.fillStyle = style.textColor;
 
     ctx.fillText(
       `Phase: ${this.getPhaseLabel()}`,
-      gameBox.x + 20,
-      gameBox.y + 45,
+      leftX,
+      gameBox.y + 42,
     );
 
-    ctx.font = "14px Arial";
+    ctx.font = "13px Arial";
     ctx.fillStyle = style.mutedText;
     const activeTimer = this.isBreakActive()
       ? this.defenseState.breakTimer
@@ -844,60 +850,59 @@ class Panel extends Sprite {
         ? this.defenseState.preparationTimer
         : 0;
     ctx.fillText(
-      `Level: ${this.defenseState.currentLevel}/${this.defenseState.maxLevel}`,
-      gameBox.x + 20,
-      gameBox.y + 112,
-    );
-    ctx.fillText(
       `Timer: ${this.formatTimer(activeTimer)}`,
-      gameBox.x + 20,
-      gameBox.y + 130,
+      rightX,
+      gameBox.y + 43,
     );
     ctx.fillText(
-      `Enemy Lvl: ${this.defenseState.enemyLevel}`,
-      gameBox.x + 20,
-      gameBox.y + 150,
+      `Level ${this.defenseState.currentLevel}/${this.defenseState.maxLevel}`,
+      leftX,
+      gameBox.y + 68,
     );
     ctx.fillText(
-      `Wave: ${this.defenseState.currentWave}/${this.defenseState.maxWaves}`,
-      gameBox.x + 150,
-      gameBox.y + 130,
+      `Wave ${this.defenseState.currentWave}/${this.defenseState.maxWaves}`,
+      rightX,
+      gameBox.y + 68,
     );
     ctx.fillText(
-      `Enemy HP: x${this.defenseState.enemyHp.toFixed(2)}`,
-      gameBox.x + 150,
-      gameBox.y + 150,
+      `Enemy Lv ${this.defenseState.enemyLevel}`,
+      leftX,
+      gameBox.y + 88,
     );
     ctx.fillText(
-      `Enemy Spd: x${this.defenseState.enemySpeed.toFixed(2)}`,
-      gameBox.x + 20,
-      gameBox.y + 168,
-    );
-
-    ctx.fillText(
-      `Wave Progress: ${this.defenseState.defeatedEnemies}/${this.defenseState.totalEnemiesThisWave}`,
-      gameBox.x + 150,
-      gameBox.y + 168,
+      `HP x${this.defenseState.enemyHp.toFixed(2)}`,
+      rightX,
+      gameBox.y + 88,
     );
     ctx.fillText(
-      `Enemies Alive: ${this.defenseState.activeEnemies}`,
-      gameBox.x + 150,
-      gameBox.y + 186,
+      `Speed x${this.defenseState.enemySpeed.toFixed(2)}`,
+      leftX,
+      gameBox.y + 108,
     );
     ctx.fillText(
-      `Level Left: ${this.defenseState.currentLevelRemainingEnemies}`,
-      gameBox.x + 20,
-      gameBox.y + 186,
+      `Defeated ${this.defenseState.defeatedEnemies}/${this.defenseState.totalEnemiesThisWave}`,
+      rightX,
+      gameBox.y + 108,
     );
-
     if (this.defenseState.pendingResultState === "WIN_READY") {
       ctx.fillStyle = "#2ecc71";
-      ctx.font = "bold 14px Arial";
-      ctx.fillText("VICTORY: Final wave cleared!", gameBox.x + 20, gameBox.y + 206);
+      ctx.font = "bold 12px Arial";
+      ctx.fillText("VICTORY: Final wave cleared!", leftX, gameBox.y + 122);
     } else if (this.defenseState.pendingResultState === "LOSE_READY") {
       ctx.fillStyle = "#e74c3c";
-      ctx.font = "bold 14px Arial";
-      ctx.fillText("DEFEAT: Town Hall destroyed.", gameBox.x + 20, gameBox.y + 206);
+      ctx.font = "bold 12px Arial";
+      ctx.fillText("DEFEAT: Town Hall destroyed.", leftX, gameBox.y + 122);
+    } else {
+      ctx.fillText(
+        `Alive ${this.defenseState.activeEnemies}`,
+        leftX,
+        gameBox.y + 124,
+      );
+      ctx.fillText(
+        `Level Left ${this.defenseState.currentLevelRemainingEnemies}`,
+        rightX,
+        gameBox.y + 124,
+      );
     }
 
     for (const btn of this.controlButtons) btn.draw(ctx);

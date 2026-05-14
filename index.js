@@ -19,6 +19,125 @@ const Utils = {
         "Defend your Bastion… or lose everything.",
       ],
     },
+    HelpLevel: {
+      helpLines: [
+        "Objective: defend your Town Hall from every enemy wave.",
+        "Start by placing Buildable foundations on grass where you want to construct.",
+        "Towers, buildings, and mines can only be placed on Buildable foundations.",
+        "Waves begin after the build phase and get stronger as levels progress.",
+        "Protect the Town Hall at all costs. If it falls, you lose the game.",
+        "Win by surviving the waves and clearing each map level.",
+      ],
+    },
+  },
+
+  LevelScreens: {
+    MenuLevel: {
+      title: {
+        x: 800,
+        y: 260,
+        style: {
+          color: "#e8d174",
+          font: "bold 64px Georgia",
+          shadow: false,
+          stroke: false,
+        },
+      },
+      subtitle: {
+        x: 800,
+        y: 325,
+        text: "Defend the Town Hall. Survive every wave.",
+        style: {
+          color: "#f4f1e6",
+          font: "26px Georgia",
+          shadow: true,
+          stroke: true,
+        },
+      },
+      buttons: {
+        x: 650,
+        width: 300,
+        height: 56,
+        startY: 430,
+        gapY: 85,
+      },
+      sound: {
+        id: "entryMusic",
+        volume: 0.8,
+      },
+    },
+
+    StoryLevel: {
+      title: {
+        x: 800,
+        y: 110,
+        text: "Story",
+        style: {
+          font: "bold 58px Georgia",
+          color: "#e8d174",
+          shadow: true,
+          stroke: true,
+        },
+      },
+      lines: {
+        x: 800,
+        startY: 235,
+        gapY: 85,
+        maxWidth: 1380,
+        style: {
+          font: "30px Georgia",
+          color: "#f2f2f2",
+          shadow: true,
+          stroke: true,
+        },
+        lastLineStyle: {
+          font: "bold 36px Georgia",
+          color: "#ffd27d",
+          shadow: true,
+          stroke: true,
+        },
+      },
+      backButton: {
+        x: 100,
+        y: 800,
+        width: 300,
+        height: 56,
+      },
+    },
+
+    HelpLevel: {
+      title: {
+        x: 800,
+        y: 115,
+        text: "How to Play",
+        style: {
+          color: "#e8d174",
+          font: "bold 58px Georgia",
+          shadow: true,
+          stroke: true,
+        },
+      },
+      lines: {
+        x: 190,
+        startY: 220,
+        gapY: 88,
+        style: {
+          color: "#f7f6f2",
+          font: "29px Georgia",
+          align: "left",
+          baseline: "middle",
+          maxWidth: 1220,
+          shadow: true,
+          stroke: true,
+        },
+      },
+      backButton: {
+        x: 100,
+        y: 800,
+        width: 300,
+        height: 56,
+      },
+    },
   },
   //Tiles
   TILE_TYPES: {
@@ -533,17 +652,16 @@ const Utils = {
 
 
   ShopItemsData: {
-    buildable_tile: { id: "buildable_tile", type: "foundation", cost: 20, unlockLevel: 1, placement: "grass", image: null, placeholderColor: "#5c6b73", frameWidth: 40, frameHeight: 40, idleFrameCount: 1, frameDurationMs: 200 },
-    gold_mine: { id: "gold_mine", type: "resource", cost: 95, unlockLevel: 1, placement: "buildable", image: null, placeholderColor: "#d6b14a", frameWidth: 256, frameHeight: 256, idleFrameCount: 6, frameDurationMs: 130, productionAmount: 12, productionIntervalMs: 4500 },
-    barracks: { id: "barracks", type: "military", cost: 140, unlockLevel: 2, placement: "buildable", image: null, placeholderColor: "#8e9aa7", frameWidth: 256, frameHeight: 256, idleFrameCount: 6, frameDurationMs: 150, troopCapacityBonus: 10 },
-    archer: { id: "archer", type: "defense", cost: 70, unlockLevel: 1, placement: "buildable", image: null, placeholderColor: "#7cb342", frameWidth: 256, frameHeight: 256, idleFrameCount: 6, attackFrameStart: 6, attackFrameCount: 6, frameDurationMs: 110, range: 120, damage: 4, attackCooldownMs: 550, targetType: "ground" },
-    cannon: { id: "cannon", type: "defense", cost: 125, unlockLevel: 2, placement: "buildable", image: null, placeholderColor: "#616161", frameWidth: 256, frameHeight: 256, idleFrameCount: 6, attackFrameStart: 6, attackFrameCount: 6, frameDurationMs: 125, range: 130, damage: 10, attackCooldownMs: 1100, targetType: "ground" },
-    wizard: { id: "wizard", type: "defense", cost: 195, unlockLevel: 3, placement: "buildable", image: null, placeholderColor: "#9575cd", frameWidth: 256, frameHeight: 256, idleFrameCount: 6, attackFrameStart: 6, attackFrameCount: 6, frameDurationMs: 120, range: 150, damage: 8, attackCooldownMs: 800, targetType: "ground" },
-    inferno_tower: { id: "inferno_tower", type: "defense", cost: 290, unlockLevel: 4, placement: "buildable", image: null, placeholderColor: "#ef6c00", frameWidth: 256, frameHeight: 256, idleFrameCount: 6, attackFrameStart: 6, attackFrameCount: 6, frameDurationMs: 110, range: 165, damage: 16, attackCooldownMs: 1400, targetType: "ground" },
+    buildable_tile: { id: "buildable_tile", type: "foundation", cost: 1, unlockLevel: 1, placement: "grass", image: (() => { const img = new Image(); img.src = "images/SpriteSheets/Shop/Buildable.png"; return img; })(), placeholderColor: "#5c6b73", frameWidth: 40, frameHeight: 40, idleFrameCount: 1, frameDurationMs: 200 },
+    gold_mine: { id: "gold_mine", type: "resource", cost: 1, unlockLevel: 1, placement: "buildable", image: (() => { const img = new Image(); img.src = "images/SpriteSheets/Shop/GoldMine.png"; return img; })(), placeholderColor: "#d6b14a", frameWidth: 40, frameHeight: 40, idleFrameCount: 5, frameDurationMs: 130, productionAmount: 12, productionIntervalMs: 4500 },
+    barracks: { id: "barracks", type: "military", cost: 1, unlockLevel: 2, placement: "buildable", image: (() => { const img = new Image(); img.src = "images/SpriteSheets/Shop/Barrack.png"; return img; })(), placeholderColor: "#8e9aa7", frameWidth: 40, frameHeight: 40, idleFrameCount: 5, frameDurationMs: 150, troopCapacityBonus: 10 },
+    archer: { id: "archer", type: "defense", cost: 1, unlockLevel: 1, placement: "buildable", image: (() => { const img = new Image(); img.src = "images/SpriteSheets/Shop/Archer.png"; return img; })(), placeholderColor: "#7cb342", frameWidth: 40, frameHeight: 40, idleFrameCount: 1, attackFrameStart: 0, attackFrameCount: 5, frameDurationMs: 110, range: 120, damage: 4, attackCooldownMs: 550, targetType: "ground" },
+    cannon: { id: "cannon", type: "defense", cost: 1, unlockLevel: 2, placement: "buildable", image: (() => { const img = new Image(); img.src = "images/SpriteSheets/Shop/Cannon.png"; return img; })(), placeholderColor: "#616161", frameWidth: 40, frameHeight: 40, idleFrameCount: 1, attackFrameStart: 0, attackFrameCount: 5, frameDurationMs: 125, range: 130, damage: 10, attackCooldownMs: 1100, targetType: "ground" },
+    wizard: { id: "wizard", type: "defense", cost: 1, unlockLevel: 3, placement: "buildable", image: (() => { const img = new Image(); img.src = "images/SpriteSheets/Shop/Wizard.png"; return img; })(), placeholderColor: "#9575cd", frameWidth: 40, frameHeight: 40, idleFrameCount: 1, attackFrameStart: 0, attackFrameCount: 5, frameDurationMs: 120, range: 150, damage: 8, attackCooldownMs: 800, targetType: "ground" },
+    inferno_tower: { id: "inferno_tower", type: "defense", cost: 1, unlockLevel: 4, placement: "buildable", image: (() => { const img = new Image(); img.src = "images/SpriteSheets/Shop/Inferno.png"; return img; })(), placeholderColor: "#ef6c00", frameWidth: 40, frameHeight: 40, idleFrameCount: 1, attackFrameStart: 0, attackFrameCount: 5, frameDurationMs: 110, range: 165, damage: 16, attackCooldownMs: 1400, targetType: "ground" },
   },
 
   EnemyData: {
-    // TODO: Replace/adjust this when the full enemy/wave system is implemented.
     default: {
       image: null,
       maxHp: 10,
@@ -552,7 +670,12 @@ const Utils = {
       frameWidth: 40,
       frameHeight: 40,
     },
-    byLevel: {},
+    byLevel: {
+      1: { image: (() => { const img = new Image(); img.src = "images/SpriteSheets/Enemies/1.png"; return img; })(), maxHp: 10, speed: 1, damage: 1, frameWidth: 40, frameHeight: 40 },
+      2: { image: (() => { const img = new Image(); img.src = "images/SpriteSheets/Enemies/2.png"; return img; })(), maxHp: 10, speed: 1, damage: 1, frameWidth: 40, frameHeight: 40 },
+      3: { image: (() => { const img = new Image(); img.src = "images/SpriteSheets/Enemies/3.png"; return img; })(), maxHp: 10, speed: 1, damage: 1, frameWidth: 40, frameHeight: 40 },
+      4: { image: (() => { const img = new Image(); img.src = "images/SpriteSheets/Enemies/4.png"; return img; })(), maxHp: 10, speed: 1, damage: 1, frameWidth: 40, frameHeight: 40 },
+    },
   },
 
   WaveData: {
@@ -617,7 +740,6 @@ const Utils = {
   },
 
   TownHallData: {
-    // TODO: Replace/adjust this when full fortress upgrade/balance system is implemented.
     maxHp: 1200,
   },
 
@@ -734,26 +856,7 @@ const Utils = {
 };
 
 
-
-Utils.ShopItemsData.gold_mine.image = (() => { const img = new Image(); img.src = "images/SpriteSheets/Shop/GoldMine.png"; return img; })();
-Utils.ShopItemsData.barracks.image = (() => { const img = new Image(); img.src = "images/SpriteSheets/Shop/Barrack.png"; return img; })();
-Utils.ShopItemsData.archer.image = (() => { const img = new Image(); img.src = "images/SpriteSheets/Shop/Archer.png"; return img; })();
-Utils.ShopItemsData.buildable_tile.image = Utils.Images.Buildable;
-Utils.ShopItemsData.cannon.image = (() => { const img = new Image(); img.src = "images/SpriteSheets/Shop/Cannon.png"; return img; })();
-Utils.ShopItemsData.inferno_tower.image = (() => { const img = new Image(); img.src = "images/SpriteSheets/Shop/Inferno.png"; return img; })();
-
-Utils.EnemyData.byLevel = {
-  1: { ...Utils.EnemyData.default, image: Utils.Images.Enemies.E1 },
-  2: { ...Utils.EnemyData.default, image: Utils.Images.Enemies.E2 },
-  3: { ...Utils.EnemyData.default, image: Utils.Images.Enemies.E3 },
-  4: { ...Utils.EnemyData.default, image: Utils.Images.Enemies.E4 },
-};
-
 const game = new Game();
-
-Utils.MAP.map_2 = Utils.MAP.map_2 || Utils.MAP.map_1;
-Utils.MAP.map_3 = Utils.MAP.map_3 || Utils.MAP.map_1;
-Utils.MAP.map_4 = Utils.MAP.map_4 || Utils.MAP.map_1;
 
 game.addLevel(new MenuLevel(game, Utils)); //0
 game.addLevel(new HelpLevel(game, Utils)); //1
