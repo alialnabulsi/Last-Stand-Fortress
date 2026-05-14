@@ -81,8 +81,8 @@ class Panel extends Sprite {
 
     this.townHallState = {
       townHall: null,
-      hp: 100,
-      maxHp: 100,
+      hp: this.getConfiguredTownHallMaxHp(),
+      maxHp: this.getConfiguredTownHallMaxHp(),
     };
 
     this.shopButtons = [];
@@ -92,6 +92,11 @@ class Panel extends Sprite {
     this.createShopButtons();
     this.createGameButtons();
     this.updateEnemyInfo();
+  }
+
+  getConfiguredTownHallMaxHp() {
+    const townHallData = this.utils && this.utils.TownHallData ? this.utils.TownHallData : null;
+    return townHallData && typeof townHallData.maxHp === "number" ? townHallData.maxHp : 100;
   }
 
   createShopButtons() {
@@ -199,7 +204,29 @@ class Panel extends Sprite {
       },
     );
 
-    this.controlButtons = [this.startDefenseButton, this.takeBreakButton];
+    this.menuButton = new PanelButton(
+      gameBox.x + 246,
+      gameBox.y + 140,
+      76,
+      34,
+      "MENU",
+      () => this.returnToMenu(),
+      {
+        icon: "<",
+        description: "Back",
+        style,
+      },
+    );
+
+    this.controlButtons = [this.startDefenseButton, this.takeBreakButton, this.menuButton];
+  }
+
+  returnToMenu() {
+    const level = this.game && this.game.currentGameLevel ? this.game.currentGameLevel : null;
+    if (level && level.sound && typeof level.sound.stopAll === "function") {
+      level.sound.stopAll();
+    }
+    this.game.changeLevel(0);
   }
 
   selectShopItem(item) {
@@ -924,6 +951,7 @@ class Panel extends Sprite {
       info.y + 88,
     );
     const statusMessage = this.getFortressStatusMessage();
+    ctx.fillStyle = this.getFortressStatusColor(style);
     this.drawWrappedText(ctx, statusMessage, info.x + 16, info.y + 114, info.width - 30, 17);
 
     ctx.restore();
@@ -948,6 +976,12 @@ class Panel extends Sprite {
       return "DEFEAT: Town Hall destroyed.";
     }
     return this.shopState.message;
+  }
+
+  getFortressStatusColor(style) {
+    if (this.defenseState.pendingResultState === "WIN_READY") return style.good;
+    if (this.defenseState.pendingResultState === "LOSE_READY") return style.danger;
+    return style.mutedText;
   }
 
   drawWrappedText(ctx, text, x, y, maxWidth, lineHeight) {

@@ -836,7 +836,7 @@ const Utils = {
   },
 
   TownHallData: {
-    maxHp: 1200,
+    maxHp: 1,
   },
 
   // ===============================

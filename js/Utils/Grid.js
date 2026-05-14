@@ -78,7 +78,7 @@ class Grid extends Sprite {
                 this.map[row][col - 1] !== this.TILE_TYPES.TOWN_HALL);
 
             if (isTopLeftTownHall) {
-              sprites.push(new TownHall(x, y, this.cellSize * 2, image, 1, row, col));
+              sprites.push(new TownHall(x, y, this.cellSize * 2, image, 1, row, col, this.utils));
             }
             break;
 

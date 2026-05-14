@@ -1,5 +1,5 @@
 class TownHall extends Sprite {
-  constructor(x, y, size, image, level = 1, row, col) {
+  constructor(x, y, size, image, level = 1, row, col, utils) {
     super();
 
     this.x = x;
@@ -13,6 +13,7 @@ class TownHall extends Sprite {
     this.canPlaceFoundation = false;
     this.canPlaceObject = false;
     this.isEnemyPath = false;
+    this.utils = utils || null;
 
     this.sourceSize = 80;
     this.level = level;
@@ -26,7 +27,9 @@ class TownHall extends Sprite {
 
   resolveTownHallConfig() {
     const townHallData =
-      this.game &&
+      this.utils && this.utils.TownHallData
+        ? this.utils.TownHallData
+        : this.game &&
       this.game.currentGameLevel &&
       this.game.currentGameLevel.utils &&
       this.game.currentGameLevel.utils.TownHallData
@@ -37,7 +40,7 @@ class TownHall extends Sprite {
       maxHp:
         townHallData && typeof townHallData.maxHp === "number"
           ? townHallData.maxHp
-          : 1000,
+          : 1,
     };
   }
 
