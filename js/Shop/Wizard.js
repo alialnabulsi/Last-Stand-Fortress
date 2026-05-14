@@ -1,0 +1,1 @@
+class Wizard extends DefenseTower {}

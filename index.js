@@ -533,13 +533,13 @@ const Utils = {
 
 
   ShopItemsData: {
-    buildable_tile: { id: "buildable_tile", type: "foundation", cost: 20, unlockLevel: 1, placement: "grass", image: null, placeholderColor: "#5c6b73" },
-    gold_mine: { id: "gold_mine", type: "resource", cost: 95, unlockLevel: 1, placement: "buildable", image: null, placeholderColor: "#d6b14a", productionAmount: 12, productionIntervalMs: 4500 },
-    barracks: { id: "barracks", type: "military", cost: 140, unlockLevel: 2, placement: "buildable", image: null, placeholderColor: "#8e9aa7", troopCapacityBonus: 10 },
-    archer: { id: "archer", type: "defense", cost: 70, unlockLevel: 1, placement: "buildable", image: null, placeholderColor: "#7cb342", range: 120, damage: 4, attackCooldownMs: 550, targetType: "ground" },
-    cannon: { id: "cannon", type: "defense", cost: 125, unlockLevel: 2, placement: "buildable", image: null, placeholderColor: "#616161", range: 130, damage: 10, attackCooldownMs: 1100, targetType: "ground" },
-    wizard: { id: "wizard", type: "defense", cost: 195, unlockLevel: 3, placement: "buildable", image: null, placeholderColor: "#9575cd", range: 150, damage: 8, attackCooldownMs: 800, targetType: "ground" },
-    inferno_tower: { id: "inferno_tower", type: "defense", cost: 290, unlockLevel: 4, placement: "buildable", image: null, placeholderColor: "#ef6c00", range: 165, damage: 16, attackCooldownMs: 1400, targetType: "ground" },
+    buildable_tile: { id: "buildable_tile", type: "foundation", cost: 20, unlockLevel: 1, placement: "grass", image: null, placeholderColor: "#5c6b73", frameWidth: 40, frameHeight: 40, idleFrameCount: 1, frameDurationMs: 200 },
+    gold_mine: { id: "gold_mine", type: "resource", cost: 95, unlockLevel: 1, placement: "buildable", image: null, placeholderColor: "#d6b14a", frameWidth: 256, frameHeight: 256, idleFrameCount: 6, frameDurationMs: 130, productionAmount: 12, productionIntervalMs: 4500 },
+    barracks: { id: "barracks", type: "military", cost: 140, unlockLevel: 2, placement: "buildable", image: null, placeholderColor: "#8e9aa7", frameWidth: 256, frameHeight: 256, idleFrameCount: 6, frameDurationMs: 150, troopCapacityBonus: 10 },
+    archer: { id: "archer", type: "defense", cost: 70, unlockLevel: 1, placement: "buildable", image: null, placeholderColor: "#7cb342", frameWidth: 256, frameHeight: 256, idleFrameCount: 6, attackFrameStart: 6, attackFrameCount: 6, frameDurationMs: 110, range: 120, damage: 4, attackCooldownMs: 550, targetType: "ground" },
+    cannon: { id: "cannon", type: "defense", cost: 125, unlockLevel: 2, placement: "buildable", image: null, placeholderColor: "#616161", frameWidth: 256, frameHeight: 256, idleFrameCount: 6, attackFrameStart: 6, attackFrameCount: 6, frameDurationMs: 125, range: 130, damage: 10, attackCooldownMs: 1100, targetType: "ground" },
+    wizard: { id: "wizard", type: "defense", cost: 195, unlockLevel: 3, placement: "buildable", image: null, placeholderColor: "#9575cd", frameWidth: 256, frameHeight: 256, idleFrameCount: 6, attackFrameStart: 6, attackFrameCount: 6, frameDurationMs: 120, range: 150, damage: 8, attackCooldownMs: 800, targetType: "ground" },
+    inferno_tower: { id: "inferno_tower", type: "defense", cost: 290, unlockLevel: 4, placement: "buildable", image: null, placeholderColor: "#ef6c00", frameWidth: 256, frameHeight: 256, idleFrameCount: 6, attackFrameStart: 6, attackFrameCount: 6, frameDurationMs: 110, range: 165, damage: 16, attackCooldownMs: 1400, targetType: "ground" },
   },
 
   EnemyData: {

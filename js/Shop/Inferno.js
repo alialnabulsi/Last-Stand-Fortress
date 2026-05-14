@@ -1,0 +1,1 @@
+class Inferno extends DefenseTower {}

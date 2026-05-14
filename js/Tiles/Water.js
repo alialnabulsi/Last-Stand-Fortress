@@ -9,7 +9,7 @@ class Water extends Sprite {
     this.tileType = "WATER";
     this.row = typeof row === "number" ? row : Math.floor(y / size);
     this.col = typeof col === "number" ? col : Math.floor(x / size);
-    this.canPlaceBuildable = false;
+    this.canPlaceFoundation = false;
     this.canPlaceObject = false;
     this.isEnemyPath = false;
 

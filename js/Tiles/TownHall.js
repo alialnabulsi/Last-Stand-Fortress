@@ -10,7 +10,7 @@ class TownHall extends Sprite {
     this.tileType = "TOWN_HALL";
     this.row = typeof row === "number" ? row : Math.floor(y / 40);
     this.col = typeof col === "number" ? col : Math.floor(x / 40);
-    this.canPlaceBuildable = false;
+    this.canPlaceFoundation = false;
     this.canPlaceObject = false;
     this.isEnemyPath = false;
 

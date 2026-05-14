@@ -1,0 +1,1 @@
+class Cannon extends DefenseTower {}

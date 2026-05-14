@@ -9,7 +9,7 @@ class Grass extends Sprite {
     this.tileType = "GRASS";
     this.row = typeof row === "number" ? row : Math.floor(y / size);
     this.col = typeof col === "number" ? col : Math.floor(x / size);
-    this.canPlaceBuildable = true;
+    this.canPlaceFoundation = true;
     this.canPlaceObject = false;
     this.isEnemyPath = false;
 
@@ -23,32 +23,21 @@ class Grass extends Sprite {
     return arrayOfSprites.find((sprite) => sprite instanceof Panel) || null;
   }
 
-  tryPlaceBuildable(arrayOfSprites) {
+  tryPlaceSelectedShopItem(arrayOfSprites) {
     const panel = this.findPanel(arrayOfSprites);
     if (!panel) return;
-    const selected = panel.shopState.selectedItem;
+    const selected = getSelectedShopPlaceableConfig(panel);
     if (!selected) {
       panel.setMessage("No item selected. Select Buildable first, then click grass.");
       this.flashUntil = performance.now() + 220;
       return;
     }
-    if (selected.id !== "buildable_tile") {
+    if (selected.placement !== "grass") {
       panel.setMessage(`${selected.fullName} needs a Buildable foundation. Place Buildable on grass first.`);
       this.flashUntil = performance.now() + 220;
       return;
     }
-    if (!panel.canPlaceDuringCurrentPhase()) {
-      panel.setMessage("Placement is only allowed during preparation or under attack.");
-      this.flashUntil = performance.now() + 220;
-      return;
-    }
-    if (!panel.isShopItemUnlocked(selected.id)) {
-      panel.setMessage(`${selected.fullName} is locked.`);
-      this.flashUntil = performance.now() + 220;
-      return;
-    }
-    if (!panel.canAfford(selected.cost)) {
-      panel.setMessage(`Not enough gold for ${selected.fullName}. Need ${selected.cost}G.`);
+    if (!canPlaceSelectedShopItem(panel, selected, this)) {
       this.flashUntil = performance.now() + 220;
       return;
     }
@@ -63,21 +52,19 @@ class Grass extends Sprite {
       return;
     }
 
-    const Constructor = ShopPlaceableRegistry[selected.id];
-    if (!Constructor) {
-      panel.setMessage("This item cannot be placed yet.");
+    const buildable = createShopPlaceableFromRegistry(selected.id, this, panel, selected);
+    if (!buildable) {
+      panel.setMessage("Placement failed.");
+      this.flashUntil = performance.now() + 220;
+      return;
+    }
+    if (!panel.spendGold(selected.cost)) {
+      panel.setMessage("Not enough gold.");
       this.flashUntil = performance.now() + 220;
       return;
     }
 
-    const buildable = new Constructor(
-      this,
-      { ...selected, image: panel.utils.Images.Buildable },
-      panel.game,
-      panel.utils,
-    );
-    panel.game.addSprite(buildable);
-    panel.spendGold(selected.cost);
+    addShopPlaceableSprite(panel.game, buildable, this);
     panel.setMessage(`Buildable placed on grass. Spend gold: ${selected.cost}G.`);
   }
 
@@ -90,7 +77,7 @@ class Grass extends Sprite {
     this.isHovered = isInside;
     const isMouseDown = !!mouse?.down;
     const justPressed = isMouseDown && !this.wasMouseDown;
-    if (justPressed && isInside) this.tryPlaceBuildable(arrayOfSprites);
+    if (justPressed && isInside) this.tryPlaceSelectedShopItem(arrayOfSprites);
     this.wasMouseDown = isMouseDown;
     return false;
   }

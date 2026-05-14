@@ -10,7 +10,7 @@ class Spawner extends Sprite {
     this.row = typeof row === "number" ? row : Math.floor(y / size);
     this.col = typeof col === "number" ? col : Math.floor(x / size);
     this.isSpawner = true;
-    this.canPlaceBuildable = false;
+    this.canPlaceFoundation = false;
     this.canPlaceObject = false;
     this.isEnemyPath = true;
 
