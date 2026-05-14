@@ -240,6 +240,7 @@ class Panel extends Sprite {
     this.shopState.selectedItem = { ...item, ...rule };
     this.shopState.selectedItemId = item.id;
     const targetHint = item.id === "buildable_tile" ? "grass" : "Buildable foundation";
+    this.playSfx("SHOP_ITEM_SELECTED");
     this.setMessage(`${item.fullName} selected. Place on ${targetHint}.`);
   }
 
@@ -315,6 +316,18 @@ class Panel extends Sprite {
 
   setMessage(message) {
     this.shopState.message = message;
+  }
+
+  playSfx(key) {
+    const level = this.game && this.game.currentGameLevel ? this.game.currentGameLevel : null;
+    if (level && typeof level.playSfx === "function") level.playSfx(key);
+  }
+
+  playFinalSfx(key) {
+    const level = this.game && this.game.currentGameLevel ? this.game.currentGameLevel : null;
+    if (!level) return;
+    if (typeof level.stopMusic === "function") level.stopMusic();
+    if (typeof level.playSfx === "function") level.playSfx(key);
   }
 
   getBreakButtonLabel() {
@@ -523,6 +536,7 @@ class Panel extends Sprite {
       this.defenseState.timerRunning = false;
       this.clearRuntimeEnemies();
       this.resetSpawnerRuntimeCounters();
+      this.playFinalSfx("LOSE");
       // TODO: Trigger final lose message/screen in the result system task.
       this.setMessage("Town Hall destroyed. Defense failed.");
     }
@@ -581,6 +595,10 @@ class Panel extends Sprite {
       0,
       this.defenseState.totalEnemiesThisWave - this.defenseState.defeatedEnemies,
     );
+    const level = this.game && this.game.currentGameLevel ? this.game.currentGameLevel : null;
+    if (level && typeof level.playEnemySfx === "function") {
+      level.playEnemySfx(enemy && enemy.enemyLevel ? enemy.enemyLevel : this.defenseState.enemyLevel);
+    }
   }
   onEnemyHandled() {
     if (this.defenseState.gameOverPending || this.defenseState.finalProgressionCompleted) return;
@@ -600,6 +618,7 @@ class Panel extends Sprite {
   }
   onEnemyReachedTownHall(enemy) {
     this.onEnemyHandled();
+    this.playSfx("ENEMY_HIT_TOWN_HALL");
     this.setMessage(`An enemy reached the Town Hall for ${enemy && enemy.damage ? enemy.damage : 0} damage.`);
   }
   onEnemyPathFailed(enemy) {
@@ -617,10 +636,12 @@ class Panel extends Sprite {
       this.defenseState.finalProgressionCompleted = true;
       this.defenseState.winReady = this.townHallState.hp > 0;
       this.defenseState.pendingResultState = this.defenseState.winReady ? "WIN_READY" : this.defenseState.pendingResultState;
+      if (this.defenseState.winReady) this.playFinalSfx("WIN");
       // TODO: Trigger final win message/screen in the result system task.
       this.setMessage("Final wave completed. Victory!");
       return;
     }
+    this.playSfx("LEVEL_UPGRADE");
     this.advanceProgression();
   }
 

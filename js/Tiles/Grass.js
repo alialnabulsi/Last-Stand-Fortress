@@ -29,11 +29,13 @@ class Grass extends Sprite {
     const selected = getSelectedShopPlaceableConfig(panel);
     if (!selected) {
       panel.setMessage("No item selected. Select Buildable first, then click grass.");
+      playPlacementFailure(panel);
       this.flashUntil = performance.now() + 220;
       return;
     }
     if (selected.placement !== "grass") {
       panel.setMessage(`${selected.fullName} needs a Buildable foundation. Place Buildable on grass first.`);
+      playPlacementFailure(panel);
       this.flashUntil = performance.now() + 220;
       return;
     }
@@ -48,6 +50,7 @@ class Grass extends Sprite {
     );
     if (hasBuildableAlready) {
       panel.setMessage("This grass tile already has a Buildable foundation.");
+      playPlacementFailure(panel);
       this.flashUntil = performance.now() + 220;
       return;
     }
@@ -55,16 +58,19 @@ class Grass extends Sprite {
     const buildable = createShopPlaceableFromRegistry(selected.id, this, panel, selected);
     if (!buildable) {
       panel.setMessage("Placement failed.");
+      playPlacementFailure(panel);
       this.flashUntil = performance.now() + 220;
       return;
     }
     if (!panel.spendGold(selected.cost)) {
       panel.setMessage("Not enough gold.");
+      playPlacementFailure(panel);
       this.flashUntil = performance.now() + 220;
       return;
     }
 
     addShopPlaceableSprite(panel.game, buildable, this);
+    playPlacementSuccess(panel);
     panel.setMessage(`Buildable placed on grass. Spend gold: ${selected.cost}G.`);
   }
 

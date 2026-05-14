@@ -6,6 +6,8 @@ class HelpLevel extends Level {
     this.backButtonTitle = utils.LevelsTexts.MenuLevel.backButtonTitle;
     this.helpLines = utils.LevelsTexts.HelpLevel.helpLines;
     this.screenConfig = utils.LevelScreens.HelpLevel;
+    this.soundConfig = utils.SOUNDS.HELP;
+    this.sound = null;
   }
 
   initialize() {
@@ -26,8 +28,25 @@ class HelpLevel extends Level {
 
     this.game.addSprite(
       new Button(backButtonConfig.x, backButtonConfig.y, backButtonConfig.width, backButtonConfig.height, this.backButtonTitle, () => {
-        this.game.changeLevel(0);
+        this.changeLevel(0);
       }),
     );
+
+    this.setupSound();
+  }
+
+  setupSound() {
+    if (this.sound) this.sound.stopAll();
+
+    this.sound = new Sound();
+    this.game.addSprite(this.sound);
+
+    this.sound.addSoundsFromConfig(this.soundConfig);
+    if (this.soundConfig.MUSIC) this.sound.play(this.soundConfig.MUSIC.id);
+  }
+
+  changeLevel(index) {
+    if (this.sound) this.sound.stopAll();
+    this.game.changeLevel(index);
   }
 }

@@ -11,6 +11,10 @@ class GameLevel extends Level {
     this.hasWater = false;
     this.pendingMapLevel = null;
     this.mapChangeQueued = false;
+    this.sound = null;
+    this.currentSoundState = null;
+    this.idleSoundIndex = 0;
+    this.lastSfxPlayedAt = {};
   }
   initialize() {
     this.game.currentGameLevel = this;
@@ -21,8 +25,120 @@ class GameLevel extends Level {
     }
     if (!panel) return;
 
+    this.setupSound();
+
     const level = panel.defenseState ? panel.defenseState.currentLevel : panel.playerState.level;
     this.changeMapForPlayerLevel(level);
+  }
+
+  setupSound() {
+    if (this.sound) this.sound.stopAll();
+
+    this.sound = new Sound();
+    this.currentSoundState = null;
+    this.lastSfxPlayedAt = {};
+    this.registerGameSounds();
+    this.sound.update = () => {
+      this.syncSoundState();
+      return false;
+    };
+    this.game.addSprite(this.sound);
+    this.syncSoundState();
+  }
+
+  registerGameSounds() {
+    const soundConfig = this.getGameSoundConfig();
+    this.sound.addSoundsFromConfig(soundConfig.IDLE);
+    this.sound.addSoundsFromConfig(soundConfig.PLANNING);
+    this.sound.addSoundsFromConfig(soundConfig.COMBAT);
+    this.sound.addSoundsFromConfig(this.getSfxConfig());
+  }
+
+  getGameSoundConfig() {
+    return (this.utils.SOUNDS && this.utils.SOUNDS.GAME) || {};
+  }
+
+  getSfxConfig() {
+    return (this.utils.SOUNDS && this.utils.SOUNDS.SFX) || {};
+  }
+
+  playSfx(key) {
+    const config = this.getSfxConfig()[key];
+    if (!this.sound || !config) return false;
+
+    const now = performance.now();
+    const cooldownMs = config.cooldownMs || 0;
+    if (cooldownMs > 0 && now - (this.lastSfxPlayedAt[key] || 0) < cooldownMs) {
+      return false;
+    }
+
+    this.lastSfxPlayedAt[key] = now;
+    this.sound.stop(config.id);
+    return this.sound.play(config.id);
+  }
+
+  stopMusic() {
+    if (!this.sound) return;
+
+    const soundConfig = this.getGameSoundConfig();
+    const configs = [
+      ...this.getConfigsForSoundState("IDLE"),
+      ...(soundConfig.PLANNING ? [soundConfig.PLANNING] : []),
+      ...(soundConfig.COMBAT ? [soundConfig.COMBAT] : []),
+    ];
+
+    for (const config of configs) {
+      if (config && config.id) this.sound.stop(config.id);
+    }
+    this.currentSoundState = null;
+  }
+
+  playEnemySfx(enemyLevel) {
+    const level = enemyLevel || 1;
+    if (level >= 4) return this.playSfx("LEVEL_4_ENEMY");
+    if (level >= 3) return this.playSfx("LEVEL_3_ENEMY");
+    return this.playSfx("LEVEL_1_AND_2_ENEMY");
+  }
+
+  getSoundStateForDefenseState(defenseState) {
+    const soundConfig = this.getGameSoundConfig();
+    const stateMap = soundConfig.STATE_MAP || {};
+    return stateMap[defenseState] || stateMap.IDLE || "IDLE";
+  }
+
+  getConfigsForSoundState(soundState) {
+    const soundConfig = this.getGameSoundConfig();
+    const config = soundConfig[soundState];
+    if (Array.isArray(config)) return config;
+    return config ? [config] : [];
+  }
+
+  getActiveConfigForSoundState(soundState) {
+    const configs = this.getConfigsForSoundState(soundState);
+    if (configs.length === 0) return null;
+    if (soundState !== "IDLE") return configs[0];
+
+    const index = this.idleSoundIndex % configs.length;
+    this.idleSoundIndex = (this.idleSoundIndex + 1) % configs.length;
+    return configs[index];
+  }
+
+  syncSoundState() {
+    if (!this.sound) return;
+
+    const panel = this.findPanel();
+    if (panel && panel.defenseState && panel.defenseState.finalProgressionCompleted) return;
+
+    const defenseState = panel && panel.defenseState ? panel.defenseState.state : "IDLE";
+    const soundState = this.getSoundStateForDefenseState(defenseState);
+    if (soundState === this.currentSoundState) return;
+
+    this.stopMusic();
+    this.currentSoundState = soundState;
+
+    const activeConfig = this.getActiveConfigForSoundState(soundState);
+    if (!activeConfig) return;
+    this.sound.play(activeConfig.id);
   }
 
   findPanel() {

@@ -39,30 +39,44 @@ function addShopPlaceableSprite(game, sprite, anchor) {
   return true;
 }
 
+function playPlacementSuccess(panel) {
+  if (panel && typeof panel.playSfx === "function") panel.playSfx("SHOP_ITEM_PLACED");
+}
+
+function playPlacementFailure(panel) {
+  if (panel && typeof panel.playSfx === "function") panel.playSfx("CANT_BUILD");
+}
+
 function canPlaceSelectedShopItem(panel, itemConfig, target) {
   if (!panel || !itemConfig) return false;
   if (!ShopPlaceableRegistry[itemConfig.id]) {
     panel.setMessage("This item cannot be placed yet.");
+    playPlacementFailure(panel);
     return false;
   }
   if (!panel.canPlaceDuringCurrentPhase()) {
     panel.setMessage("Placement is only allowed during preparation or under attack.");
+    playPlacementFailure(panel);
     return false;
   }
   if (panel.isRuntimePaused && panel.isRuntimePaused()) {
     panel.setMessage("Cannot place while on break.");
+    playPlacementFailure(panel);
     return false;
   }
   if (!panel.isShopItemUnlocked(itemConfig.id)) {
     panel.setMessage(`${itemConfig.fullName} is locked.`);
+    playPlacementFailure(panel);
     return false;
   }
   if (!panel.canAfford(itemConfig.cost)) {
     panel.setMessage(`Not enough gold for ${itemConfig.fullName}. Need ${itemConfig.cost}G.`);
+    playPlacementFailure(panel);
     return false;
   }
   if (target && target.isMapTile && itemConfig.placement !== "grass") {
     panel.setMessage(`${itemConfig.fullName} needs a Buildable foundation.`);
+    playPlacementFailure(panel);
     return false;
   }
   return true;

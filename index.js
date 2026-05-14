@@ -61,10 +61,6 @@ const Utils = {
         startY: 430,
         gapY: 85,
       },
-      sound: {
-        id: "entryMusic",
-        volume: 0.8,
-      },
     },
 
     StoryLevel: {
@@ -136,6 +132,126 @@ const Utils = {
         y: 800,
         width: 300,
         height: 56,
+      },
+    },
+  },
+
+  SOUNDS: {
+    MENU: {
+      MUSIC: {
+        id: "entryMusic",
+        volume: 0.6,
+        loop: true,
+      },
+    },
+
+    HELP: {
+      MUSIC: {
+        id: "entryMusic2",
+        volume: 0.6,
+        loop: true,
+      },
+    },
+
+    STORY: {
+      MUSIC: {
+        id: "storySound",
+        volume: 0.6,
+        loop: true,
+      },
+    },
+
+    GAME: {
+      STATE_MAP: {
+        IDLE: "IDLE",
+        PREPARATION: "PLANNING",
+        BREAK: "PLANNING",
+        UNDER_ATTACK: "COMBAT",
+      },
+
+      IDLE: [
+        { id: "Home_Village_Music1", volume: 0.5, loop: true },
+        { id: "Home_Village_Music2", volume: 0.5, loop: true },
+        { id: "Home_Village_Music3", volume: 0.5, loop: true },
+      ],
+
+      PLANNING: {
+        id: "Combat_Planning_Music",
+        volume: 0.55,
+        loop: true,
+      },
+
+      COMBAT: {
+        id: "HV_Combat_Music",
+        volume: 0.6,
+        loop: true,
+      },
+    },
+
+    SFX: {
+      WIN: {
+        id: "finalVictory",
+        volume: 0.8,
+        loop: false,
+      },
+
+      LOSE: {
+        id: "lost",
+        volume: 0.8,
+        loop: false,
+      },
+
+      SHOP_ITEM_SELECTED: {
+        id: "shopItemSelected",
+        volume: 0.6,
+        loop: false,
+      },
+
+      SHOP_ITEM_PLACED: {
+        id: "shopItemPlaced",
+        volume: 0.65,
+        loop: false,
+      },
+
+      CANT_BUILD: {
+        id: "cantBuild",
+        volume: 0.65,
+        loop: false,
+        cooldownMs: 180,
+      },
+
+      ENEMY_HIT_TOWN_HALL: {
+        id: "enemyHitTownHall",
+        volume: 0.7,
+        loop: false,
+        cooldownMs: 500,
+      },
+
+      LEVEL_1_AND_2_ENEMY: {
+        id: "level1and2Enemy",
+        volume: 0.55,
+        loop: false,
+        cooldownMs: 650,
+      },
+
+      LEVEL_3_ENEMY: {
+        id: "level3Enemy",
+        volume: 0.6,
+        loop: false,
+        cooldownMs: 650,
+      },
+
+      LEVEL_4_ENEMY: {
+        id: "level4Enemy",
+        volume: 0.65,
+        loop: false,
+        cooldownMs: 650,
+      },
+
+      LEVEL_UPGRADE: {
+        id: "levelUpgrade",
+        volume: 0.75,
+        loop: false,
       },
     },
   },

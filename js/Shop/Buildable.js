@@ -17,24 +17,31 @@ class Buildable extends ShopPlaceable {
     if (!panel) return;
     if (!panel.shopState.selectedItem) {
       panel.setMessage("No item selected. Select a building/tower, then click Buildable.");
+      playPlacementFailure(panel);
       this.flashUntil = performance.now() + 220;
       return;
     }
     if (panel.shopState.selectedItem.id === "buildable_tile") {
       panel.setMessage("Buildable can only be placed on grass, not on another Buildable.");
+      playPlacementFailure(panel);
       this.flashUntil = performance.now() + 220;
       return;
     }
     if (this.occupied || !this.canPlaceObject) {
       panel.setMessage("This Buildable is occupied. Choose an empty Buildable foundation.");
+      playPlacementFailure(panel);
       this.flashUntil = performance.now() + 220;
       return;
     }
 
     const selected = getSelectedShopPlaceableConfig(panel);
-    if (!selected) return;
+    if (!selected) {
+      playPlacementFailure(panel);
+      return;
+    }
     if (selected.placement !== "buildable") {
       panel.setMessage(`${selected.fullName} cannot be placed on a Buildable foundation.`);
+      playPlacementFailure(panel);
       this.flashUntil = performance.now() + 220;
       return;
     }
@@ -46,16 +53,19 @@ class Buildable extends ShopPlaceable {
     const placed = createShopPlaceableFromRegistry(selected.id, this, panel, selected);
     if (!placed) {
       panel.setMessage("Placement failed.");
+      playPlacementFailure(panel);
       this.flashUntil = performance.now() + 220;
       return;
     }
     if (!panel.spendGold(selected.cost)) {
       panel.setMessage("Not enough gold.");
+      playPlacementFailure(panel);
       this.flashUntil = performance.now() + 220;
       return;
     }
 
     addShopPlaceableSprite(panel.game, placed, this);
+    playPlacementSuccess(panel);
     this.occupied = true;
     this.placedObjectId = selected.id;
     panel.setMessage(`${selected.fullName} placed on Buildable foundation. Spend gold: ${selected.cost}G.`);
