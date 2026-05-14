@@ -17,7 +17,6 @@ class GameLevel extends Level {
     this.lastSfxPlayedAt = {};
   }
   initialize() {
-    this.game.currentGameLevel = this;
     let panel = this.findPanel();
     if (!panel) {
       panel = new Panel(this.game, this.utils);

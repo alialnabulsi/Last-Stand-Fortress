@@ -154,7 +154,7 @@ class Enemy extends Sprite {
   buildRouteFromLevel() {
     this.routeBuilt = true;
 
-    const level = this.game ? this.game.currentGameLevel : null;
+    const level = this.getActiveLevel();
     if (!level || !level.getTownHallTile || !level.getPathNeighbors) return;
 
     const startTile = this.findCurrentPathTile(level);
@@ -214,8 +214,6 @@ class Enemy extends Sprite {
         queue.push({ tile: neighbor, path: current.path.concat(neighbor) });
       }
     }
-
-    // TODO: Replace/adjust this when full route/path logic is implemented.
     return [];
   }
 
@@ -337,8 +335,13 @@ class Enemy extends Sprite {
     return null;
   }
 
+  getActiveLevel() {
+    if (!this.game || !Array.isArray(this.game.levels)) return null;
+    return this.game.levels[this.game.currentLevelIndex] || null;
+  }
+
   findTownHallSprite() {
-    const level = this.game ? this.game.currentGameLevel : null;
+    const level = this.getActiveLevel();
     if (level && typeof level.getTownHallTile === "function") {
       const activeTownHall = level.getTownHallTile();
       if (activeTownHall && this.game && Array.isArray(this.game.arrayOfSprites) && this.game.arrayOfSprites.includes(activeTownHall)) {

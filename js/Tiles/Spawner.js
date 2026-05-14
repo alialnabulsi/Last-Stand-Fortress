@@ -65,11 +65,15 @@ class Spawner extends Sprite {
   }
 
   isCurrentMapSpawner() {
-    if (!this.game || !this.game.currentGameLevel) return false;
-    const level = this.game.currentGameLevel;
+    const level = this.getActiveLevel();
     if (typeof level.getSpawnerTiles !== "function") return false;
     const activeSpawners = level.getSpawnerTiles();
     return Array.isArray(activeSpawners) && activeSpawners.includes(this);
+  }
+
+  getActiveLevel() {
+    if (!this.game || !Array.isArray(this.game.levels)) return null;
+    return this.game.levels[this.game.currentLevelIndex] || null;
   }
 
   update(arrayOfSprites) {
@@ -113,7 +117,7 @@ class Spawner extends Sprite {
       this.y,
       this.size,
       wave.currentEnemyLevel,
-      this.game.currentGameLevel ? this.game.currentGameLevel.utils : null,
+      this.getActiveLevel() ? this.getActiveLevel().utils : null,
       {
         maxHp: wave.enemyHp,
         speed: wave.enemySpeed,

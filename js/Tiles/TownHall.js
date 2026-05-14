@@ -29,11 +29,10 @@ class TownHall extends Sprite {
     const townHallData =
       this.utils && this.utils.TownHallData
         ? this.utils.TownHallData
-        : this.game &&
-      this.game.currentGameLevel &&
-      this.game.currentGameLevel.utils &&
-      this.game.currentGameLevel.utils.TownHallData
-        ? this.game.currentGameLevel.utils.TownHallData
+        : this.getActiveLevel() &&
+      this.getActiveLevel().utils &&
+      this.getActiveLevel().utils.TownHallData
+        ? this.getActiveLevel().utils.TownHallData
         : null;
 
     return {
@@ -71,6 +70,10 @@ class TownHall extends Sprite {
     this.maxHp = this.resolveTownHallConfig().maxHp;
     this.hp = this.maxHp;
     this.destroyed = false;
+  }
+  getActiveLevel() {
+    if (!this.game || !Array.isArray(this.game.levels)) return null;
+    return this.game.levels[this.game.currentLevelIndex] || null;
   }
   setLevel(level) {
     this.level = Math.max(1, Math.min(4, level));

@@ -222,7 +222,7 @@ class Panel extends Sprite {
   }
 
   returnToMenu() {
-    const level = this.game && this.game.currentGameLevel ? this.game.currentGameLevel : null;
+    const level = this.getActiveLevel();
     if (level && level.sound && typeof level.sound.stopAll === "function") {
       level.sound.stopAll();
     }
@@ -357,13 +357,18 @@ class Panel extends Sprite {
     this.shopState.message = message;
   }
 
+  getActiveLevel() {
+    if (!this.game || !Array.isArray(this.game.levels)) return null;
+    return this.game.levels[this.game.currentLevelIndex] || null;
+  }
+
   playSfx(key) {
-    const level = this.game && this.game.currentGameLevel ? this.game.currentGameLevel : null;
+    const level = this.getActiveLevel();
     if (level && typeof level.playSfx === "function") level.playSfx(key);
   }
 
   playFinalSfx(key) {
-    const level = this.game && this.game.currentGameLevel ? this.game.currentGameLevel : null;
+    const level = this.getActiveLevel();
     if (!level) return;
     if (typeof level.stopMusic === "function") level.stopMusic();
     if (typeof level.playSfx === "function") level.playSfx(key);
@@ -409,9 +414,6 @@ class Panel extends Sprite {
     this.defenseState.breakTimer = this.defenseState.breakDurationSeconds;
     this.defenseState.breakLastTickAt = now;
     this.setMessage("Break activated.");
-
-    // TODO: Runtime sprites (enemies/spawners/gold mines/towers) should find Panel
-    // and skip runtime updates when panel.canRuntimeUpdate() returns false.
   }
 
   endBreak({ manual = false } = {}) {
@@ -438,7 +440,7 @@ class Panel extends Sprite {
   }
 
   findTownHall(arrayOfSprites) {
-    const activeLevel = this.game && this.game.currentGameLevel ? this.game.currentGameLevel : null;
+    const activeLevel = this.getActiveLevel();
     if (activeLevel && typeof activeLevel.getTownHallTile === "function") {
       const levelTownHall = activeLevel.getTownHallTile();
       if (levelTownHall && this.isTownHallSpriteActive(levelTownHall, arrayOfSprites)) {
@@ -576,13 +578,12 @@ class Panel extends Sprite {
       this.clearRuntimeEnemies();
       this.resetSpawnerRuntimeCounters();
       this.playFinalSfx("LOSE");
-      // TODO: Trigger final lose message/screen in the result system task.
       this.setMessage("Town Hall destroyed. Defense failed.");
     }
   }
 
   resetSpawnerRuntimeCounters() {
-    const level = this.game ? this.game.currentGameLevel : null;
+    const level = this.getActiveLevel();
     if (!level || typeof level.getSpawnerTiles !== "function") return;
     const spawners = level.getSpawnerTiles();
     for (let i = 0; i < spawners.length; i++) {
@@ -634,7 +635,7 @@ class Panel extends Sprite {
       0,
       this.defenseState.totalEnemiesThisWave - this.defenseState.defeatedEnemies,
     );
-    const level = this.game && this.game.currentGameLevel ? this.game.currentGameLevel : null;
+    const level = this.getActiveLevel();
     if (level && typeof level.playEnemySfx === "function") {
       level.playEnemySfx(enemy && enemy.enemyLevel ? enemy.enemyLevel : this.defenseState.enemyLevel);
     }
@@ -676,7 +677,6 @@ class Panel extends Sprite {
       this.defenseState.winReady = this.townHallState.hp > 0;
       this.defenseState.pendingResultState = this.defenseState.winReady ? "WIN_READY" : this.defenseState.pendingResultState;
       if (this.defenseState.winReady) this.playFinalSfx("WIN");
-      // TODO: Trigger final win message/screen in the result system task.
       this.setMessage("Final wave completed. Victory!");
       return;
     }
@@ -714,8 +714,9 @@ class Panel extends Sprite {
     this.defenseState.completedEnemies = 0;
     this.playerState.level = this.defenseState.currentLevel;
     this.clearRuntimeEnemies();
-    if (this.game.currentGameLevel) {
-      this.game.currentGameLevel.changeMapForPlayerLevel(this.playerState.level);
+    const level = this.getActiveLevel();
+    if (level && typeof level.changeMapForPlayerLevel === "function") {
+      level.changeMapForPlayerLevel(this.playerState.level);
     }
     this.findTownHall(this.game.arrayOfSprites);
     if (this.townHallState.townHall && typeof previousTownHallHp === "number") {
@@ -723,7 +724,6 @@ class Panel extends Sprite {
       this.townHallState.townHall.destroyed = this.townHallState.townHall.hp <= 0;
       this.updateTownHallInfo(this.townHallState.townHall);
     }
-    // TODO: Decide whether Town Hall HP should reset per level. Current behavior preserves HP across levels.
     return true;
   }
 
@@ -780,6 +780,10 @@ class Panel extends Sprite {
     this.townHallDestroyedHandled = false;
     this.resetSpawnerRuntimeCounters();
     this.findTownHall(this.game.arrayOfSprites);
+    if (this.townHallState.townHall && typeof this.townHallState.townHall.setLevel === "function") {
+      this.townHallState.townHall.setLevel(level);
+      this.updateTownHallInfo(this.townHallState.townHall);
+    }
     this.updateEnemyInfo();
     this.setMessage(`Level ${level} loaded. Select Buildable to rebuild defenses.`);
   }
