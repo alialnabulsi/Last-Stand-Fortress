@@ -135,9 +135,9 @@ class Panel extends Sprite {
 
     this.startDefenseButton = new PanelButton(
       gameBox.x + 18,
-      gameBox.y + 132,
-      100,
-      40,
+      gameBox.y + 140,
+      92,
+      34,
       "START",
       () => {
         if (this.defenseState.gameOverPending || this.defenseState.finalProgressionCompleted) {
@@ -169,10 +169,10 @@ class Panel extends Sprite {
     );
 
     this.takeBreakButton = new PanelButton(
-      gameBox.x + 151,
-      gameBox.y + 132,
-      116,
-      40,
+      gameBox.x + 124,
+      gameBox.y + 140,
+      108,
+      34,
       this.getBreakButtonLabel(),
       () => {
         if (this.isBreakActive()) {
@@ -293,13 +293,25 @@ class Panel extends Sprite {
     if (!levelConfig || !Array.isArray(levelConfig.waves)) return null;
     return levelConfig.waves[this.defenseState.currentWave - 1] || null;
   }
+  getConfiguredWaves(levelConfig) {
+    return levelConfig && Array.isArray(levelConfig.waves) ? levelConfig.waves : [];
+  }
+  getConfiguredWaveCount(levelConfig) {
+    return this.getConfiguredWaves(levelConfig).length || 1;
+  }
+  getConfiguredTotalEnemies(levelConfig) {
+    return this.getConfiguredWaves(levelConfig).reduce(
+      (total, wave) => total + (wave.enemyCount || 0),
+      0,
+    );
+  }
   updateEnemyInfo() {
     const levelConfig = this.getLevelWaveConfig(this.defenseState.currentLevel);
     if (!levelConfig) return;
     const waveConfig = this.getCurrentWaveConfig() || levelConfig.waves[0] || {};
     this.defenseState.maxLevel = (this.utils.WaveData && this.utils.WaveData.maxLevel) || 4;
-    this.defenseState.maxWaves = levelConfig.maxWaves || levelConfig.waves.length || 1;
-    this.defenseState.currentLevelTotalEnemies = levelConfig.totalEnemies || 0;
+    this.defenseState.maxWaves = this.getConfiguredWaveCount(levelConfig);
+    this.defenseState.currentLevelTotalEnemies = this.getConfiguredTotalEnemies(levelConfig);
     this.defenseState.currentLevelRemainingEnemies = Math.max(0, this.defenseState.currentLevelTotalEnemies - this.defenseState.completedEnemies);
     this.defenseState.enemyLevel = waveConfig.enemyLevel || this.defenseState.currentLevel;
     this.defenseState.enemyCount = waveConfig.enemyCount || 1;
@@ -641,7 +653,6 @@ class Panel extends Sprite {
       this.setMessage("Final wave completed. Victory!");
       return;
     }
-    this.playSfx("LEVEL_UPGRADE");
     this.advanceProgression();
   }
 
@@ -716,6 +727,7 @@ class Panel extends Sprite {
       );
     } else {
       if (!this.advanceLevel()) return;
+      this.playSfx("LEVEL_UPGRADE");
       this.updateEnemyInfo();
       this.startPreparationForCurrentWave(
         `Level ${this.defenseState.currentLevel} started. New map loaded; place a Buildable foundation on grass first.`,
@@ -804,24 +816,24 @@ class Panel extends Sprite {
   drawSectionTitles(ctx) {
     const style = this.config.style;
     ctx.save();
-    ctx.font = "bold 22px Arial";
+    ctx.font = "bold 18px Arial";
     ctx.fillStyle = style.titleColor;
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
     ctx.fillText(
       this.config.titles.shop,
       this.config.layout.shop.x + 15,
-      this.config.layout.shop.y + 12,
+      this.config.layout.shop.y + 10,
     );
     ctx.fillText(
       this.config.titles.game,
       this.config.layout.game.x + 15,
-      this.config.layout.game.y + 12,
+      this.config.layout.game.y + 10,
     );
     ctx.fillText(
       this.config.titles.info,
       this.config.layout.info.x + 15,
-      this.config.layout.info.y + 12,
+      this.config.layout.info.y + 10,
     );
     ctx.restore();
   }
@@ -831,14 +843,14 @@ class Panel extends Sprite {
     const style = this.config.style;
 
     ctx.save();
-    ctx.font = "13px Arial";
+    ctx.font = "12px Arial";
     ctx.fillStyle = style.mutedText;
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
     ctx.fillText(
       "Select what you want to place on the map.",
       shop.x + 15,
-      shop.y + 42,
+      shop.y + 34,
     );
 
     for (const btn of this.shopButtons) btn.draw(ctx);
@@ -849,82 +861,35 @@ class Panel extends Sprite {
     const gameBox = this.config.layout.game;
     const style = this.config.style;
     const leftX = gameBox.x + 18;
-    const rightX = gameBox.x + 145;
+    const midX = gameBox.x + 150;
+    const rightX = gameBox.x + 278;
 
     ctx.save();
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
-    ctx.font = "bold 14px Arial";
+    ctx.font = "bold 13px Arial";
     ctx.fillStyle = style.textColor;
+    ctx.fillText(`Phase: ${this.getPhaseLabel()}`, leftX, gameBox.y + 36);
 
-    ctx.fillText(
-      `Phase: ${this.getPhaseLabel()}`,
-      leftX,
-      gameBox.y + 42,
-    );
-
-    ctx.font = "13px Arial";
+    ctx.font = "12px Arial";
     ctx.fillStyle = style.mutedText;
     const activeTimer = this.isBreakActive()
       ? this.defenseState.breakTimer
       : this.defenseState.state === "PREPARATION"
         ? this.defenseState.preparationTimer
         : 0;
-    ctx.fillText(
-      `Timer: ${this.formatTimer(activeTimer)}`,
-      rightX,
-      gameBox.y + 43,
-    );
-    ctx.fillText(
-      `Level ${this.defenseState.currentLevel}/${this.defenseState.maxLevel}`,
-      leftX,
-      gameBox.y + 68,
-    );
-    ctx.fillText(
-      `Wave ${this.defenseState.currentWave}/${this.defenseState.maxWaves}`,
-      rightX,
-      gameBox.y + 68,
-    );
-    ctx.fillText(
-      `Enemy Lv ${this.defenseState.enemyLevel}`,
-      leftX,
-      gameBox.y + 88,
-    );
-    ctx.fillText(
-      `HP x${this.defenseState.enemyHp.toFixed(2)}`,
-      rightX,
-      gameBox.y + 88,
-    );
-    ctx.fillText(
-      `Speed x${this.defenseState.enemySpeed.toFixed(2)}`,
-      leftX,
-      gameBox.y + 108,
-    );
-    ctx.fillText(
-      `Defeated ${this.defenseState.defeatedEnemies}/${this.defenseState.totalEnemiesThisWave}`,
-      rightX,
-      gameBox.y + 108,
-    );
-    if (this.defenseState.pendingResultState === "WIN_READY") {
-      ctx.fillStyle = "#2ecc71";
-      ctx.font = "bold 12px Arial";
-      ctx.fillText("VICTORY: Final wave cleared!", leftX, gameBox.y + 122);
-    } else if (this.defenseState.pendingResultState === "LOSE_READY") {
-      ctx.fillStyle = "#e74c3c";
-      ctx.font = "bold 12px Arial";
-      ctx.fillText("DEFEAT: Town Hall destroyed.", leftX, gameBox.y + 122);
-    } else {
-      ctx.fillText(
-        `Alive ${this.defenseState.activeEnemies}`,
-        leftX,
-        gameBox.y + 124,
-      );
-      ctx.fillText(
-        `Level Left ${this.defenseState.currentLevelRemainingEnemies}`,
-        rightX,
-        gameBox.y + 124,
-      );
-    }
+    ctx.fillText(`Timer: ${this.formatTimer(activeTimer)}`, midX, gameBox.y + 37);
+
+    ctx.fillText(`Level ${this.defenseState.currentLevel}/${this.defenseState.maxLevel}`, leftX, gameBox.y + 62);
+    ctx.fillText(`Wave ${this.defenseState.currentWave}/${this.defenseState.maxWaves}`, midX, gameBox.y + 62);
+    ctx.fillText(`Enemy Lv ${this.defenseState.enemyLevel}`, rightX, gameBox.y + 62);
+
+    ctx.fillText(`HP x${this.defenseState.enemyHp.toFixed(2)}`, leftX, gameBox.y + 84);
+    ctx.fillText(`Speed x${this.defenseState.enemySpeed.toFixed(2)}`, midX, gameBox.y + 84);
+    ctx.fillText(`Alive ${this.defenseState.activeEnemies}`, rightX, gameBox.y + 84);
+
+    ctx.fillText(`Defeated ${this.defenseState.defeatedEnemies}/${this.defenseState.totalEnemiesThisWave}`, leftX, gameBox.y + 106);
+    ctx.fillText(`Level Left ${this.defenseState.currentLevelRemainingEnemies}`, midX, gameBox.y + 106);
 
     for (const btn of this.controlButtons) btn.draw(ctx);
     ctx.restore();
@@ -937,28 +902,29 @@ class Panel extends Sprite {
     ctx.save();
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
-    ctx.font = "bold 15px Arial";
+    ctx.font = "bold 14px Arial";
     ctx.fillStyle = style.textColor;
-    ctx.fillText(`Gold: ${this.playerState.gold}G`, info.x + 16, info.y + 44);
-    ctx.fillText(`Level: ${this.playerState.level}`, info.x + 160, info.y + 44);
+    ctx.fillText(`Gold: ${this.playerState.gold}G`, info.x + 16, info.y + 38);
+    ctx.fillText(`Level: ${this.playerState.level}`, info.x + 158, info.y + 38);
     ctx.fillText(
       `XP: ${this.playerState.xp}/${this.playerState.xpToNextLevel}`,
       info.x + 250,
-      info.y + 44,
+      info.y + 38,
     );
 
-    ctx.font = "14px Arial";
+    ctx.font = "13px Arial";
     ctx.fillStyle = style.mutedText;
     const selectedName = this.shopState.selectedItem
       ? this.shopState.selectedItem.fullName
       : "None";
-    ctx.fillText(`Selected: ${selectedName}`, info.x + 16, info.y + 74);
+    ctx.fillText(`Selected: ${selectedName}`, info.x + 16, info.y + 66);
     ctx.fillText(
       `Town Hall HP: ${this.townHallState.hp}/${this.townHallState.maxHp}`,
       info.x + 16,
-      info.y + 96,
+      info.y + 88,
     );
-    this.drawWrappedText(ctx, this.shopState.message, info.x + 16, info.y + 122, info.width - 30, 18);
+    const statusMessage = this.getFortressStatusMessage();
+    this.drawWrappedText(ctx, statusMessage, info.x + 16, info.y + 114, info.width - 30, 17);
 
     ctx.restore();
   }
@@ -972,6 +938,16 @@ class Panel extends Sprite {
     if (this.defenseState.state === "UNDER_ATTACK") return "UNDER ATTACK";
     if (this.defenseState.state === "BREAK") return "BREAK";
     return "IDLE";
+  }
+
+  getFortressStatusMessage() {
+    if (this.defenseState.pendingResultState === "WIN_READY") {
+      return "VICTORY: Final wave cleared!";
+    }
+    if (this.defenseState.pendingResultState === "LOSE_READY") {
+      return "DEFEAT: Town Hall destroyed.";
+    }
+    return this.shopState.message;
   }
 
   drawWrappedText(ctx, text, x, y, maxWidth, lineHeight) {

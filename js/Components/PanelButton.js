@@ -99,28 +99,34 @@ class PanelButton extends Sprite {
     ctx.lineTo(this.x + this.width - 8, this.y + 6);
     ctx.stroke();
 
+    const small = this.height <= 40;
+    const compact = this.height < 56;
+    const titleY = this.y + (small ? 12 : compact ? 17 : 18);
+    const descriptionY = this.y + (small ? 25 : compact ? 32 : 36);
+    const costY = this.y + (compact ? this.height - 8 : 50);
+
     // Icon
-    ctx.font = "bold 17px Arial";
+    ctx.font = small ? "bold 13px Arial" : compact ? "bold 14px Arial" : "bold 17px Arial";
     ctx.fillStyle = textColor;
     ctx.textAlign = "left";
     ctx.textBaseline = "middle";
-    ctx.fillText(this.icon, this.x + 10, this.y + 18);
+    ctx.fillText(this.icon, this.x + 8, titleY);
 
     // Main text
-    ctx.font = "bold 14px Arial";
+    ctx.font = compact ? "bold 12px Arial" : "bold 14px Arial";
     ctx.textAlign = "center";
-    ctx.fillText(this.text, this.x + this.width / 2 + 8, this.y + 18);
+    ctx.fillText(this.text, this.x + this.width / 2 + (compact ? 5 : 8), titleY);
 
     // Description
-    ctx.font = "11px Arial";
+    ctx.font = compact ? "10px Arial" : "11px Arial";
     ctx.fillStyle = this.disabled ? "#777777" : "#d6c8a5";
-    ctx.fillText(this.description, this.x + this.width / 2, this.y + 36);
+    ctx.fillText(this.description, this.x + this.width / 2, descriptionY);
 
     // Cost
     if (this.cost !== null) {
-      ctx.font = "bold 11px Arial";
+      ctx.font = compact ? "bold 10px Arial" : "bold 11px Arial";
       ctx.fillStyle = this.disabled ? "#ff7070" : "#ffd166";
-      ctx.fillText(`${this.cost}G`, this.x + this.width / 2, this.y + 50);
+      ctx.fillText(`${this.cost}G`, this.x + this.width / 2, costY);
     }
 
     ctx.restore();

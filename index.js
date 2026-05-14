@@ -798,58 +798,38 @@ const Utils = {
     maxLevel: 4,
     default: {
       level: 1,
-      totalEnemies: 24,
-      maxWaves: 4,
       waves: [
         { wave: 1, enemyLevel: 1, enemyCount: 5, enemyHp: 12, enemySpeed: 0.95, enemyDamage: 6, enemyGoldReward: 14, enemyXpReward: 6, spawnDelaySeconds: 1.15 },
         { wave: 2, enemyLevel: 1, enemyCount: 6, enemyHp: 13, enemySpeed: 0.98, enemyDamage: 6, enemyGoldReward: 14, enemyXpReward: 6, spawnDelaySeconds: 1.05 },
-        { wave: 3, enemyLevel: 1, enemyCount: 6, enemyHp: 14, enemySpeed: 1.0, enemyDamage: 7, enemyGoldReward: 15, enemyXpReward: 7, spawnDelaySeconds: 1.0 },
-        { wave: 4, enemyLevel: 1, enemyCount: 7, enemyHp: 15, enemySpeed: 1.03, enemyDamage: 7, enemyGoldReward: 15, enemyXpReward: 7, spawnDelaySeconds: 0.95 },
       ],
     },
     levels: {
       1: {
         level: 1,
-        totalEnemies: 24,
-        maxWaves: 4,
         waves: [
           { wave: 1, enemyLevel: 1, enemyCount: 5, enemyHp: 12, enemySpeed: 0.95, enemyDamage: 6, enemyGoldReward: 14, enemyXpReward: 6, spawnDelaySeconds: 1.15 },
           { wave: 2, enemyLevel: 1, enemyCount: 6, enemyHp: 13, enemySpeed: 0.98, enemyDamage: 6, enemyGoldReward: 14, enemyXpReward: 6, spawnDelaySeconds: 1.05 },
-          { wave: 3, enemyLevel: 1, enemyCount: 6, enemyHp: 14, enemySpeed: 1.0, enemyDamage: 7, enemyGoldReward: 15, enemyXpReward: 7, spawnDelaySeconds: 1.0 },
-          { wave: 4, enemyLevel: 1, enemyCount: 7, enemyHp: 15, enemySpeed: 1.03, enemyDamage: 7, enemyGoldReward: 15, enemyXpReward: 7, spawnDelaySeconds: 0.95 },
         ],
       },
       2: {
         level: 2,
-        totalEnemies: 32,
-        maxWaves: 4,
         waves: [
           { wave: 1, enemyLevel: 2, enemyCount: 7, enemyHp: 17, enemySpeed: 1.03, enemyDamage: 8, enemyGoldReward: 16, enemyXpReward: 8, spawnDelaySeconds: 1.0 },
           { wave: 2, enemyLevel: 2, enemyCount: 8, enemyHp: 18, enemySpeed: 1.05, enemyDamage: 8, enemyGoldReward: 16, enemyXpReward: 8, spawnDelaySeconds: 0.95 },
-          { wave: 3, enemyLevel: 2, enemyCount: 8, enemyHp: 20, enemySpeed: 1.08, enemyDamage: 9, enemyGoldReward: 17, enemyXpReward: 9, spawnDelaySeconds: 0.9 },
-          { wave: 4, enemyLevel: 2, enemyCount: 9, enemyHp: 22, enemySpeed: 1.1, enemyDamage: 9, enemyGoldReward: 17, enemyXpReward: 9, spawnDelaySeconds: 0.85 },
         ],
       },
       3: {
         level: 3,
-        totalEnemies: 40,
-        maxWaves: 4,
         waves: [
           { wave: 1, enemyLevel: 3, enemyCount: 9, enemyHp: 24, enemySpeed: 1.08, enemyDamage: 10, enemyGoldReward: 18, enemyXpReward: 10, spawnDelaySeconds: 0.9 },
           { wave: 2, enemyLevel: 3, enemyCount: 10, enemyHp: 26, enemySpeed: 1.1, enemyDamage: 10, enemyGoldReward: 18, enemyXpReward: 10, spawnDelaySeconds: 0.85 },
-          { wave: 3, enemyLevel: 3, enemyCount: 10, enemyHp: 28, enemySpeed: 1.12, enemyDamage: 11, enemyGoldReward: 19, enemyXpReward: 11, spawnDelaySeconds: 0.8 },
-          { wave: 4, enemyLevel: 3, enemyCount: 11, enemyHp: 30, enemySpeed: 1.14, enemyDamage: 11, enemyGoldReward: 19, enemyXpReward: 11, spawnDelaySeconds: 0.75 },
         ],
       },
       4: {
         level: 4,
-        totalEnemies: 48,
-        maxWaves: 4,
         waves: [
           { wave: 1, enemyLevel: 4, enemyCount: 11, enemyHp: 34, enemySpeed: 1.13, enemyDamage: 12, enemyGoldReward: 20, enemyXpReward: 12, spawnDelaySeconds: 0.8 },
           { wave: 2, enemyLevel: 4, enemyCount: 12, enemyHp: 36, enemySpeed: 1.15, enemyDamage: 13, enemyGoldReward: 20, enemyXpReward: 12, spawnDelaySeconds: 0.75 },
-          { wave: 3, enemyLevel: 4, enemyCount: 12, enemyHp: 38, enemySpeed: 1.17, enemyDamage: 13, enemyGoldReward: 21, enemyXpReward: 13, spawnDelaySeconds: 0.7 },
-          { wave: 4, enemyLevel: 4, enemyCount: 13, enemyHp: 40, enemySpeed: 1.2, enemyDamage: 14, enemyGoldReward: 21, enemyXpReward: 13, spawnDelaySeconds: 0.65 },
         ],
       },
     },
@@ -869,8 +849,8 @@ const Utils = {
       y: 800,
       width: 1600,
       height: 200,
-      shop: { x: 12, y: 812, width: 835, height: 176 },
-      game: { x: 865, y: 812, width: 285, height: 176 },
+      shop: { x: 12, y: 812, width: 700, height: 176 },
+      game: { x: 710, y: 812, width: 420, height: 176 },
       info: { x: 1160, y: 812, width: 428, height: 176 },
     },
 
@@ -902,11 +882,11 @@ const Utils = {
     },
 
     shopButton: {
-      width: 100,
-      height: 58,
-      gap: 10,
-      startX: 28,
-      startY: 872,
+      width: 88,
+      height: 54,
+      gap: 8,
+      startX: 32,
+      startY: 870,
       columns: 7,
     },
 
